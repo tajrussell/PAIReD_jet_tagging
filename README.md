@@ -1,2 +1,2 @@
-# PAIReD_jet_tagging
+# PAIReD jet tagging framework
 A repository combining the full workflow of PAIReD tagger development.
