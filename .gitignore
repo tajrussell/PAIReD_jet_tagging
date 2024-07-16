@@ -1,3 +1,26 @@
+# Jupyter Notebook
+.ipynb_checkpoints
+
+
+# Excel open files
+~$*.xlsx
+
+
+*.pyc
+
+# ROOT files
+*.root
+!PAIReD_Data_Production/PFNano_to_PAIReD/data/example_PFNano_mcRun3_EE_allPF_noBTV.root
+
+# Plots
+plots
+
+# histograms
+histograms
+
+
+
+
 # Byte-compiled / optimized / DLL files
 __pycache__/
 *.py[cod]
