@@ -36,9 +36,13 @@ python3 crabby.py -c path/to/your_card.yml --submit
 Once you have created the data sets in the NanoAOD file, the next step is to produce PAIReD jets from them. To do this, we use a specially developed framework `PFNano_to_PAIRED`. The following explains how to install `conda`, set up the required environment and download the framework. The use of the framework is then explained afterwards.
 
 ### Installing the framework
+Go to the directory on your machine where you want to install the framework. Make sure that it is a reasonable place to install it to. Then, clone this repository to your current directory by running:
+```bash
+git clone https://github.com/JanGerritSchulz/PAIReD_jet_tagging.git
+```
 
 ### Installing conda
-If you don't have `Miniconda` installed already on your computing cluster (does not have to be `lxplus` btw...), you can install it by performing the following steps:
+If you don't have `Miniconda` installed already on your machine, you can install it by following these steps:
 
 First, download `Miniconda` with this command:
 ```bash
@@ -61,6 +65,30 @@ Verify the installation is successful by running `conda info` and checking if th
 
 If you cannot run the `conda` command, check if the conda path has been correctly set up in your `.bashrc`/`.zshrc` file. You may need to log out and log in again for the changes to take effect.
 
+### Set up the conda environment
+Once you have `Miniconda` installed, you can set up the `conda` environment `nano2paired` for the data processing to PAIReD files. For doing this, you need to go to main directory of the `PAIReD_jet_tagging` repository. If you just downloaded the repo, you can most likely get there with:
+```bash
+cd PAIReD_jet_tagging
+```
+When you are there, we can create and set up the environment by running:
+```bash
+conda env create -f environments/nano2paired.yml
+```
+After this is done, you can activate the environment with:
+```bash
+conda activate nano2paired
+```
+
+### Check if the setup works
+In order to check whether everything worked fine, we will run a quick PAIReD production task. For this, we go to the `src` directory:
+```bash
+cd PAIReD_Data_Production/PFNano_to_PAIReD/src/
+```
+Make sure that your `nano2paired` environment is activated and run:
+```bash
+python processFileToPAIReD.py "../data/example_PFNano_mcRun3_EE_allPF_noBTV.root" "../data/example_PAIReD_mcRun3_EE.root"
+```
+If everything worked as expected, you should see the code running for a couple of seconds and get `End makeNtuplesPAIReDjoint()` as a final printed statement. If this is the case, you can take a closer look at the output and you will notice that you just produced some first PAIReD jets. Congratulations!
 
 
 
