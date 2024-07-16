@@ -1,5 +1,5 @@
 # Overview of the file structure and content of the PAIReD output files
-This note gives you a short overview of the structure (ROOT trees) and content (ROOT branches) of the produced output files of the [`makeNtuplesPAIReDjointMC()`](../src/processFileToPAIReD.py) function. Those output files are meant to be used for training of the PAIReD tagger and therefore consist of both observables and true MC information.
+This note gives you a short overview of the structure (ROOT trees) and content (ROOT branches) of the produced output files of the [`makeNtuplesPAIReDjointMC()`](../src/processFileToPAIReD.py#L76) function. Those output files are meant to be used for training of the PAIReD tagger and therefore consist of both observables and true MC information.
 
 There is only one tree in the ROOT file:
 * `tree`: containing all the PAIReD jets with all the relevant information for training.
