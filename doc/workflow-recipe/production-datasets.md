@@ -1,4 +1,4 @@
-## Production of the data sets
+# Production of the data sets
 In order to create a tagger for PAIReD jets, data sets of such PAIReD jets are required first of all. As this type of jet is new in CMS, PAIReD jets are not yet available in standardized file formats such as MiniAOD or NanoAOD. Accordingly, we have to generate the data sets ourselves. We do this in two steps:
 1. We create a NanoAOD data set from a data set in MiniAOD format.
 2. From these NanoAOD files we create PAIReD files with ntuples of PAIReD jets.
@@ -6,14 +6,14 @@ Both steps are described below.
 
 **Note:** Technically, it is unnecessary to do this in two steps. A single step from MiniAOD directly to PAIReD ntuples is possible, but was not implemented here due to an unfavorable choice of approach at the beginning of the project. This may be implemented in the future.
 
-### 1. From MiniAOD to PFNanoAOD
+## 1. From MiniAOD to PFNanoAOD
 We use the BTV Nano production workflow to produce NanoAOD data sets. This is necessary because the PF candidates are required as tagger input and these are not available in normal NanoAODs. You can find the corresponding [repo here](https://github.com/cms-btv-pog/btvnano-prod). Follow the instructions given there to set up CMSSW and crab on `lxplus`.
 
-**Important:** Before sending jobs to produce data sets, a setting must be changed in the CMSSW code. This is this line in the `custom_btv_cff.py` file:
+**Important:** Before sending jobs to produce data sets, a setting must be changed in the CMSSW code. The [following line](https://github.com/cms-sw/cmssw/blob/master/PhysicsTools/NanoAOD/python/custom_btv_cff.py#L658) in the `custom_btv_cff.py` file
 ```python
 btvNano_addallPF_switch = cms.untracked.bool(False)
 ```
-This must be changed to 
+must be changed to  
 ```python
 btvNano_addallPF_switch = cms.untracked.bool(True)
 ```
@@ -30,8 +30,38 @@ and submitted using
 python3 crabby.py -c path/to/your_card.yml --submit
 ```
 
-**Note:** I personally still used `lxplus7` which was ended recently. I have not tested the BTV-Nano workflow on the newer linux versions yet.
+**Note:** I personally still used `lxplus7` which ended working recently. I have not tested the BTV-Nano workflow on the newer linux versions yet.
 
-### 2. From PFNanoAOD to PAIReD
+## 2. From PFNanoAOD to PAIReD
+Once you have created the data sets in the NanoAOD file, the next step is to produce PAIReD jets from them. To do this, we use a specially developed framework `PFNano_to_PAIRED`. The following explains how to install `conda`, set up the required environment and download the framework. The use of the framework is then explained afterwards.
 
-### Subdividing in Training+Validation and Test
+### Installing the framework
+
+### Installing conda
+If you don't have `Miniconda` installed already on your computing cluster (does not have to be `lxplus` btw...), you can install it by performing the following steps:
+
+First, download `Miniconda` with this command:
+```bash
+wget https://repo.anaconda.com/miniconda/Miniconda3-latest-Linux-x86_64.sh
+```
+Next, run the installation
+```bash
+bash Miniconda3-latest-Linux-x86_64.sh
+```
+and follow the instructions. Choose a reasonable destination for the installation and make sure to choose `yes` at this point:
+```
+> Do you wish the installer to initialize Miniconda3
+> by running conda init? [yes|no]
+```
+Optionally, you can disable the auto activation of the base environment at login:
+```bash
+conda config --set auto_activate_base false
+```
+Verify the installation is successful by running `conda info` and checking if the paths are pointing to your Miniconda installation.
+
+If you cannot run the `conda` command, check if the conda path has been correctly set up in your `.bashrc`/`.zshrc` file. You may need to log out and log in again for the changes to take effect.
+
+
+
+
+### Subdividing in training/validation and test sets
