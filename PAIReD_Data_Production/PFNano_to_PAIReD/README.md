@@ -22,12 +22,6 @@ conda activate nano2paired
 conda install -c conda-forge uproot vector xrootd
  ```
 
-### Cloning the Git repository
- Clone this repository to lxplus, e.g., via ssh:
- ```
-git clone git@github.com:JanGerritSchulz/PFNano_to_PAIReD.git
- ```
-
 
 ## Documentation
  The documentation for the relevant files can be found here:
