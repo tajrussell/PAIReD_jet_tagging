@@ -25,6 +25,7 @@ conda install -c conda-forge uproot vector xrootd
 
 ## Documentation
  The documentation for the relevant files can be found here:
+ * [Documentation for processDatasetToPAIReD](doc/doc_processDataset.md)
  * [Documentation for processFileToPAIReD](doc/doc_main.md)
  * [Documentation for tools/processEvents](doc/doc_processEvents.md)
  * [Documentation for tools/isInPAIReD/*](doc/doc_isInPAIReD.md)

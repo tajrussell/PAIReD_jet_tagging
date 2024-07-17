@@ -101,7 +101,7 @@ process event batch 0
 You can see all the options for the usage in the command line by calling the `--help` option (`-h`):
 
 ```bash
->>> python makeNtuplesPAIReDjointMC.py -h
+>>> python processFileToPAIReD.py -h
 usage: processFileToPAIReD.py [-h] [--batchsize BATCHSIZE] [--N-update N_UPDATE] [-n NEVENTS] [-p PHYSICSPROCESS] [-g GEOMETRY] inputFilePath outputFilePath
 
 Process MC PFNano files to the PAIReD data format for training.

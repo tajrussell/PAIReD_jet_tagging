@@ -65,7 +65,8 @@ def processDataset(dataset,
     print("** Number of files in the data set:", len(filelist))
     if N_files==-1:
         N_files = len(filelist) - first_file
-    print("** Number of files to be processed:", N_files)
+    last_file = min(first_file + N_files, len(filelist))
+    print("** Number of files to be processed:", last_file-first_file)
     print("** Start at file:", first_file)
 
     print("\nSettings for processFileToPAIReD:")
@@ -80,10 +81,10 @@ def processDataset(dataset,
     if N_threads == 1:
         print("** Use only one thread")
         print("\n** Start processing the data set\n\n")
-        for i in range(first_file, first_file + N_files):
+        for inputfile in filelist[first_file:last_file]:
             process(storageprefix, outputpath, batchsize, N_update,
                         N_events_to_process, physics_process, PAIReD_geometry, 
-                        inputfile=filelist[i])
+                        inputfile=inputfile)
     # if run in parallel
     else:
         process_for_pool = functools.partial(process, storageprefix,
@@ -92,7 +93,7 @@ def processDataset(dataset,
         print("** Use %i threads in parallel" % N_threads)
         print("\n** Start processing the data set\n\n")
         with mp.Pool(processes=N_threads) as pool:
-            pool.map(process_for_pool, filelist[first_file:(first_file + N_files)])
+            pool.map(process_for_pool, filelist[first_file:last_file])
 
     print("\n\n** Done processing\n")
 
