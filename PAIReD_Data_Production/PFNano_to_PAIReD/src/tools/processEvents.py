@@ -22,7 +22,7 @@ import awkward as ak
 import numpy as np
 import vector
 from tools.branchnames import BranchNames
-from tools.helpers import isoLeptonCut, deltaPhi
+from tools.helpers import isoLeptonCut, deltaPhi, getJetClusterIndex
 from tools.getMCInfo import getMCInfo
 from tools.PAIReD_geometries.ellipse import isInPAIReD
 
@@ -65,7 +65,8 @@ def processEvents(Events, physics_process=0, PAIReD_geometry="Ellipse"):
             "pid": Events.PFCands_pdgId[s], "d0val": Events.PFCands_d0[s],
             "d0err": Events.PFCands_d0Err[s], "dzval": Events.PFCands_dz[s],
             "dzerr": Events.PFCands_dzErr[s], "mass": Events.PFCands_mass[s],
-            "puppiweight": Events.PFCands_puppiWeight[s]}
+            "puppiweight": Events.PFCands_puppiWeight[s],
+            "jetindex": getJetClusterIndex(Events)[s]}
     
     # sort the secondary vertices (SV) according to their dlenSig
     s = ak.argsort(Events.SV_dlenSig, ascending=False, axis=1)
@@ -119,6 +120,10 @@ def processEvents(Events, physics_process=0, PAIReD_geometry="Ellipse"):
         SV[name], isInSV = ak.broadcast_arrays(SV[name], isInSV)
         SV[name] = SV[name][isInSV]
 
+    # flags indicating if particles are clustered in one of seed jets
+    Part["in_jet1"] = Part["jetindex"] == Jet.j1.index
+    Part["in_jet2"] = Part["jetindex"] == Jet.j2.index
+
     # calculate remaining variables (px,py,pz,E) from 4-vector
     Part4 = vector.zip({"eta": Part["eta"], "phi": Part["phi"],
                 "pt": Part["pt"], "mass": Part["mass"]})
@@ -147,6 +152,14 @@ def processEvents(Events, physics_process=0, PAIReD_geometry="Ellipse"):
                     "py": ak.sum(Part4.py, axis=2),
                     "pz": ak.sum(Part4.pz, axis=2),
                     "E":  ak.sum(Part4.E, axis=2)})
+    
+    # get indices of the particles in one of the AK4 jets
+    s = ak.local_index(Part["pt"], axis=2)[(Part["in_jet1"]) & (Part["in_jet2"])]
+    # get indices of the particles in no jet
+    s = ak.concatenate([s, ak.local_index(Part["pt"], axis=2)[(~Part["in_jet1"]) & (~Part["in_jet2"])]], axis=2)
+    # bring particles clustered to the seed jets to the front of the list
+    for name in Part.keys():
+        Part[name] = Part[name][s]
     
     # prepare jet and particle objects for the tree
     part = ak.zip(Part)

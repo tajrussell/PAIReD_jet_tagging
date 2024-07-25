@@ -3,6 +3,7 @@
  "PFCands_charge", "PFCands_pdgId", "PFCands_d0",
  "PFCands_d0Err", "PFCands_dz", "PFCands_dzErr",
  "PFCands_mass", "PFCands_puppiWeight",
+ "JetPFCands_pFCandsIdx", "JetPFCands_jetIdx",
  "nJet", 
  "Jet_mass", "Jet_eta", "Jet_phi", "Jet_pt", 
  "Jet_nConstituents", "Jet_partonFlavour",

@@ -42,7 +42,7 @@ The PAIReD jets are assigned a truth MC flag called `MC_physics_process`, an int
 
 
 ## The `tree` tree
-Note that the particles `part` are sorted accoding to their transverse momentum $p_T$ while the secondary vertices `sv` are sorted according to their decay length significance.
+Note that the particles `part` that are clustered in one of the two seed jets are at the top of the list. Furthermore, the particles are sorted according to their transverse momentum $p_T$ while the secondary vertices `sv` are sorted according to their decay length significance.
 | Object | Type | Description |
 |:--|:--|:--|
 | `event` | uint64_t | Event index of the MC event from the original simulation file |
@@ -91,6 +91,9 @@ Note that the particles `part` are sorted accoding to their transverse momentum 
 | `part_dphi1` | float[] | Array of the phi angle differences of all particles in the PAIReD jet to the first jet |
 | `part_dphi2` | float[] | Array of the phi angle differences of all particles in the PAIReD jet to the second jet |
 | `part_puppiweight` | float[] | Array of the pile-up weights of all particles in the PAIReD jet |
+| `part_jetindex` | float[] | Array of the jet indices that the particles were clustered to |
+| `part_in_jet1` | float[] | Array of bools if particle is clustered in the first seed AK4 jet |
+| `part_in_jet2` | float[] | Array of bools if particle is clustered in the second seed AK4 jet |
 | `nsv` | int32_t | Number of secondary vertices |
 | `sv_charge` | float[] | Array of the sums of the charge of the SV tracks of all SV in the PAIReD jet |
 | `sv_chi2` | float[] | Array of the reduced chi2, i.e. chi/ndof, of all SV in the PAIReD jet |

@@ -285,3 +285,34 @@ def shiftPhi(phi, shift, lim):
 # ******************************************************************************
 
 
+"""
+ * Function: getJetClusterIndex
+ * ----------------------------
+Determine the jet the the particle was clustered to.
+
+Parameters
+----------
+Events : event tree object
+    Object containing all information of multiple simulated events.
+
+Returns
+-------
+jetclusterindex : int or array of ints
+    Index of the jet each particle was clustered to. 
+"""
+
+def getJetClusterIndex(Events):
+    # number of particles in each event
+    num = ak.num(Events.PFCands_pt)
+    
+    cum = np.cumsum(num) - num
+    indices = ak.flatten(Events.JetPFCands_pFCandsIdx + cum, None)
+
+    # define the array of jet indices
+    jetclusterindex = - np.ones(np.sum(num))
+    jetclusterindex[indices] = ak.flatten(Events.JetPFCands_jetIdx, None)
+    jetclusterindex = ak.unflatten(jetclusterindex, num)
+
+    return jetclusterindex
+
+# ******************************************************************************
