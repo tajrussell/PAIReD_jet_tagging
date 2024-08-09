@@ -1,6 +1,6 @@
 # Training a PAIReD tagger
 
-Here, we want to train a neural network on the classification of PAIReD jets and their mass regression. For this, we need to have dataset prepared. So, if you don't have a dataset yet, go back to the data production step described [here](./production-dataset.md). If you have your dataset ready, then let's get started on the neural network training!
+Here, we want to train a neural network on the classification of PAIReD jets and their mass regression. For this, we need to have dataset prepared. So, if you don't have a dataset yet, go back to the data production step described [here](./production-datasets.md). If you have your dataset ready, then let's get started on the neural network training!
 
 #### Content
 <!-- TOC -->
@@ -16,7 +16,7 @@ Here, we want to train a neural network on the classification of PAIReD jets and
 <!-- /TOC -->
 
 ## Set up the conda environment
-For the training and inference, we will need a different conda environment than in the data production. If you don't have `conda` installed yet, go back to [Installing `conda`](./production-dataset.md#installing-conda). If you have conda installed, proceed with the following steps to set up the `weaver` environment.
+For the training and inference, we will need a different conda environment than in the data production. If you don't have `conda` installed yet, go back to [Installing `conda`](./production-datasets.md#installing-conda). If you have conda installed, proceed with the following steps to set up the `weaver` environment.
 
 Create a new environment:
 ```bash
