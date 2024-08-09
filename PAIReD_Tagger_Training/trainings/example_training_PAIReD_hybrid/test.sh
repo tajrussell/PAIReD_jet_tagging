@@ -31,8 +31,4 @@ python $BASEDIR/weaver-core-hybrid/weaver/train.py \
 --num-workers $NWORKERS \
 --train-mode "hybrid" \
 --model-prefix ./models/_best_epoch_state.pt \
---predict-output ./predictions/prediction.root \
---loss-option "factor_reg" 0.1 \
---loss-option "factor_err" 0.1 \
---loss-option "baseline_reg" 0.0 \
---loss-option "baseline_err" 0.0
+--predict-output ./predictions/prediction.root
