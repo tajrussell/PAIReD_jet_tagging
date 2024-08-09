@@ -6,6 +6,21 @@ Both steps are described below.
 
 **Note:** Technically, it is unnecessary to do this in two steps. A single step from MiniAOD directly to PAIReD ntuples is possible, but was not implemented here due to an unfavorable choice of approach at the beginning of the project. This may be implemented in the future.
 
+#### Content
+<!-- TOC -->
+
+- [1. From MiniAOD to PFNanoAOD](#1-from-miniaod-to-pfnanoaod)
+- [2. From PFNanoAOD to PAIReD](#2-from-pfnanoaod-to-paired)
+    - [Installing the framework](#installing-the-framework)
+    - [Installing conda](#installing-conda)
+    - [Set up the conda environment](#set-up-the-conda-environment)
+    - [Check if the setup works](#check-if-the-setup-works)
+    - [Produce entire data sets of PAIReD jets](#produce-entire-data-sets-of-paired-jets)
+    - [Subdividing in training/validation and test sets](#subdividing-in-trainingvalidation-and-test-sets)
+    - [Counting the produced PAIReD jets](#counting-the-produced-paired-jets)
+
+<!-- /TOC -->
+
 ## 1. From MiniAOD to PFNanoAOD
 We use the BTV Nano production workflow to produce NanoAOD data sets. This is necessary because the PF candidates are required as tagger input and these are not available in normal NanoAODs. You can find the corresponding [repo here](https://github.com/cms-btv-pog/btvnano-prod/tree/NanoAODv12_22Sep2023). Follow the instructions given there to set up CMSSW and crab on `lxplus`.
 

@@ -1,0 +1,172 @@
+treename:
+  tree
+
+selection:
+  
+test_time_selection:
+  null
+
+preprocess:
+  ### method: [manual, auto] - whether to use manually specified parameters for variable standardization
+  method: manual
+  ### data_fraction: fraction of events to use when calculating the mean/scale for the standardization
+  data_fraction: null
+  params: null
+
+new_variables:
+  ### [format] name: formula
+  ### can use functions from `math`, `np` (numpy), and `awkward` in the expression
+  part_mask: ak.ones_like(part_energy)
+  part_pt_log: np.where(np.isnan(np.log(part_pt)), -1e3, np.log(part_pt))
+  part_e_log: np.where(np.isnan(np.log(part_energy)), -1e3, np.log(part_energy))
+  jet1_rawenergy: jet1_energy * (1-jet1_rawfactor)
+  jet2_rawenergy: jet2_energy * (1-jet2_rawfactor)
+  jet1_rawpt: jet1_pt * (1-jet1_rawfactor)
+  jet2_rawpt: jet2_pt * (1-jet2_rawfactor)
+  part_logptrel: np.where(np.isnan(np.log(part_pt/(jet1_rawpt+jet2_rawpt))), -1e3,
+    np.log(part_pt/(jet1_rawpt+jet2_rawpt)))
+  part_logerel: np.where(np.isnan(np.log(part_energy/(jet1_rawenergy+jet2_rawenergy))),
+    -1e3, np.log(part_energy/(jet1_rawenergy+jet2_rawenergy)))
+  part_deltaR1: np.hypot(part_deta1, part_dphi1)
+  part_deltaR2: np.hypot(part_deta2, part_dphi2)
+  part_d0: np.where(part_d0val==-1, -1.5, np.tanh(part_d0val))
+  part_dz: np.where(part_dzval==-1, -1.5, np.tanh(part_dzval))
+  sv_px: np.cos(sv_phi) * sv_pt
+  sv_py: np.sin(sv_phi) * sv_pt
+  sv_pz: np.sinh(sv_eta) * sv_pt
+  sv_energy: np.sqrt(sv_mass**2 + (sv_pt*np.cosh(sv_eta))**2)
+  sv_mask: ak.ones_like(sv_pt)
+  class_WpHcc: (MC_physics_process==1)
+  class_WmHcc: (MC_physics_process==2)
+  class_ZHcc: (MC_physics_process==3)
+  class_WpHbb: (MC_physics_process==11)
+  class_WmHbb: (MC_physics_process==12)
+  class_ZHbb: (MC_physics_process==13)
+  class_DY: (MC_physics_process==23)
+  class_W: (MC_physics_process==22)
+  class_TT: (MC_physics_process==24)
+
+
+inputs:
+  pf_features:
+    length: 128
+    pad_mode: wrap
+    vars:
+      - [part_pt_log, 1., 0.25]
+      - [part_e_log, 2.0, 0.25]
+      - [part_logptrel, -4.7, 0.25]
+      - [part_logerel, -4.7, 0.25]
+      - [part_deltaR1, null]
+      - [part_deltaR2, null]
+      - [part_charge, null]
+      - [part_d0, null]
+      - [part_d0err, 0, 1, 0, 1]
+      - [part_dz, null]
+      - [part_dzerr, 0, 1, 0, 1]
+      - [part_deta1, null]
+      - [part_dphi1, null]
+      - [part_deta2, null]
+      - [part_dphi2, null]
+      - [part_puppiweight, null]
+  pf_vectors:
+    length: 128
+    pad_mode: wrap
+    vars:
+    - - part_px
+      - null
+    - - part_py
+      - null
+    - - part_pz
+      - null
+    - - part_energy
+      - null
+  pf_mask:
+    length: 128
+    pad_mode: constant
+    vars:
+    - part_mask
+  sv_features:
+    length: 10
+    pad_mode: wrap
+    vars:
+      - sv_charge
+      - [sv_chi2, 0, 0.25]
+      - [sv_dlen, 0, 0.05]
+      - [sv_dlenSig, 0, 0.01]
+      - [sv_dxy, 0, 0.05]
+      - [sv_dxySig, 0, 0.01]
+      - sv_eta
+      - [sv_mass, 0, 0.1]
+      - [sv_ndof, 0, 0.1]
+      - [sv_ntracks, 0, 0.1]
+      - [sv_pAngle, 0, 0.33]
+      - sv_phi
+      - [sv_pt, 0, 0.01]
+      - [sv_x, 0, 0.2]
+      - [sv_y, 0, 0.2]
+      - [sv_z, 0, 0.2]
+      - sv_deta1
+      - sv_deta2
+      - sv_dphi1
+      - sv_dphi2
+  sv_vectors:
+    length: 10
+    pad_mode: wrap
+    vars:
+    - - sv_px
+      - null
+    - - sv_py
+      - null
+    - - sv_pz
+      - null
+    - - sv_energy
+      - null
+  sv_mask:
+    length: 10
+    pad_mode: constant
+    vars:
+    - sv_mask
+
+labels:
+  type: hybrid
+  value: #null
+  #value_cls_index: MC_gen_flav
+  #value_cls_names:
+  # first two labels have to be CC and BB in order for the regression loss to work!!!
+  - label_BB
+  - label_CC
+  - label_LL
+  value_custom:
+    target_mass: MC_higgs_mass
+
+observers:
+  - event
+  - genweight
+  - jet1_eta
+  - jet1_phi
+  - jet2_eta
+  - jet2_phi
+  - jet1_nparticles
+  - jet2_nparticles
+  - dijet_nparticles
+  - dijet_eta
+  - dijet_phi
+  - dijet_pt
+  - dijet_mass
+  - dijet_index
+  - MC_higgs_pt
+  - MC_higgs_eta
+  - MC_higgs_phi
+  - MC_higgs_mass
+  - MC_higgs_flav
+  - MC_vector_flav
+  - MC_lepton_channel
+  - label_bb
+  - label_cc
+  - label_ll
+  - label_cl
+  - label_bl
+  - label_LL
+  - label_CC
+  - label_BB
+
