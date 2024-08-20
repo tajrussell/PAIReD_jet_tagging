@@ -17,13 +17,13 @@ BranchNames = {
     "dijet": ["eta", "phi", "pt", "mass", "nparticles",
               "index"],
     "higgs": ['MC_higgs_pt','MC_higgs_eta','MC_higgs_phi','MC_higgs_mass',
-              'MC_gendijet_pt','MC_gendijet_eta','MC_gendijet_phi','MC_gendijet_mass',
-              'MC_genjet1_flav','MC_genjet2_flav','MC_genjet1_matched','MC_genjet2_matched',
-              'MC_drqq','MC_n_c','MC_higgs_flav'],
+              'MC_drqq','MC_higgs_flav',
+              'label_LL', 'label_CC', 'label_BB'],
     "singleValues": ['event', 'genweight','run', 'pv_n', 'pv_ngood', 'fgrfccpu', 'fgrfcc', 'Pileup_nPU',
-                     'MC_vector_flav', 'MC_lepton_channel', 'MC_physics_process',
-                     'label_bb','label_cc','label_ll','label_bl','label_cl', 
-                     'label_LL', 'label_CC', 'label_BB']
+                     'MC_vector_flav', 'MC_lepton_channel', 'MC_physics_process', 'MC_n_c'
+                     'MC_gendijet_pt','MC_gendijet_eta','MC_gendijet_phi','MC_gendijet_mass',
+                     'MC_genjet1_flav','MC_genjet2_flav','MC_genjet1_matched','MC_genjet2_matched',
+                     'label_bb','label_cc','label_ll','label_bl','label_cl']
 }
 
 
