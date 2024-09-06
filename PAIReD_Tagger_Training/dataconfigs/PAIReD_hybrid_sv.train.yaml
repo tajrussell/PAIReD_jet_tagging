@@ -135,7 +135,10 @@ labels:
   # first two labels have to be CC and BB in order for the regression loss to work!!!
   - label_BB
   - label_CC
-  - label_LL
+  - label_bb
+  - label_bx
+  - label_cx
+  - label_ll
   value_custom:
     target_mass: MC_higgs_mass
 
@@ -162,21 +165,18 @@ observers:
   - MC_vector_flav
   - MC_lepton_channel
   - label_bb
-  - label_cc
+  - label_cx
   - label_ll
-  - label_cl
-  - label_bl
+  - label_bx
   - label_LL
   - label_CC
   - label_BB
-
-
 #monitor_variables: []
 weights:
   use_precomputed_weights: false
   reweight_method: ref
   reweight_vars:
-    MC_higgs_pt:
+    dijet_pt:
     - 0.0
     - 20.0
     - 40.0
@@ -193,7 +193,7 @@ weights:
     - 260.0
     - 280.0
     - 300.0
-    MC_higgs_mass:
+    dijet_mass:
     - -100000
     - 100000
   reweight_threshold: 0.1

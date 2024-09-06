@@ -90,19 +90,29 @@ import numpy as np
 import vector
 from tools.helpers import deltaR
 
-def processHiggs(Events, isInGenPart, higgs_idx, MCInfo):
-    # process fake higgs
+def getMCInfo(Events, isInGenPart, Jet_genJetIdx, Jetcut):
+
+    # check if there is a Higgs in the event
+    isHiggs = ak.any(Events.GenPart_pdgId == 25, axis=1)
+
+    # define array of ones that matches the wanted ouput shape
     ones = ak.ones_like(isInGenPart[:,:,0])
-    if ak.any(higgs_idx == -1): return False
-    singleInfo = dict()
-    for i in range(2):
-        singleInfo["MC_higgs_pt_"+str(i)] = ones * Events.GenPart_pt[higgs_idx][:,i]
-        singleInfo["MC_higgs_eta_"+str(i)] = ones * Events.GenPart_eta[higgs_idx][:,i]
-        singleInfo["MC_higgs_phi_"+str(i)] = ones * Events.GenPart_phi[higgs_idx][:,i]
-        singleInfo["MC_higgs_mass_"+str(i)] = ones * Events.GenPart_mass[higgs_idx][:,i]
-        d1 = ak.argmax(1*(Events.GenPart_genPartIdxMother == higgs_idx[:,i]), axis=1, keepdims=True)
-        alt_d1 = ak.argmax(1*(Events.GenPart_genPartIdxMother == higgs_idx[:,i][:,np.newaxis]), axis=1, keepdims=True)
-        d2 = ak.argmax(ak.local_index(Events.GenPart_pdgId, axis=1)*(Events.GenPart_genPartIdxMother == higgs_idx[:,i]), axis=1, keepdims=True)
+
+    # if Higgs event
+    if ak.all(isHiggs):
+        # index of the Higgs boson
+        higgs_idx = ak.argmax(ak.local_index(Events.GenPart_pdgId, axis=1)*(Events.GenPart_pdgId == 25), axis=1, keepdims=True)
+
+        # Higgs properties
+        higgs_pt   = Events.GenPart_pt[higgs_idx][:,0]
+        higgs_eta  = Events.GenPart_eta[higgs_idx][:,0]
+        higgs_phi  = Events.GenPart_phi[higgs_idx][:,0]
+        higgs_mass = Events.GenPart_mass[higgs_idx][:,0]
+        print(higgs_idx)
+        # indices of the daughter particles of the Higgs
+        d1 = ak.argmax(1*(Events.GenPart_genPartIdxMother == higgs_idx), axis=1, keepdims=True)
+        d2 = ak.argmax(ak.local_index(Events.GenPart_pdgId, axis=1)*(Events.GenPart_genPartIdxMother == higgs_idx), axis=1, keepdims=True)
+
         # kinematics of the daughter particles
         d1_eta = Events.GenPart_eta[d1]
         d2_eta = Events.GenPart_eta[d2]
@@ -110,98 +120,80 @@ def processHiggs(Events, isInGenPart, higgs_idx, MCInfo):
         d2_phi = Events.GenPart_phi[d2]
         d1_pid = abs(Events.GenPart_pdgId[d1])
         d2_pid = abs(Events.GenPart_pdgId[d2])
+
         # ΔR_qq between the two daughter particles
-        singleInfo["MC_drqq_"+str(i)] = ones * deltaR(d1_eta, d2_eta, d1_phi, d2_phi)[:,0]
+        drqq = deltaR(d1_eta, d2_eta, d1_phi, d2_phi)[:,0]
+
         # check if daughter particles are b or c
         d1_is_b = ak.unflatten(d1_pid==5, 1, axis=0)
         d2_is_b = ak.unflatten(d2_pid==5, 1, axis=0)
         d1_is_c = ak.unflatten(d1_pid==4, 1, axis=0)
         d2_is_c = ak.unflatten(d2_pid==4, 1, axis=0)
-        d1_is_s = ak.unflatten(d1_pid==3, 1, axis=0)
-        d2_is_s = ak.unflatten(d2_pid==3, 1, axis=0)
-        singleInfo["h_hadronic_"+str(i)] = ((d1_is_b & d2_is_b) | (d1_is_c & d2_is_c) | (d1_is_s & d2_is_s)) * ones
+
         # check if daughter particles are in PAIReD jet
         ones_ = ak.unflatten(ones, 1, axis=-1)
         d1_isIn = isInGenPart[ones_*d1]
         d2_isIn = isInGenPart[ones_*d2]
+
         # count how many lie inside (0, 1 or 2?)
-        singleInfo["h_daughters_in_"+str(i)] = (1*d1_isIn + d2_isIn)
+        Ndaughters_isIn = (1*d1_isIn + d2_isIn)
+
         # label the jet pairs:
         # - BB if both daughters are b quarks and inside the PAIReD jet
         # - CC if both daughters are c quarks and inside the PAIReD jet
         # - LL else
-        singleInfo["label_BB_"+str(i)] = ( d1_is_b * d2_is_b )[:,:,0]
-        singleInfo["label_CC_"+str(i)] = ( d1_is_c * d2_is_c )[:,:,0]
-        singleInfo["MC_higgs_flav_"+str(i)] = ones * d1_pid[:,0]
+        label_BB = ( d1_is_b * d2_is_b * (Ndaughters_isIn == 2) )[:,:,0]
+        label_CC = ( d1_is_c * d2_is_c * (Ndaughters_isIn == 2) )[:,:,0]
+        label_LL = (~label_CC) & (~label_BB)
 
-    use_h_0 = ((singleInfo["h_daughters_in_0"] == 2) * (singleInfo["h_daughters_in_1"] == 0) * (singleInfo["h_hadronic_0"]))[:,:,0]
-    use_h_1 = ((singleInfo["h_daughters_in_1"] == 2) * (singleInfo["h_daughters_in_0"] == 0) * (singleInfo["h_hadronic_1"]))[:,:,0]
-    singleInfo["label_BB_0"] = singleInfo["label_BB_0"] * use_h_0
-    singleInfo["label_BB_1"] = singleInfo["label_BB_1"] * use_h_1
-    singleInfo["label_CC_0"] = singleInfo["label_CC_0"] * use_h_0
-    singleInfo["label_CC_1"] = singleInfo["label_CC_1"] * use_h_1
+        # generated higgs flavor:
+        # - digit represents the flavor of the daughter particle 
+        #   (e.g., 1 for d, 3 for s, or 5 for b)
+        higgs_flav = d1_pid[:,0]
 
-    MCInfo["label_BB"] = singleInfo["label_BB_0"] | singleInfo["label_BB_1"]
-    MCInfo["label_CC"] = (~MCInfo["label_BB"]) & (singleInfo["label_CC_0"] | singleInfo["label_CC_1"])
-
-    MCInfo["MC_higgs_valid"] = ~((singleInfo["h_daughters_in_0"] > 0) * (singleInfo["h_daughters_in_1"] > 0))[:,:,0]
-    MCInfo["MC_higgs_valid"] = MCInfo["MC_higgs_valid"] * ((singleInfo["h_daughters_in_0"] == 0) | (singleInfo["h_hadronic_0"] > 0))[:,:,0]
-    MCInfo["MC_higgs_valid"] = MCInfo["MC_higgs_valid"] * ((singleInfo["h_daughters_in_1"] == 0) | (singleInfo["h_hadronic_1"] > 0))[:,:,0]
-
-
-    MCInfo["MC_higgs_mass"] = ((use_h_0) * singleInfo["MC_higgs_mass_0"]) + ((use_h_1) * singleInfo["MC_higgs_mass_1"])
-    MCInfo["MC_higgs_pt"] = ((use_h_0) * singleInfo["MC_higgs_pt_0"]) + ((use_h_1) * singleInfo["MC_higgs_pt_1"])
-    MCInfo["MC_higgs_eta"] = ((use_h_0) * singleInfo["MC_higgs_eta_0"]) + ((use_h_1) * singleInfo["MC_higgs_eta_1"])
-    MCInfo["MC_higgs_phi"] = ((use_h_0) * singleInfo["MC_higgs_phi_0"]) + ((use_h_1) * singleInfo["MC_higgs_phi_1"])
-    MCInfo["MC_drqq"] = ((use_h_0) * singleInfo["MC_drqq_0"]) + ((use_h_1) * singleInfo["MC_drqq_1"])
-    MCInfo["MC_higgs_flav"] = ((use_h_0) * singleInfo["MC_higgs_flav_0"]) + ((use_h_1) * singleInfo["MC_higgs_flav_1"])
-
-def getMCInfo(Events, isInGenPart, Jet_genJetIdx, Jetcut):
-    # check if there is a Higgs in the event
-    isHiggs = ak.any(Events.GenPart_pdgId == 25, axis=1)
-    if ak.all(isHiggs):
-        local_idx = ak.local_index(Events.GenPart_pdgId, axis=1)
-        hmother_idx = Events.GenPart_genPartIdxMother * (Events.GenPart_pdgId == 25)
-        hdaughter_idx = ak.any(ak.broadcast_arrays(local_idx[:, None], hmother_idx)[0] == hmother_idx, axis=1)
-        higgs_indices = ak.local_index(Events.GenPart_pdgId, axis=1)[(Events.GenPart_pdgId == 25)*(~hdaughter_idx)]
+    # if Higgs but not all
     elif ak.any(isHiggs):
         print("   !!! Skip batch as there are events with Higgs and events without Higgs !!!")
         return False
+
+    # if not a Higgs event
     else:
-        higgs_indices = [[-1]]
-    # define information dictionary and set defaults
-    h_ones = []
-    ones = ak.ones_like(isInGenPart[:,:,0])
-    MCInfo = {
-        "MC_higgs_pt" : None,
-        "MC_higgs_eta" : None,
-        "MC_higgs_phi" : None,
-        "MC_higgs_mass" : None,
-        "MC_higgs_flav" : None,
-        "MC_higgs_valid" : None,
-        "MC_vector_flav" : ak.ones_like(ones),
-        "MC_lepton_channel" : ak.ones_like(ones),
-        "MC_gendijet_pt" : None,
-        "MC_gendijet_eta" : None,
-        "MC_gendijet_phi" : None,
-        "MC_gendijet_mass" : None,
-        "MC_genjet1_flav" : None,
-        "MC_genjet2_flav" : None,
-        "MC_genjet1_matched" : None,
-        "MC_genjet2_matched" : None,
-        "MC_drqq" : ak.zeros_like(ones),
-        "MC_n_c" : ak.ones_like(ones),
-        "label_BB" : ak.full_like(ones, False),
-        "label_CC" : ak.full_like(ones, False),
-        "label_bb" : ak.full_like(ones, True),
-        "label_bx" : ak.full_like(ones, True),
-        "label_cx" : ak.full_like(ones, True),
-        "label_ll" : ak.full_like(ones, True),
-    }
-    # get the higgs information
-    #for i in range(len(higgs_indices[0])):
-    #    processHiggs(Events, isInGenPart, i, higgs_indices[:,i,np.newaxis], MCInfo)
-    processHiggs(Events, isInGenPart, higgs_indices, MCInfo)
+        # get original partons and gluons from the collision (no mother particle
+        # and PDG Id of 21 or less)
+        partons = (Events.LHEPart_status==1) & ((abs(Events.LHEPart_pdgId)<=5) | (abs(Events.LHEPart_pdgId)==21))
+        
+        # check which events have less than two initial partons
+        less_than_two_partons = ak.sum(partons, axis=1) < 2
+
+        # get two partons of highest pT
+        s = ak.argsort(Events.LHEPart_pt[partons], axis=1, ascending=False)[:, :2]
+        partons4 = vector.zip({"phi" : Events.LHEPart_phi[partons][s],
+                                "eta" : Events.LHEPart_eta[partons][s],
+                                "pt"  : Events.LHEPart_pt[partons][s],
+                                "mass": Events.LHEPart_mass[partons][s]})
+
+        # combine two highest pT partons to a "fake Higgs" / proxy Higgs
+        fakeHiggs4 = vector.zip({"px": ak.sum(partons4.px, axis=1),
+                                "py": ak.sum(partons4.py, axis=1),
+                                "pz": ak.sum(partons4.pz, axis=1),
+                                "E":  ak.sum(partons4.E, axis=1)})
+
+        # set higgs_mass to -1 for events with less than two initial partons
+        higgs_pt = ak.nan_to_num(fakeHiggs4.pt)*(~less_than_two_partons) - 1*less_than_two_partons
+        higgs_eta = ak.nan_to_num(fakeHiggs4.eta)*(~less_than_two_partons)
+        higgs_phi = ak.nan_to_num(fakeHiggs4.phi)*(~less_than_two_partons)
+        higgs_mass = ak.nan_to_num(fakeHiggs4.mass)*(~less_than_two_partons) - 1*less_than_two_partons
+
+        # set drqq and higgs_flav to default=0
+        drqq = ones*0
+        higgs_flav = ones*0
+
+        # set signal labels to False and background label to True
+        label_LL = ones == 1
+        label_CC = ~label_LL
+        label_BB = ~label_LL
+
+
     # get c/b quarks in GenParts
     # ensure that statusFlags bit 13 is True (isLastCopy)
     # reject quarks without mother particle (mostly pile-up)
@@ -228,12 +220,13 @@ def getMCInfo(Events, isInGenPart, Jet_genJetIdx, Jetcut):
     #  - label cc: if no b quarks but two or more c quarks
     #  - label cl: if no b quarks but one or more c quarks
     #  - label ll: if no b and no c quarks
-    
-    MCInfo["label_bb"] = (~MCInfo["label_CC"]) & (~MCInfo["label_BB"]) & (Nbottoms >= 2)
-    MCInfo["label_bx"] = (~MCInfo["label_CC"]) & (~MCInfo["label_BB"]) & (Nbottoms == 1)
-    MCInfo["label_cx"] = (~MCInfo["label_CC"]) & (~MCInfo["label_BB"]) & (Nbottoms == 0) & (Ncharms >= 1)
-    MCInfo["label_ll"] = (~MCInfo["label_CC"]) & (~MCInfo["label_BB"]) & (Nbottoms == 0) & (Ncharms == 0)
+    label_bb = (label_LL) & (Nbottoms >= 2)
+    label_bl = (label_LL) & (Nbottoms == 1)
+    label_cc = (label_LL) & (Nbottoms == 0) & (Ncharms >= 2)
+    label_cl = (label_LL) & (Nbottoms == 0) & (Ncharms == 1)
+    label_ll = (label_LL) & (Nbottoms == 0) & (Ncharms == 0)
 
+    
     # check if there is a vector boson in the event
     hasVector = ak.any((abs(Events.GenPart_pdgId) == 23) | (abs(Events.GenPart_pdgId) == 24), axis=1)
 
@@ -252,17 +245,15 @@ def getMCInfo(Events, isInGenPart, Jet_genJetIdx, Jetcut):
     # - digit represents the flavor of the daughter particles
     #   (11 for e-like,  13 for mu-like, 15 for tau-like)
     # - if there is no vector boson, = 0
-    vector_flavs = (11 * ((vector_d1_pid==11) | (vector_d1_pid==12)) +
+    vector_flav = (11 * ((vector_d1_pid==11) | (vector_d1_pid==12)) +
                    13 * ((vector_d1_pid==13) | (vector_d1_pid==14)) +
                    15 * ((vector_d1_pid==15) | (vector_d1_pid==16))) * hasVector
-    MCInfo["MC_vector_flav"] = MCInfo["MC_vector_flav"] * vector_flavs
 
     # lepton channel:
     # - number of charged leptons the vector boson decays into (0L, 1L, 2L)
     # - if there is no vector boson, = -1
-    lepton_channels = (1* ((vector_d1_pid==11) | (vector_d1_pid==13) | (vector_d1_pid==15)) + 
+    lepton_channel = (1* ((vector_d1_pid==11) | (vector_d1_pid==13) | (vector_d1_pid==15)) + 
                       1* ((vector_d2_pid==11) | (vector_d2_pid==13) | (vector_d2_pid==15))) * hasVector - 1*(~hasVector)
-    MCInfo["MC_lepton_channel"] = MCInfo["MC_lepton_channel"] * lepton_channels
 
 
     # add the four-vectors of the two generated jets of the ellipse 
@@ -286,27 +277,53 @@ def getMCInfo(Events, isInGenPart, Jet_genJetIdx, Jetcut):
     GenDijet4 = GenJet1 + GenJet2
 
     # check if jets have matched GenJet
-    MCInfo["MC_genjet1_matched"] = (Jet_genJetIdx.j1 != -1)
-    MCInfo["MC_genjet2_matched"] = (Jet_genJetIdx.j2 != -1)
+    genjet1_matched = (Jet_genJetIdx.j1 != -1)
+    genjet2_matched = (Jet_genJetIdx.j2 != -1)
 
     # save kinematics and set them to zero for PAIReD jets
     # in which at least one Jet is not matched to a GenJet
-    bothJetHaveGenJet = MCInfo["MC_genjet1_matched"] * MCInfo["MC_genjet2_matched"]
-    MCInfo["MC_gendijet_eta"]  = GenDijet4.eta  * bothJetHaveGenJet
-    MCInfo["MC_gendijet_phi"]  = GenDijet4.phi  * bothJetHaveGenJet
-    MCInfo["MC_gendijet_pt"]   = GenDijet4.pt   * bothJetHaveGenJet
-    MCInfo["MC_gendijet_mass"] = GenDijet4.mass * bothJetHaveGenJet
+    bothJetHaveGenJet = genjet1_matched * genjet2_matched
+    gendijet_eta  = GenDijet4.eta  * bothJetHaveGenJet
+    gendijet_phi  = GenDijet4.phi  * bothJetHaveGenJet
+    gendijet_pt   = GenDijet4.pt   * bothJetHaveGenJet
+    gendijet_mass = GenDijet4.mass * bothJetHaveGenJet
 
     # get parton flavour of matched GenJet
-    MCInfo["MC_genjet1_flav"] = Events.GenJet_partonFlavour[Jet_genJetIdx.j1] * MCInfo["MC_genjet1_matched"]
-    MCInfo["MC_genjet2_flav"] = Events.GenJet_partonFlavour[Jet_genJetIdx.j2] * MCInfo["MC_genjet2_matched"]
+    genjet1_flav = Events.GenJet_partonFlavour[Jet_genJetIdx.j1] * genjet1_matched
+    genjet2_flav = Events.GenJet_partonFlavour[Jet_genJetIdx.j2] * genjet2_matched
 
     # number of c jets in event
-    num_cjets = ak.sum(abs(Events.Jet_partonFlavour[Jetcut])==4, axis=1)  # take selection cut into account
-    MCInfo["MC_n_c"] = MCInfo["MC_n_c"] * num_cjets
+    n_c = ak.sum(abs(Events.Jet_partonFlavour[Jetcut])==4, axis=1)  # take selection cut into account
 
     # vectorize the scalars for the number jet pairs
     # and define dictionary with all the outputs
-    
+    MCInfo = {
+        "MC_higgs_pt" : higgs_pt * ones,
+        "MC_higgs_eta" : higgs_eta * ones,
+        "MC_higgs_phi" : higgs_phi * ones,
+        "MC_higgs_mass" : higgs_mass * ones,
+        "MC_higgs_flav" : higgs_flav * ones,
+        "MC_vector_flav" : vector_flav * ones,
+        "MC_lepton_channel" : lepton_channel * ones,
+        "MC_gendijet_pt" : gendijet_pt,
+        "MC_gendijet_eta" : gendijet_eta,
+        "MC_gendijet_phi" : gendijet_phi,
+        "MC_gendijet_mass" : gendijet_mass,
+        "MC_genjet1_flav" : genjet1_flav,
+        "MC_genjet2_flav" : genjet2_flav,
+        "MC_genjet1_matched" : genjet1_matched,
+        "MC_genjet2_matched" : genjet2_matched,
+        "MC_drqq" : drqq * ones,
+        "MC_n_c" : n_c * ones,
+        "label_BB" : label_BB,
+        "label_CC" : label_CC,
+        "label_LL" : label_LL,
+        "label_bb" : label_bb,
+        "label_bl" : label_bl,
+        "label_cc" : label_cc,
+        "label_cl" : label_cl,
+        "label_ll" : label_ll
+    }
+    print(MCInfo["MC_higgs_pt"])
     # return the summarized MC information
     return MCInfo

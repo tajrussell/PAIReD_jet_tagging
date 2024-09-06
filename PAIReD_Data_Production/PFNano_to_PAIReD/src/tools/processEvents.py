@@ -208,9 +208,16 @@ def processEvents(Events, physics_process=0, PAIReD_geometry="Ellipse"):
 
     for name in MCInfo.keys():
         DataPAIReD[name] = MCInfo[name]
-
+    higgs_cut = DataPAIReD["MC_higgs_valid"] > 0
     # remove the dimension of N_events
     for name in DataPAIReD.keys():
+        print(name)
+        print("precut len "+str(len(DataPAIReD[name])))
+        print(DataPAIReD[name])
+        #DataPAIReD[name] = DataPAIReD[name][higgs_cut]
+        #print("postcut len "+str(len(DataPAIReD[name])))
+        #print(DataPAIReD[name])
         DataPAIReD[name] = ak.flatten(DataPAIReD[name], axis=1)
-    
+        print("flattened len "+str(len(DataPAIReD[name])))
+        print(DataPAIReD[name])
     return DataPAIReD

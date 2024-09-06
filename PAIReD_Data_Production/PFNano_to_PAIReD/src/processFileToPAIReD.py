@@ -143,7 +143,6 @@ def makeNtuplesPAIReDjointMC(inputFilePath, outputFilePath, batchsize = "100 MB"
 
                 # process the events
                 DataPAIReD = processEvents(Events, physics_process=physics_process, PAIReD_geometry=PAIReD_geometry)
-
                 # check if processing worked
                 if DataPAIReD == False:
                     print("   * Batch %i was not processed" % N_processed)
