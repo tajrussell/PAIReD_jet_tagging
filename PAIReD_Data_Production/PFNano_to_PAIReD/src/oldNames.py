@@ -20,10 +20,10 @@ BranchNames = {
                      'MC_higgs_pt','MC_higgs_eta','MC_higgs_phi','MC_higgs_mass',
                      'MC_gendijet_pt','MC_gendijet_eta','MC_gendijet_phi','MC_gendijet_mass',
                      'MC_genjet1_flav','MC_genjet2_flav','MC_genjet1_matched','MC_genjet2_matched',
-                     'MC_drqq','MC_n_c','MC_higgs_flav','MC_vector_flav', 'MC_lepton_channel',
+                     'MC_n_c','MC_vector_flav', 'MC_lepton_channel',
+                     'MC_drqq','MC_higgs_flav', 'MC_higgs_valid',
                      'MC_physics_process',
-                     'label_bb','label_cc','label_ll','label_bl','label_cl', 
-                     'label_LL', 'label_CC', 'label_BB']
+                     'label_bb','label_cx','label_ll','label_bx', 'label_CC', 'label_BB']
 }
 
 
@@ -79,15 +79,14 @@ outputTreeType =  {
     'MC_drqq': "float32",
     'MC_n_c': "uint8",
     'MC_higgs_flav': "uint8",
+    'MC_higgs_valid': "uint8",
     'MC_vector_flav': "uint8",
     'MC_lepton_channel': "int8",
     'MC_physics_process': "uint8",
     'label_BB': "int8",
     'label_CC': "int8",
-    'label_LL': "int8",
     'label_bb': "int8",
-    'label_bl': "int8",
-    'label_cc': "int8",
-    'label_cl': "int8",
+    'label_bx': "int8",
+    'label_cx': "int8",
     'label_ll': "int8"
     }

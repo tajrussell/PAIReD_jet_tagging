@@ -73,7 +73,7 @@ Returns
     nothing, but creates an output file with the transformed data
 """
 
-def makeNtuplesPAIReDjointMC(inputFilePath, outputFilePath, batchsize = "100 MB",
+def makeNtuplesPAIReDjointMC(inputFilePath, outputFilePath, batchsize = "10 MB",
     N_update = 10, N_events_to_process = -1, physics_process = 0, PAIReD_geometry = "Ellipse"):
 
     print("\n*****************************************************************")
@@ -174,7 +174,7 @@ if __name__ == "__main__":
     parser = argparse.ArgumentParser(description="Process MC PFNano files to the PAIReD data format for training.")
     parser.add_argument("inputFilePath", help="Path to the ROOT input file (NanoAOD processed by PFNano, has to contain particle flow candidates (PFcands))")
     parser.add_argument("outputFilePath",  help="Path and name of the ROOT output file")
-    parser.add_argument("--batchsize", default="100 MB", help="Size of the batches of events that are handled simultaneously (default is '100 MB'). Can be an integer (=number of events) or a string (specifying the data size, e.g. '100 MB')")
+    parser.add_argument("--batchsize", default="10 MB", help="Size of the batches of events that are handled simultaneously (default is '100 MB'). Can be an integer (=number of events) or a string (specifying the data size, e.g. '100 MB')")
     parser.add_argument("--N-update", type=int, default=10, help="Number of batches processed before printing an update in the terminal: e.g., 'process event batch 10 of 15' (default is 10)")
     parser.add_argument("-n", "--nevents", type=int, default=-1,  help="Number of events to be processed")
     parser.add_argument("-p", "--physicsprocess", type=int, default=0,  help="Integer indicating the physics process. Default is 0.")

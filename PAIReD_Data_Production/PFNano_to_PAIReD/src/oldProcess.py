@@ -22,7 +22,7 @@ import awkward as ak
 import numpy as np
 import vector
 from tools.branchnames import BranchNames
-from tools.helpers import isoLeptonCut, deltaPhi, getJetClusterIndex, _is_rootcompat
+from tools.helpers import isoLeptonCut, deltaPhi, getJetClusterIndex
 from tools.getMCInfo import getMCInfo
 from tools.PAIReD_geometries.ellipse import isInPAIReD
 
@@ -163,7 +163,6 @@ def processEvents(Events, physics_process=0, PAIReD_geometry="Ellipse"):
     
     # prepare jet and particle objects for the tree
     part = ak.zip(Part)
-    print("part", part)
     sv = ak.zip(SV)
     jet1 = Jet.j1
     jet2 = Jet.j2
@@ -195,7 +194,7 @@ def processEvents(Events, physics_process=0, PAIReD_geometry="Ellipse"):
         "genweight": genweight,
         "run" : run,
         "Pileup_nPU" : Pileup_nPU,
-        "pv_n" : pv_n,       
+        "pv_n" : pv_n,
         "pv_ngood" : pv_ngood,
         "fgrfcc" : fgrfcc,
         "fgrfccpu" : fgrfccpu,
@@ -209,56 +208,9 @@ def processEvents(Events, physics_process=0, PAIReD_geometry="Ellipse"):
 
     for name in MCInfo.keys():
         DataPAIReD[name] = MCInfo[name]
-    higgs_cut = DataPAIReD["MC_higgs_valid"] > 0
-    flattened_Data = dict()
 
     # remove the dimension of N_events
     for name in DataPAIReD.keys():
-        print("---------------------------------")
-        print(name)
-        print()
-        print("precut len "+str(len(DataPAIReD[name])))
-        print(DataPAIReD[name])
-        flat_precut = ak.copy(ak.flatten(DataPAIReD[name], axis=1))
-        print()
-        print("flattened precut len "+str(len(flat_precut)))
-        print(flat_precut)
-        if not DataPAIReD[name].fields:
-            postcut = ak.copy(DataPAIReD[name][higgs_cut])
-        else:
-            postcut_dict = dict()
-            for n in DataPAIReD[name].fields:
-                precut = DataPAIReD[name][n]
-                postcut_dict[n] = precut[higgs_cut]
-            postcut = ak.zip(postcut_dict)
-        print()
-        print("postcut len "+str(len(postcut)))
-        print(DataPAIReD[name])
-        flattened = ak.copy(ak.flatten(postcut, axis=1))
-        print()
-        print("flattened len "+str(len(flattened)))
-        print(flattened)
-        #flattened_Data[name] = flattened
-        if not flattened.fields:
-            flattened_Data[name] = ak.fill_none(ak.to_packed(ak.without_parameters(flattened)), -99)
-        else:
-            b_nest = {}
-            for n in flattened.fields:
-                evnums = ak.num(flattened[n], axis=0)
-                if not isinstance(evnums, int):
-                    print("AK NUM NOT INTEGER")
-                    print("field "+n+" evnums", evnums, "type", type(evnums))
-                    #continue
-                if not _is_rootcompat(flattened[n]) and evnums != len(flatten(flattened[n])):
-                    print("NOT ROOT COMPATIBLE")
-                    continue
-                b_nest[n] = ak.fill_none(flattened[n],-99)
-                #b_nest[n] = ak.fill_none(ak.to_packed(ak.without_parameters(flattened[n])), -99)
-            flattened_Data[name] = ak.zip(b_nest)
-        print()
-        print("flattened replaced len "+str(len(flattened_Data[name])))
-        print(name,flattened_Data[name])
-        for n in flattened_Data[name].fields:
-            print(n,flattened_Data[name][n])
-        print()       
-    return flattened_Data
+        DataPAIReD[name] = ak.flatten(DataPAIReD[name], axis=1)
+    
+    return DataPAIReD

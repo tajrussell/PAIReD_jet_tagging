@@ -1,0 +1,10 @@
+Traceback (most recent call last):
+  File "/isilon/condor/hep104.hep.brown.edu/execute/dir_69333/execute/job_PAIReD_1-2/src/processFileToPAIReD.py", line 184, in <module>
+    makeNtuplesPAIReDjointMC(args.inputFilePath, args.outputFilePath,
+  File "/isilon/condor/hep104.hep.brown.edu/execute/dir_69333/execute/job_PAIReD_1-2/src/processFileToPAIReD.py", line 145, in makeNtuplesPAIReDjointMC
+    DataPAIReD = processEvents(Events, physics_process=physics_process, PAIReD_geometry=PAIReD_geometry)
+  File "/isilon/condor/hep104.hep.brown.edu/execute/dir_69333/execute/job_PAIReD_1-2/src/tools/processEvents.py", line 252, in processEvents
+    if not _is_rootcompat(flattened[n]) and evnums != len(flatten(flattened[n])):
+  File "/isilon/condor/hep104.hep.brown.edu/execute/dir_69333/execute/job_PAIReD_1-2/src/tools/helpers.py", line 97, in _is_rootcompat
+    if ak.types.is_primitive(t):
+AttributeError: module 'awkward.types' has no attribute 'is_primitive'

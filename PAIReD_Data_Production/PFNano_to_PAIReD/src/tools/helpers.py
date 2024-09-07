@@ -90,6 +90,21 @@ def getJetCombinationIndices(N_Jet):
 # ******************************************************************************
 
 
+def _is_rootcompat(a):
+    """Is it a flat or 1-d jagged array?"""
+    t = ak.type(a)
+    if isinstance(t, ak.types.ArrayType):
+        if isinstance(t, ak.types.arraytype.ArrayType):
+            return True
+        print(type(t))
+        if isinstance(ak.type(t), ak.types.ListType) and ak.types.is_primitive(ak.type(t)):
+            return True
+    return False
+
+
+
+
+
 """
  * Function: getAllJetCombinationIndices
  * -------------------------------------
