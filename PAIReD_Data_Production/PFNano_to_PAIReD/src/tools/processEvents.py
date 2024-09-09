@@ -209,7 +209,7 @@ def processEvents(Events, physics_process=0, PAIReD_geometry="Ellipse"):
 
     for name in MCInfo.keys():
         DataPAIReD[name] = MCInfo[name]
-    higgs_cut = DataPAIReD["MC_higgs_valid"] > 0
+    higgs_cut = ak.sum(DataPAIReD["MC_higgs_valid"], axis=1) > 0
     flattened_Data = dict()
 
     # remove the dimension of N_events
@@ -227,8 +227,8 @@ def processEvents(Events, physics_process=0, PAIReD_geometry="Ellipse"):
             postcut = ak.copy(DataPAIReD[name][higgs_cut])
         else:
             postcut_dict = dict()
-            for n in DataPAIReD[name].fields:
-                precut = DataPAIReD[name][n]
+            for i,n in enumerate(DataPAIReD[name].fields):
+                precut = ak.unzip(DataPAIReD[name], highlevel=True)[i]
                 postcut_dict[n] = precut[higgs_cut]
             postcut = ak.zip(postcut_dict)
         print()
@@ -238,27 +238,6 @@ def processEvents(Events, physics_process=0, PAIReD_geometry="Ellipse"):
         print()
         print("flattened len "+str(len(flattened)))
         print(flattened)
-        #flattened_Data[name] = flattened
-        if not flattened.fields:
-            flattened_Data[name] = ak.fill_none(ak.to_packed(ak.without_parameters(flattened)), -99)
-        else:
-            b_nest = {}
-            for n in flattened.fields:
-                evnums = ak.num(flattened[n], axis=0)
-                if not isinstance(evnums, int):
-                    print("AK NUM NOT INTEGER")
-                    print("field "+n+" evnums", evnums, "type", type(evnums))
-                    #continue
-                if not _is_rootcompat(flattened[n]) and evnums != len(flatten(flattened[n])):
-                    print("NOT ROOT COMPATIBLE")
-                    continue
-                b_nest[n] = ak.fill_none(flattened[n],-99)
-                #b_nest[n] = ak.fill_none(ak.to_packed(ak.without_parameters(flattened[n])), -99)
-            flattened_Data[name] = ak.zip(b_nest)
-        print()
-        print("flattened replaced len "+str(len(flattened_Data[name])))
-        print(name,flattened_Data[name])
-        for n in flattened_Data[name].fields:
-            print(n,flattened_Data[name][n])
+        flattened_Data[name] = flattened
         print()       
     return flattened_Data

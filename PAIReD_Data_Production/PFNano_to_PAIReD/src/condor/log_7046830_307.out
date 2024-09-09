@@ -1,0 +1,596 @@
+
+*****************************************************************
+  Start makeNtuplesPAIReDjointMC()
+*****************************************************************
+
+** Open input file: PFNano.root
+** Create output file: PAIReD.root
+** Create tree "tree" entitled "PAIReD jets for training" in output file
+** Total number of events: 12000
+** Process all events
+** Batch size: 100 MB
+** Physics process: 0
+** PAIReD geometry: Ellipse
+
+** Start processing data
+process event batch 0
+part [[[]], ..., [[{phi: 2.54, eta: -0.303, pt: 41.1, charge: 1, ...}, ...], ...]]
+---------------------------------
+event
+
+precut len 10383
+[[2.42e+07], ..., [2.68e+07, 2.68e+07, 2.68e+07, ..., 2.68e+07, 2.68e+07]]
+
+flattened precut len 69877
+[2.42e+07, 2.42e+07, 2.42e+07, 2.42e+07, ..., 2.68e+07, 2.68e+07, 2.68e+07]
+
+postcut len 5691
+[[2.42e+07], ..., [2.68e+07, 2.68e+07, 2.68e+07, ..., 2.68e+07, 2.68e+07]]
+
+flattened len 49038
+[2.42e+07, 2.42e+07, 2.42e+07, 2.42e+07, ..., 2.68e+07, 2.68e+07, 2.68e+07]
+
+---------------------------------
+genweight
+
+precut len 10383
+[[1], [1, 1, 1], ..., [1, ...], [1, 1, 1, 1, 1, 1, 1, 1, 1, 1, 1, 1, 1, 1, 1]]
+
+flattened precut len 69877
+[1, 1, 1, 1, 1, 1, 1, 1, 1, 1, 1, 1, 1, ..., 1, 1, 1, 1, 1, 1, 1, 1, 1, 1, 1, 1]
+
+postcut len 5691
+[[1], [1, 1, 1], ..., [1, ...], [1, 1, 1, 1, 1, 1, 1, 1, 1, 1, 1, 1, 1, 1, 1]]
+
+flattened len 49038
+[1, 1, 1, 1, 1, 1, 1, 1, 1, 1, 1, 1, 1, ..., 1, 1, 1, 1, 1, 1, 1, 1, 1, 1, 1, 1]
+
+---------------------------------
+run
+
+precut len 10383
+[[1], [1, 1, 1], ..., [1, ...], [1, 1, 1, 1, 1, 1, 1, 1, 1, 1, 1, 1, 1, 1, 1]]
+
+flattened precut len 69877
+[1, 1, 1, 1, 1, 1, 1, 1, 1, 1, 1, 1, 1, ..., 1, 1, 1, 1, 1, 1, 1, 1, 1, 1, 1, 1]
+
+postcut len 5691
+[[1], [1, 1, 1], ..., [1, ...], [1, 1, 1, 1, 1, 1, 1, 1, 1, 1, 1, 1, 1, 1, 1]]
+
+flattened len 49038
+[1, 1, 1, 1, 1, 1, 1, 1, 1, 1, 1, 1, 1, ..., 1, 1, 1, 1, 1, 1, 1, 1, 1, 1, 1, 1]
+
+---------------------------------
+Pileup_nPU
+
+precut len 10383
+[[41], [...], ..., [57, 57, 57, 57, 57, 57, 57, 57, 57, 57, 57, 57, 57, 57, 57]]
+
+flattened precut len 69877
+[41, 43, 43, 43, 44, 44, 44, 42, 62, ..., 57, 57, 57, 57, 57, 57, 57, 57, 57]
+
+postcut len 5691
+[[41], [...], ..., [57, 57, 57, 57, 57, 57, 57, 57, 57, 57, 57, 57, 57, 57, 57]]
+
+flattened len 49038
+[41, 43, 43, 43, 44, 44, 44, 66, 41, ..., 57, 57, 57, 57, 57, 57, 57, 57, 57]
+
+---------------------------------
+pv_n
+
+precut len 10383
+[[35], [...], ..., [40, 40, 40, 40, 40, 40, 40, 40, 40, 40, 40, 40, 40, 40, 40]]
+
+flattened precut len 69877
+[35, 29, 29, 29, 34, 34, 34, 35, 49, ..., 40, 40, 40, 40, 40, 40, 40, 40, 40]
+
+postcut len 5691
+[[35], [...], ..., [40, 40, 40, 40, 40, 40, 40, 40, 40, 40, 40, 40, 40, 40, 40]]
+
+flattened len 49038
+[35, 29, 29, 29, 34, 34, 34, 44, 28, ..., 40, 40, 40, 40, 40, 40, 40, 40, 40]
+
+---------------------------------
+pv_ngood
+
+precut len 10383
+[[30], [...], ..., [38, 38, 38, 38, 38, 38, 38, 38, 38, 38, 38, 38, 38, 38, 38]]
+
+flattened precut len 69877
+[30, 28, 28, 28, 31, 31, 31, 30, 45, ..., 38, 38, 38, 38, 38, 38, 38, 38, 38]
+
+postcut len 5691
+[[30], [...], ..., [38, 38, 38, 38, 38, 38, 38, 38, 38, 38, 38, 38, 38, 38, 38]]
+
+flattened len 49038
+[30, 28, 28, 28, 31, 31, 31, 42, 26, ..., 38, 38, 38, 38, 38, 38, 38, 38, 38]
+
+---------------------------------
+fgrfcc
+
+precut len 10383
+[[21.9], ..., [28.3, 28.3, 28.3, 28.3, 28.3, ..., 28.3, 28.3, 28.3, 28.3, 28.3]]
+
+flattened precut len 69877
+[21.9, 21.3, 21.3, 21.3, 23.2, 23.2, ..., 28.3, 28.3, 28.3, 28.3, 28.3, 28.3]
+
+postcut len 5691
+[[21.9], ..., [28.3, 28.3, 28.3, 28.3, 28.3, ..., 28.3, 28.3, 28.3, 28.3, 28.3]]
+
+flattened len 49038
+[21.9, 21.3, 21.3, 21.3, 23.2, 23.2, ..., 28.3, 28.3, 28.3, 28.3, 28.3, 28.3]
+
+---------------------------------
+fgrfccpu
+
+precut len 10383
+[[18.9], ..., [25, 25, 25, 25, 25, 25, 25, 25, 25, 25, 25, 25, 25, 25, 25]]
+
+flattened precut len 69877
+[18.9, 19.6, 19.6, 19.6, 23, 23, 23, 16.4, ..., 25, 25, 25, 25, 25, 25, 25, 25]
+
+postcut len 5691
+[[18.9], ..., [25, 25, 25, 25, 25, 25, 25, 25, 25, 25, 25, 25, 25, 25, 25]]
+
+flattened len 49038
+[18.9, 19.6, 19.6, 19.6, 23, 23, 23, 29.2, ..., 25, 25, 25, 25, 25, 25, 25, 25]
+
+---------------------------------
+jet1
+
+precut len 10383
+[[{phi: -2.34, eta: 1.17, pt: 206, energy: 363, nparticles: 17, ...}], ...]
+
+flattened precut len 69877
+[{phi: -2.34, eta: 1.17, pt: 206, energy: 363, nparticles: 17, ...}, ..., {...}]
+
+postcut len 5691
+[[{phi: -2.34, eta: 1.17, pt: 206, energy: 363, nparticles: 17, ...}], ...]
+
+flattened len 49038
+[{phi: -2.34, eta: 1.17, pt: 206, energy: 363, nparticles: 17, ...}, ..., {...}]
+
+---------------------------------
+jet2
+
+precut len 10383
+[[{phi: 2.28, eta: 1.55, pt: 156, energy: 383, nparticles: 23, ...}], ...]
+
+flattened precut len 69877
+[{phi: 2.28, eta: 1.55, pt: 156, energy: 383, nparticles: 23, ...}, ..., {...}]
+
+postcut len 5691
+[[{phi: 2.28, eta: 1.55, pt: 156, energy: 383, nparticles: 23, ...}], ...]
+
+flattened len 49038
+[{phi: 2.28, eta: 1.55, pt: 156, energy: 383, nparticles: 23, ...}, ..., {...}]
+
+---------------------------------
+dijet
+
+precut len 10383
+[[{eta: 1.7, phi: -3.02, pt: 215, mass: 242, nparticles: 0, ...}], ..., [...]]
+
+flattened precut len 69877
+[{eta: 1.7, phi: -3.02, pt: 215, mass: 242, nparticles: 0, ...}, ..., {...}]
+
+postcut len 5691
+[[{eta: 1.7, phi: -3.02, pt: 215, mass: 242, nparticles: 0, ...}], ..., [...]]
+
+flattened len 49038
+[{eta: 1.7, phi: -3.02, pt: 215, mass: 242, nparticles: 0, ...}, ..., {...}]
+
+---------------------------------
+part
+
+precut len 10383
+[[[]], ..., [[{phi: 2.54, eta: -0.303, pt: 41.1, charge: 1, ...}, ...], ...]]
+
+flattened precut len 69877
+[[], ..., [{phi: 1.12, eta: -1.76, pt: 7.89, charge: -1, pid: -211, ...}, ...]]
+
+postcut len 5691
+[[[]], ..., [[{phi: 2.54, eta: -0.303, pt: 41.1, charge: 1, ...}, ...], ...]]
+
+flattened len 49038
+[[], ..., [{phi: 1.12, eta: -1.76, pt: 7.89, charge: -1, pid: -211, ...}, ...]]
+
+---------------------------------
+sv
+
+precut len 10383
+[[[{charge: -2, chi2: 0.00139, dlen: 0.194, dlenSig: 8.22, ...}, ...]], ...]
+
+flattened precut len 69877
+[[{charge: -2, chi2: 0.00139, dlen: 0.194, dlenSig: 8.22, ...}, ...], ..., []]
+
+postcut len 5691
+[[[{charge: -2, chi2: 0.00139, dlen: 0.194, dlenSig: 8.22, ...}, ...]], ...]
+
+flattened len 49038
+[[{charge: -2, chi2: 0.00139, dlen: 0.194, dlenSig: 8.22, ...}, ...], ..., []]
+
+---------------------------------
+MC_physics_process
+
+precut len 10383
+[[0], [0, 0, 0], ..., [0, ...], [0, 0, 0, 0, 0, 0, 0, 0, 0, 0, 0, 0, 0, 0, 0]]
+
+flattened precut len 69877
+[0, 0, 0, 0, 0, 0, 0, 0, 0, 0, 0, 0, 0, ..., 0, 0, 0, 0, 0, 0, 0, 0, 0, 0, 0, 0]
+
+postcut len 5691
+[[0], [0, 0, 0], ..., [0, ...], [0, 0, 0, 0, 0, 0, 0, 0, 0, 0, 0, 0, 0, 0, 0]]
+
+flattened len 49038
+[0, 0, 0, 0, 0, 0, 0, 0, 0, 0, 0, 0, 0, ..., 0, 0, 0, 0, 0, 0, 0, 0, 0, 0, 0, 0]
+
+---------------------------------
+MC_higgs_pt
+
+precut len 10383
+[[254], [0, ..., 220], ..., [646, 0, 646, 0, 0, 0, 646, 0, 0, 0, 0, 0, 0, 0, 0]]
+
+flattened precut len 69877
+[254, 0, 0, 220, 0, 273, 0, 0, 0, 0, 0, ..., 0, 0, 646, 0, 0, 0, 0, 0, 0, 0, 0]
+
+postcut len 5691
+[[254], [0, ..., 220], ..., [646, 0, 646, 0, 0, 0, 646, 0, 0, 0, 0, 0, 0, 0, 0]]
+
+flattened len 49038
+[254, 0, 0, 220, 0, 273, 0, 272, 279, 343, ..., 0, 646, 0, 0, 0, 0, 0, 0, 0, 0]
+
+---------------------------------
+MC_higgs_eta
+
+precut len 10383
+[[1.12], ..., [-0.742, -0, -0.742, -0, -0, -0, ..., -0, -0, -0, -0, -0, -0]]
+
+flattened precut len 69877
+[1.12, 0, 0, 0.883, 0, -0.378, 0, 0, 0, ..., -0, -0, -0, -0, -0, -0, -0, -0]
+
+postcut len 5691
+[[1.12], ..., [-0.742, -0, -0.742, -0, -0, -0, ..., -0, -0, -0, -0, -0, -0]]
+
+flattened len 49038
+[1.12, 0, 0, 0.883, 0, -0.378, 0, -1.41, ..., -0, -0, -0, -0, -0, -0, -0, -0]
+
+---------------------------------
+MC_higgs_phi
+
+precut len 10383
+[[-2.34], [0, ...], ..., [2.46, 0, 2.46, 0, 0, 0, 2.46, 0, 0, 0, 0, 0, 0, 0, 0]]
+
+flattened precut len 69877
+[-2.34, 0, 0, 1.62, 0, 2.62, 0, 0, 0, 0, ..., 0, 2.46, 0, 0, 0, 0, 0, 0, 0, 0]
+
+postcut len 5691
+[[-2.34], [0, ...], ..., [2.46, 0, 2.46, 0, 0, 0, 2.46, 0, 0, 0, 0, 0, 0, 0, 0]]
+
+flattened len 49038
+[-2.34, 0, 0, 1.62, 0, 2.62, 0, 0.535, -0.969, ..., 0, 0, 0, 0, 0, 0, 0, 0]
+
+---------------------------------
+MC_higgs_mass
+
+precut len 10383
+[[23], [0, ..., 23], ..., [189, 0, 189, 0, 0, 0, 189, 0, 0, 0, 0, 0, 0, 0, 0]]
+
+flattened precut len 69877
+[23, 0, 0, 23, 0, 23, 0, 0, 0, 0, 0, 23, ..., 0, 0, 189, 0, 0, 0, 0, 0, 0, 0, 0]
+
+postcut len 5691
+[[23], [0, ..., 23], ..., [189, 0, 189, 0, 0, 0, 189, 0, 0, 0, 0, 0, 0, 0, 0]]
+
+flattened len 49038
+[23, 0, 0, 23, 0, 23, 0, 23, 23, 23, 0, ..., 0, 0, 189, 0, 0, 0, 0, 0, 0, 0, 0]
+
+---------------------------------
+MC_higgs_flav
+
+precut len 10383
+[[4], [0, 0, 5], ..., [0, ...], [5, 0, 5, 0, 0, 0, 5, 0, 0, 0, 0, 0, 0, 0, 0]]
+
+flattened precut len 69877
+[4, 0, 0, 5, 0, 5, 0, 0, 0, 0, 0, 4, 5, ..., 0, 0, 0, 5, 0, 0, 0, 0, 0, 0, 0, 0]
+
+postcut len 5691
+[[4], [0, 0, 5], ..., [0, ...], [5, 0, 5, 0, 0, 0, 5, 0, 0, 0, 0, 0, 0, 0, 0]]
+
+flattened len 49038
+[4, 0, 0, 5, 0, 5, 0, 4, 5, 3, 0, 4, 4, ..., 0, 0, 0, 5, 0, 0, 0, 0, 0, 0, 0, 0]
+
+---------------------------------
+MC_higgs_valid
+
+precut len 10383
+[[True], ..., [True, False, True, False, ..., False, False, False, False]]
+
+flattened precut len 69877
+[True, False, False, True, False, True, ..., False, False, False, False, False]
+
+postcut len 5691
+[[True], ..., [True, False, True, False, ..., False, False, False, False]]
+
+flattened len 49038
+[True, False, False, True, False, True, ..., False, False, False, False, False]
+
+---------------------------------
+MC_vector_flav
+
+precut len 10383
+[[0], [0, 0, 0], ..., [0, ...], [0, 0, 0, 0, 0, 0, 0, 0, 0, 0, 0, 0, 0, 0, 0]]
+
+flattened precut len 69877
+[0, 0, 0, 0, 0, 0, 0, 0, 0, 0, 0, 0, 0, ..., 0, 0, 0, 0, 0, 0, 0, 0, 0, 0, 0, 0]
+
+postcut len 5691
+[[0], [0, 0, 0], ..., [0, ...], [0, 0, 0, 0, 0, 0, 0, 0, 0, 0, 0, 0, 0, 0, 0]]
+
+flattened len 49038
+[0, 0, 0, 0, 0, 0, 0, 0, 0, 0, 0, 0, 0, ..., 0, 0, 0, 0, 0, 0, 0, 0, 0, 0, 0, 0]
+
+---------------------------------
+MC_lepton_channel
+
+precut len 10383
+[[-1], [...], ..., [-1, -1, -1, -1, -1, -1, -1, -1, -1, -1, -1, -1, -1, -1, -1]]
+
+flattened precut len 69877
+[-1, -1, -1, -1, -1, -1, -1, -1, -1, ..., -1, -1, -1, -1, -1, -1, -1, -1, -1]
+
+postcut len 5691
+[[-1], [...], ..., [-1, -1, -1, -1, -1, -1, -1, -1, -1, -1, -1, -1, -1, -1, -1]]
+
+flattened len 49038
+[-1, -1, -1, -1, -1, -1, -1, -1, -1, ..., -1, -1, -1, -1, -1, -1, -1, -1, -1]
+
+---------------------------------
+MC_gendijet_pt
+
+precut len 10383
+[[239], ..., [352, 555, 595, 745, 0, 619, 580, ..., 0, 370, 320, 0, 89.2, 0, 0]]
+
+flattened precut len 69877
+[239, 122, 265, 286, 39.4, 253, 238, 30.4, ..., 403, 0, 370, 320, 0, 89.2, 0, 0]
+
+postcut len 5691
+[[239], ..., [352, 555, 595, 745, 0, 619, 580, ..., 0, 370, 320, 0, 89.2, 0, 0]]
+
+flattened len 49038
+[239, 122, 265, 286, 39.4, 253, 238, 262, ..., 403, 0, 370, 320, 0, 89.2, 0, 0]
+
+---------------------------------
+MC_gendijet_eta
+
+precut len 10383
+[[1.68], ..., [-0.433, -0.922, 0.43, 0.276, 0, ..., -1.85, -0, -1.22, -0, -0]]
+
+flattened precut len 69877
+[1.68, 2.52, 1.75, 1.19, 0.56, -0.487, ..., -1.66, -1.85, -0, -1.22, -0, -0]
+
+postcut len 5691
+[[1.68], ..., [-0.433, -0.922, 0.43, 0.276, 0, ..., -1.85, -0, -1.22, -0, -0]]
+
+flattened len 49038
+[1.68, 2.52, 1.75, 1.19, 0.56, -0.487, ..., -1.66, -1.85, -0, -1.22, -0, -0]
+
+---------------------------------
+MC_gendijet_phi
+
+precut len 10383
+[[-3.01], ..., [-1.66, -0.681, -1.22, -1.08, -0, ..., 1.02, 0, 2.36, 0, -0]]
+
+flattened precut len 69877
+[-3.01, -1.05, -1.42, 1.72, 2.45, 2.63, -0.496, ..., 1.53, 1.02, 0, 2.36, 0, -0]
+
+postcut len 5691
+[[-3.01], ..., [-1.66, -0.681, -1.22, -1.08, -0, ..., 1.02, 0, 2.36, 0, -0]]
+
+flattened len 49038
+[-3.01, -1.05, -1.42, 1.72, 2.45, 2.63, -0.496, ..., 1.53, 1.02, 0, 2.36, 0, -0]
+
+---------------------------------
+MC_gendijet_mass
+
+precut len 10383
+[[270], ..., [1.37e+03, 1.52e+03, 646, 429, 0, 561, ..., 181, 0, 186, 0, 0]]
+
+flattened precut len 69877
+[270, 550, 319, 133, 543, 133, 127, 57.8, ..., 303, 0, 417, 181, 0, 186, 0, 0]
+
+postcut len 5691
+[[270], ..., [1.37e+03, 1.52e+03, 646, 429, 0, 561, ..., 181, 0, 186, 0, 0]]
+
+flattened len 49038
+[270, 550, 319, 133, 543, 133, 127, 165, ..., 303, 0, 417, 181, 0, 186, 0, 0]
+
+---------------------------------
+MC_genjet1_flav
+
+precut len 10383
+[[-4], [21, ...], ..., [21, 21, 21, 21, 21, 5, 5, 5, 5, 21, 21, 21, -5, -5, 21]]
+
+flattened precut len 69877
+[-4, 21, 21, -5, -5, -5, 21, 21, 5, 4, ..., 5, 5, 5, 5, 21, 21, 21, -5, -5, 21]
+
+postcut len 5691
+[[-4], [21, ...], ..., [21, 21, 21, 21, 21, 5, 5, 5, 5, 21, 21, 21, -5, -5, 21]]
+
+flattened len 49038
+[-4, 21, 21, -5, -5, -5, 21, -4, 21, 3, ..., 5, 5, 5, 5, 21, 21, 21, -5, -5, 21]
+
+---------------------------------
+MC_genjet2_flav
+
+precut len 10383
+[[21], [-5, ...], ..., [5, 21, -5, 21, 0, 21, -5, 21, 0, -5, 21, 0, 21, 0, 0]]
+
+flattened precut len 69877
+[21, -5, 21, 21, 21, 21, 21, 21, 5, -5, ..., 21, -5, 21, 0, -5, 21, 0, 21, 0, 0]
+
+postcut len 5691
+[[21], [-5, ...], ..., [5, 21, -5, 21, 0, 21, -5, 21, 0, -5, 21, 0, 21, 0, 0]]
+
+flattened len 49038
+[21, -5, 21, 21, 21, 21, 21, 21, -5, -2, ..., -5, 21, 0, -5, 21, 0, 21, 0, 0]
+
+---------------------------------
+MC_genjet1_matched
+
+precut len 10383
+[[True], ..., [True, True, True, True, True, ..., True, True, True, True, True]]
+
+flattened precut len 69877
+[True, True, True, True, True, True, ..., True, True, True, True, True, True]
+
+postcut len 5691
+[[True], ..., [True, True, True, True, True, ..., True, True, True, True, True]]
+
+flattened len 49038
+[True, True, True, True, True, True, ..., True, True, True, True, True, True]
+
+---------------------------------
+MC_genjet2_matched
+
+precut len 10383
+[[True], ..., [True, True, True, True, False, ..., False, True, False, False]]
+
+flattened precut len 69877
+[True, True, True, True, True, True, ..., True, True, False, True, False, False]
+
+postcut len 5691
+[[True], ..., [True, True, True, True, False, ..., False, True, False, False]]
+
+flattened len 49038
+[True, True, True, True, True, True, ..., True, True, False, True, False, False]
+
+---------------------------------
+MC_drqq
+
+precut len 10383
+[[0.18], [...], ..., [0.613, 0, 0.613, 0, 0, 0, 0.613, 0, 0, 0, 0, 0, 0, 0, 0]]
+
+flattened precut len 69877
+[0.18, 0, 0, 0.237, 0, 0.169, 0, 0, 0, 0, ..., 0, 0.613, 0, 0, 0, 0, 0, 0, 0, 0]
+
+postcut len 5691
+[[0.18], [...], ..., [0.613, 0, 0.613, 0, 0, 0, 0.613, 0, 0, 0, 0, 0, 0, 0, 0]]
+
+flattened len 49038
+[0.18, 0, 0, 0.237, 0, 0.169, 0, 0.184, 0.167, ..., 0, 0, 0, 0, 0, 0, 0, 0]
+
+---------------------------------
+MC_n_c
+
+precut len 10383
+[[1], [0, 0, 0], ..., [0, ...], [0, 0, 0, 0, 0, 0, 0, 0, 0, 0, 0, 0, 0, 0, 0]]
+
+flattened precut len 69877
+[1, 0, 0, 0, 0, 0, 0, 0, 0, 1, 2, 1, 0, ..., 0, 0, 0, 0, 0, 0, 0, 0, 0, 0, 0, 0]
+
+postcut len 5691
+[[1], [0, 0, 0], ..., [0, ...], [0, 0, 0, 0, 0, 0, 0, 0, 0, 0, 0, 0, 0, 0, 0]]
+
+flattened len 49038
+[1, 0, 0, 0, 0, 0, 0, 1, 0, 0, 1, 1, 1, ..., 0, 0, 0, 0, 0, 0, 0, 0, 0, 0, 0, 0]
+
+---------------------------------
+label_BB
+
+precut len 10383
+[[False], ..., [True, False, True, False, ..., False, False, False, False]]
+
+flattened precut len 69877
+[False, False, False, True, False, True, ..., False, False, False, False, False]
+
+postcut len 5691
+[[False], ..., [True, False, True, False, ..., False, False, False, False]]
+
+flattened len 49038
+[False, False, False, True, False, True, ..., False, False, False, False, False]
+
+---------------------------------
+label_CC
+
+precut len 10383
+[[True], ..., [False, False, False, False, ..., False, False, False, False]]
+
+flattened precut len 69877
+[True, False, False, False, False, ..., False, False, False, False, False]
+
+postcut len 5691
+[[True], ..., [False, False, False, False, ..., False, False, False, False]]
+
+flattened len 49038
+[True, False, False, False, False, ..., False, False, False, False, False]
+
+---------------------------------
+label_bb
+
+precut len 10383
+[[False], ..., [False, False, False, False, ..., False, True, True, False]]
+
+flattened precut len 69877
+[False, True, True, False, True, False, ..., False, False, True, True, False]
+
+postcut len 5691
+[[False], ..., [False, False, False, False, ..., False, True, True, False]]
+
+flattened len 49038
+[False, True, True, False, True, False, ..., False, False, True, True, False]
+
+---------------------------------
+label_bx
+
+precut len 10383
+[[False], ..., [False, False, False, False, ..., False, False, False, False]]
+
+flattened precut len 69877
+[False, False, False, False, False, ..., False, False, False, False, False]
+
+postcut len 5691
+[[False], ..., [False, False, False, False, ..., False, False, False, False]]
+
+flattened len 49038
+[False, False, False, False, False, ..., False, False, False, False, False]
+
+---------------------------------
+label_cx
+
+precut len 10383
+[[False], ..., [False, False, False, False, ..., False, False, False, False]]
+
+flattened precut len 69877
+[False, False, False, False, False, ..., False, False, False, False, False]
+
+postcut len 5691
+[[False], ..., [False, False, False, False, ..., False, False, False, False]]
+
+flattened len 49038
+[False, False, False, False, False, ..., False, False, False, False, False]
+
+---------------------------------
+label_ll
+
+precut len 10383
+[[False], ..., [False, True, False, True, True, ..., True, False, False, True]]
+
+flattened precut len 69877
+[False, False, False, False, False, False, ..., True, True, False, False, True]
+
+postcut len 5691
+[[False], ..., [False, True, False, True, True, ..., True, False, False, True]]
+
+flattened len 49038
+[False, False, False, False, False, False, ..., True, True, False, False, True]
+
+
+** Written 49038 PAIReD jets to the output file in 16.92 seconds
+** Computing time per PAIReD jet: 0.345 milliseconds
+** Computing time per event: 1.410 milliseconds
+
+*****************************************************************
+  End makeNtuplesPAIReDjointMC()
+*****************************************************************
+
