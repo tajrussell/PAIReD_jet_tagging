@@ -12,6 +12,7 @@
 *.root
 !PAIReD_Data_Production/PFNano_to_PAIReD/data/example_PFNano_mcRun3_EE_allPF_noBTV.root
 
+condor
 # Plots
 plots
 
