@@ -169,6 +169,5 @@ observers:
   - label_cx
   - label_ll
   - label_bx
-  - label_LL
   - label_CC
   - label_BB

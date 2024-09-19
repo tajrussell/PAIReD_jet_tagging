@@ -1,5 +1,5 @@
 universe = vanilla
-Executable     =  do_production2.sh
+Executable     =  do_TT_production.sh
 on_exit_hold = (ExitBySignal == True) || (ExitCode != 0)
 getenv = True
 Notification     = never
@@ -15,4 +15,4 @@ transfer_input_files = environment.yml, x509up_user.pem
 
 arguments = $(INPUTNAME) $(OUTPUTNAME) $(IDENTIFIER)
 
-queue INPUTNAME OUTPUTNAME IDENTIFIER from inputs.txt
+queue INPUTNAME OUTPUTNAME IDENTIFIER from input_names/inputs_TT.txt

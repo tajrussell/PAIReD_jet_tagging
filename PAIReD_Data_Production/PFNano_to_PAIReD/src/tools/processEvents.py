@@ -163,7 +163,7 @@ def processEvents(Events, physics_process=0, PAIReD_geometry="Ellipse"):
     
     # prepare jet and particle objects for the tree
     part = ak.zip(Part)
-    print("part", part)
+    #print("part", part)
     sv = ak.zip(SV)
     jet1 = Jet.j1
     jet2 = Jet.j2
@@ -185,7 +185,7 @@ def processEvents(Events, physics_process=0, PAIReD_geometry="Ellipse"):
     MC_physics_process = physics_process * ones
 
     # get summarized information from the MC simulation
-    MCInfo = getMCInfo(Events, isInGenPart, Jet_genJetIdx, Jetcut)
+    MCInfo = getMCInfo(Events, isInGenPart, Jet_genJetIdx, Jetcut, physics_process)
 
     if MCInfo == False:
         return False
@@ -214,15 +214,15 @@ def processEvents(Events, physics_process=0, PAIReD_geometry="Ellipse"):
 
     # remove the dimension of N_events
     for name in DataPAIReD.keys():
-        print("---------------------------------")
-        print(name)
-        print()
-        print("precut len "+str(len(DataPAIReD[name])))
-        print(DataPAIReD[name])
+        #print("---------------------------------")
+        #print(name)
+        #print()
+        #print("precut len "+str(len(DataPAIReD[name])))
+        #print(DataPAIReD[name])
         flat_precut = ak.copy(ak.flatten(DataPAIReD[name], axis=1))
-        print()
-        print("flattened precut len "+str(len(flat_precut)))
-        print(flat_precut)
+        #print()
+        #print("flattened precut len "+str(len(flat_precut)))
+        #print(flat_precut)
         if not DataPAIReD[name].fields:
             postcut = ak.copy(DataPAIReD[name][higgs_cut])
         else:
@@ -231,13 +231,13 @@ def processEvents(Events, physics_process=0, PAIReD_geometry="Ellipse"):
                 precut = ak.unzip(DataPAIReD[name], highlevel=True)[i]
                 postcut_dict[n] = precut[higgs_cut]
             postcut = ak.zip(postcut_dict)
-        print()
-        print("postcut len "+str(len(postcut)))
-        print(DataPAIReD[name])
+        #print()
+        #print("postcut len "+str(len(postcut)))
+        #print(DataPAIReD[name])
         flattened = ak.copy(ak.flatten(postcut, axis=1))
-        print()
-        print("flattened len "+str(len(flattened)))
-        print(flattened)
+        #print()
+        #print("flattened len "+str(len(flattened)))
+        #print(flattened)
         flattened_Data[name] = flattened
-        print()       
+        #print()       
     return flattened_Data
