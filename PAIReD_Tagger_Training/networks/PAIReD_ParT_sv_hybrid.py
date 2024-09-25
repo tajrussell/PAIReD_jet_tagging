@@ -54,8 +54,12 @@ class LogCoshLoss(torch.nn.L1Loss):
         self.baseline = baseline
 
     def forward(self, input: Tensor, target: Tensor, use_input: Tensor) -> Tensor:
+        #print('LogCoshLoss steps')
         x = (input - target)
+        #print('input', input)
+        #print('target', target)
         loss = (x + torch.nn.functional.softplus(-2. * x) - math.log(2)) * use_input + self.baseline * (~use_input)
+        #print('loss', loss)
         if self.reduction == 'none':
             return loss
         elif self.reduction == 'mean':
@@ -73,8 +77,11 @@ class QuantileLoss(torch.nn.L1Loss):
         self.baseline = baseline
 
     def forward(self, input: Tensor, target: Tensor, use_input: Tensor) -> Tensor:
+        #print('Quantile Loss steps')
         z = (target - input)
+        #print('z', z)
         loss = (self.quantile * z * (z>=0) + (self.quantile - 1) * z * (z<0)) * use_input + self.baseline * (~use_input)
+        #print('loss', loss)
         if self.reduction == 'none':
             return loss
         elif self.reduction == 'mean':
@@ -96,10 +103,13 @@ class HybridLoss(torch.nn.L1Loss):
         self.factor_err = factor_err
 
     def forward(self, input_cls: Tensor, input_reg: Tensor, input_err_plus: Tensor, input_err_minus: Tensor, target_cls: Tensor, target_reg: Tensor) -> Tensor:
-        target_reg = target_reg + 20*torch.randn_like(target_reg)
+        #print('target reg', target_reg)
         loss_cls = self.loss_cls_fn(input_cls, target_cls)
+        #print('loss_cls', loss_cls)
         loss_reg = self.loss_reg_fn(input_reg, target_reg, (target_cls <= 1))
+        #print('loss_reg', loss_cls)
         loss_err = self.loss_err_fn_plus(input_err_plus, target_reg, (target_cls <= 1)) + self.loss_err_fn_minus(input_err_minus, target_reg, (target_cls <= 1))
+        #print('loss_err', loss_err)
         loss = loss_cls + self.factor_reg * loss_reg + self.factor_err * loss_err
         return loss, {'cls': loss_cls.item(), 'reg': loss_reg.item(), 'err': loss_err.item()}
 

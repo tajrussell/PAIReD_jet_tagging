@@ -20,7 +20,7 @@ parser = argparse.ArgumentParser()
 parser.add_argument('--train-mode', type=str, default='cls',
                     choices=['cls', 'regression', 'hybrid'],
                     help='training mode')
-parser.add_argument('-c', '--data-config', type=str, default='data/ak15_points_pf_sv_v0.yaml',
+parser.add_argument('-c', '--data-config', type=str, default='/users/trussel1/PAIReD_jet_tagging/PAIReD_Tagger_Training/dataconfigs/PAIReD_hybrid_sv.train.yaml',
                     help='data config YAML file')
 parser.add_argument('-i', '--data-train', nargs='*', default=[],
                     help='training files; supported syntax:'
@@ -61,7 +61,7 @@ parser.add_argument('--tensorboard', type=str, default=None,
 parser.add_argument('--tensorboard-custom-fn', type=str, default=None,
                     help='the path of the python script containing a user-specified function `get_tensorboard_custom_fn`, '
                          'to display custom information per mini-batch or per epoch, during the training, validation or test.')
-parser.add_argument('-n', '--network-config', type=str, default='networks/particle_net_pfcand_sv.py',
+parser.add_argument('-n', '--network-config', type=str, default='PAIReD_Tagger_Training/networks/PAIReD_ParT_sv_hybrid.py',
                     help='network architecture configuration file; the path must be relative to the current dir')
 parser.add_argument('-o', '--network-option', nargs=2, action='append', default=[],
                     help='options to pass to the model class constructor, e.g., `--network-option use_counts False`')
