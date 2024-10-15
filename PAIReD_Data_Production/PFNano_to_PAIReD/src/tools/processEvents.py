@@ -202,8 +202,8 @@ def processEvents(Events, physics_process=0, PAIReD_geometry="Ellipse"):
         "jet1" : jet1,
         "jet2" : jet2,
         "dijet" : dijet,
-        "part" : part,
-        "sv" : sv,
+        "part" : ak.ones_like(part),
+        "sv" : ak.ones_like(sv),
         "MC_physics_process" : MC_physics_process
     }
 
