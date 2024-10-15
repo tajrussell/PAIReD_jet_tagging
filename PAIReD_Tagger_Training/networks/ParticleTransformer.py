@@ -256,8 +256,9 @@ class PairEmbed(nn.Module):
                 x = self.pairwise_lv_fts(xi, xj)
             else:
                 x = self.pairwise_lv_fts(x.unsqueeze(-1), x.unsqueeze(-2)).view(batch_size, -1, seq_len * seq_len)
-
+        print('attention mask elements x nans', torch.sum(torch.isnan(x))/x.numel())
         elements = self.embed(x)  # (batch, embed_dim, num_elements)
+        print('attention mask elements nans', torch.sum(torch.isnan(elements))/elements.numel())
         if not self.for_onnx:
             y = torch.zeros(batch_size, self.out_dim, seq_len, seq_len, dtype=elements.dtype, device=x.device)
             y[:, :, i, j] = elements
@@ -311,7 +312,12 @@ class Block(nn.Module):
         Returns:
             encoded output of shape `(seq_len, batch, embed_dim)`
         """
-
+        print('step 0 x nans', torch.sum(torch.isnan(x))/x.numel())
+        print('step 0 padding mask nans', torch.sum(torch.isnan(padding_mask))/padding_mask.numel())
+        if attn_mask != None: print('initial attn mask nans', torch.sum(torch.isnan(attn_mask))/attn_mask.numel())
+        print('step 0 x infs', torch.sum(torch.isinf(x))/x.numel())
+        print('step 0 padding mask infs', torch.sum(torch.isinf(padding_mask))/padding_mask.numel())
+        if attn_mask != None: print('initial attn mask infs', torch.sum(torch.isinf(attn_mask))/attn_mask.numel())
         if x_cls is not None:
             with torch.no_grad():
                 # prepend one element for x_cls: -> (batch, 1+seq_len)
@@ -321,33 +327,49 @@ class Block(nn.Module):
             u = torch.cat((x_cls, x), dim=0)  # (seq_len+1, batch, embed_dim)
             u = self.pre_attn_norm(u)
             x = self.attn(x_cls, u, u, key_padding_mask=padding_mask)[0]  # (1, batch, embed_dim)
+            print('step 1 x nans', torch.sum(torch.isnan(x))/x.numel())
         else:
             residual = x
             x = self.pre_attn_norm(x)
+            print('step 2 x nans', torch.sum(torch.isnan(x))/x.numel())
             x = self.attn(x, x, x, key_padding_mask=padding_mask,
                           attn_mask=attn_mask)[0]  # (seq_len, batch, embed_dim)
+            print('step 3 x nans', torch.sum(torch.isnan(x))/x.numel())
 
         if self.c_attn is not None:
             tgt_len, bsz = x.size(0), x.size(1)
             x = x.view(tgt_len, bsz, self.num_heads, self.head_dim)
+            print('step 4 x nans', torch.sum(torch.isnan(x))/x.numel())
             x = torch.einsum('tbhd,h->tbdh', x, self.c_attn)
+            print('step 5 x nans', torch.sum(torch.isnan(x))/x.numel())
             x = x.reshape(tgt_len, bsz, self.embed_dim)
+            print('step 6 x nans', torch.sum(torch.isnan(x))/x.numel())
         if self.post_attn_norm is not None:
             x = self.post_attn_norm(x)
+            print('step 7 x nans', torch.sum(torch.isnan(x))/x.numel())
         x = self.dropout(x)
+        print('step 8 x nans', torch.sum(torch.isnan(x))/x.numel())
         x += residual
+        print('step 9 x nans', torch.sum(torch.isnan(x))/x.numel())
 
         residual = x
         x = self.pre_fc_norm(x)
+        print('step 10 x nans', torch.sum(torch.isnan(x))/x.numel())
         x = self.act(self.fc1(x))
+        print('step 11 x nans', torch.sum(torch.isnan(x))/x.numel())
         x = self.act_dropout(x)
+        print('step 12 x nans', torch.sum(torch.isnan(x))/x.numel())
         if self.post_fc_norm is not None:
             x = self.post_fc_norm(x)
+            print('step 13 x nans', torch.sum(torch.isnan(x))/x.numel())
         x = self.fc2(x)
+        print('step 14 x nans', torch.sum(torch.isnan(x))/x.numel())
         x = self.dropout(x)
+        print('step 15 x nans', torch.sum(torch.isnan(x))/x.numel())
         if self.w_resid is not None:
             residual = torch.mul(self.w_resid, residual)
         x += residual
+        print('step 16 x nans', torch.sum(torch.isnan(x))/x.numel())
 
         return x
 
@@ -423,39 +445,57 @@ class ParticleTransformer(nn.Module):
         return {'cls_token', }
 
     def forward(self, x, v=None, mask=None):
+        
         # x: (N, C, P)
         # v: (N, 4, P) [px,py,pz,energy]
         # mask: (N, 1, P) -- real particle = 1, padded = 0
-
+        print()
+        print('initial x nans', torch.sum(torch.isnan(x))/x.numel())
         with torch.no_grad():
             x, v, mask = self.trimmer(x, v, mask)
             padding_mask = ~mask.squeeze(1)  # (N, P)
-
+        #print('ParticleTransformer')
         with torch.cuda.amp.autocast(enabled=self.use_amp):
             # input embedding
+            ogx = x
             x = self.embed(x).masked_fill(~mask.permute(2, 0, 1), 0)  # (P, N, C)
             attn_mask = None
             if v is not None and self.pair_embed is not None:
+                print("v",v)
                 attn_mask = self.pair_embed(v).view(-1, v.size(-1), v.size(-1))  # (N*num_heads, P, P)
-
+                print("attn mask", attn_mask)
             # transform
+            print('preblocked x nans', torch.sum(torch.isnan(x))/x.numel())
             for block in self.blocks:
-                x = block(x, x_cls=None, padding_mask=padding_mask, attn_mask=attn_mask)
-
+                #attn_mask = None
+                
+                x2 = block(x, x_cls=None, padding_mask=padding_mask, attn_mask=attn_mask)
+                print('blocked x nans', torch.sum(torch.isnan(x2))/x2.numel())
+                print('values that become nan', x[torch.isnan(x2)])
+                print('og values that become nan', ogx[torch.isnan(x2)])
+                #print('padding mask for nans', padding_mask[torch.isnan(x2)])
+                #print('attn mask for nans', attn_mask[torch.isnan(x2)])
+                print('values that did not become nan', x[~torch.isnan(x2)])
+                print('og values that did not become nan', ogx[~torch.isnan(x2)])
+                #print('padding mask for non-nans', padding_mask[~torch.isnan(x2)])
+                #print('attn mask for non-nans', attn_mask[~torch.isnan(x2)])
+                x = torch.where(torch.isnan(x2), 1, x2)
+                break
             # extract class token
             cls_tokens = self.cls_token.expand(1, x.size(1), -1)  # (1, N, C)
+            
+            #print('cls tokens nans', torch.sum(torch.isnan(cls_tokens)))
             for block in self.cls_blocks:
                 cls_tokens = block(x, x_cls=cls_tokens, padding_mask=padding_mask)
-
+            #print('cls tokens nans', torch.sum(torch.isnan(cls_tokens))/cls_tokens.numel())
             x_cls = self.norm(cls_tokens).squeeze(0)
-
+            print('x cls nans', torch.sum(torch.isnan(x_cls))/x_cls.numel())
             # fc
             if self.fc is None:
                 return x_cls
             output = self.fc(x_cls)
             if self.for_inference:
                 output = torch.softmax(output, dim=1)
-            # print('output:\n', output)
             return output
 
 
@@ -528,5 +568,4 @@ class ParticleTransformerTagger(nn.Module):
             pf_x = self.pf_embed(pf_x)  # after embed: (seq_len, batch, embed_dim)
             sv_x = self.sv_embed(sv_x)
             x = torch.cat([pf_x, sv_x], dim=0)
-
             return self.part(x, v, mask)

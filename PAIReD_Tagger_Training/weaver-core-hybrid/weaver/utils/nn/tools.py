@@ -59,9 +59,11 @@ def train_classification(model, loss_func, opt, scheduler, train_loader, dev, ep
                 loss = loss_func(logits, label)
             if grad_scaler is None:
                 loss.backward()
+                torch.nn.utils.clip_grad_norm_(model.parameters(), 10)
                 opt.step()
             else:
                 grad_scaler.scale(loss).backward()
+                torch.nn.utils.clip_grad_norm_(model.parameters(), 10)
                 grad_scaler.step(opt)
                 grad_scaler.update()
 
@@ -297,9 +299,11 @@ def train_regression(model, loss_func, opt, scheduler, train_loader, dev, epoch,
                 loss = loss_func(preds, label)
             if grad_scaler is None:
                 loss.backward()
+                torch.nn.utils.clip_grad_norm_(model.parameters(), 10)
                 opt.step()
             else:
                 grad_scaler.scale(loss).backward()
+                torch.nn.utils.clip_grad_norm_(model.parameters(), 10)
                 grad_scaler.step(opt)
                 grad_scaler.update()
 
@@ -501,9 +505,11 @@ def train_hybrid(model, loss_func, opt, scheduler, train_loader, dev, epoch, ste
                 loss, loss_monitor = loss_func(logits, preds_reg, preds_err_plus, preds_err_minus, label_cls, label_reg)
             if grad_scaler is None:
                 loss.backward()
+                torch.nn.utils.clip_grad_norm_(model.parameters(), 10)
                 opt.step()
             else:
                 grad_scaler.scale(loss).backward()
+                torch.nn.utils.clip_grad_norm_(model.parameters(), 10)
                 grad_scaler.step(opt)
                 grad_scaler.update()
 
@@ -511,12 +517,13 @@ def train_hybrid(model, loss_func, opt, scheduler, train_loader, dev, epoch, ste
                 scheduler.step()
 
             _, preds_cls = logits.max(1)
+            #print('new loss', loss)
+            #print('loss item', loss.item())
             loss = loss.item()
 
             num_batches += 1
             count += num_examples
             correct = (preds_cls == label_cls).sum().item()
- 
             total_loss += loss
             total_loss_cls += loss_monitor['cls']
             total_loss_reg += loss_monitor['reg']
