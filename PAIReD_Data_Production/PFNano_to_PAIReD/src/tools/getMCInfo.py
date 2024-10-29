@@ -228,7 +228,7 @@ def getMCInfo(Events, isInGenPart, Jet_genJetIdx, Jetcut, physics_process):
         "label_ll" : None,
     }
     # get the higgs information
-    if physics_process == 2525: processHiggs_HH(Events, isInGenPart, higgs_indices, MCInfo)
+    if physics_process == 25: processHiggs_HH(Events, isInGenPart, higgs_indices, MCInfo)
     elif physics_process == 23: processHiggs_DY(Events, isInGenPart, MCInfo)
     elif physics_process == 66: processHiggs_TT(Events, isInGenPart, MCInfo)
     # get c/b quarks in GenParts
