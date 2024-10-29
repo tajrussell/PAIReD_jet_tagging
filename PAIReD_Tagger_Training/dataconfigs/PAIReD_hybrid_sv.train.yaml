@@ -2,7 +2,7 @@ treename:
   tree
 
 selection:
-  MC_higgs_valid & (label_BB | label_CC)
+  ak.num(part_energy) > 0 & MC_higgs_valid
   # ((~(MC_vector_flav==15)) & ((MC_higgs_flav==0) ^ ((label_CC==1) | (label_BB==1))) & (MC_higgs_valid==1))
 test_time_selection:
   null
@@ -135,12 +135,13 @@ labels:
   #value_cls_index: MC_gen_flav
   #value_cls_names:
   # first two labels have to be CC and BB in order for the regression loss to work!!!
-  - label_BB
   - label_CC
-    # - label_bb
-    #- label_bx
-    #- label_cx
-    #- label_ll
+  - label_BB
+    #- label_LL
+  - label_bb
+  - label_bx
+  - label_cx
+  - label_ll
   value_custom:
      target_mass: MC_higgs_mass
 
@@ -170,9 +171,10 @@ observers:
   - label_cx
   - label_ll
   - label_bx
+    #- label_LL
   - label_CC
   - label_BB
-#monitor_variables: []
+monitor_variables: []
 weights:
   use_precomputed_weights: false
   reweight_method: ref
@@ -187,14 +189,14 @@ weights:
   reweight_classes:
   - label_BB
   - label_CC
-    #- label_bb
-    #- label_bx
-    #- label_cx
-    #- label_ll
+  - label_bb
+  - label_bx
+  - label_cx
+  - label_ll
   class_weights:
   - 1.0
   - 1.0
-    #- 1.0
-    #- 1.0
-  #- 1.0
-    #- 3.0
+  - 1.0
+  - 1.0
+  - 1.0
+  - 3.0

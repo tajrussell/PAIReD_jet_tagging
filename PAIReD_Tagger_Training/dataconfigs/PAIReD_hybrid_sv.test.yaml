@@ -135,10 +135,11 @@ labels:
   # first two labels have to be CC and BB in order for the regression loss to work!!!
   - label_BB
   - label_CC
-  - label_bb
-  - label_bx
-  - label_cx
-  - label_ll
+  - label_LL  
+    #- label_bb
+    #- label_bx
+    #- label_cx
+    #- label_ll
   value_custom:
     target_mass: MC_higgs_mass
 
@@ -165,9 +166,10 @@ observers:
   - MC_higgs_mass
   - MC_vector_flav
   - MC_lepton_channel
-  - label_bb
-  - label_cx
-  - label_ll
-  - label_bx
+    #- label_bb
+    #- label_cx
+    #- label_ll
+    #- label_bx
   - label_CC
   - label_BB
+  - label_LL

@@ -1,0 +1,627 @@
+## SLURM PROLOG ###############################################################
+##    Job ID : 5427969
+##  Job Name : Classi
+##  Nodelist : gpu2010
+##      CPUs : 12
+##  Mem/Node : 196608 MB
+## Directory : /oscar/home/trussel1/PAIReD_jet_tagging
+##   Job Started : Mon Oct 28 09:53:37 AM EDT 2024
+###############################################################################
+Using auto-generated model prefix models/20241028-095347_PAIReD_ParT_sv_hybrid_ranger_lr0.005_batch128/network
+[2024-10-28 09:53:47,736] INFO: args:
+ - ('train_mode', 'hybrid')
+ - ('data_config', '/users/trussel1/PAIReD_jet_tagging/PAIReD_Tagger_Training/dataconfigs/PAIReD_hybrid_sv.train.yaml')
+ - ('data_train', ['XtoHH:/HEP/export/home/trussel1/PAIReD_jet_tagging/PAIReD_Data_Production/PFNano_to_PAIReD/data/XtoHH/*/PA.root', 'DY:/HEP/export/home/trussel1/PAIReD_jet_tagging/PAIReD_Data_Production/PFNano_to_PAIReD/data/DY/PA*.root'])
+ - ('data_val', [])
+ - ('data_test', [])
+ - ('data_fraction', 1)
+ - ('file_fraction', 1)
+ - ('fetch_by_files', False)
+ - ('fetch_step', 0.01)
+ - ('in_memory', False)
+ - ('train_val_split', 0.8)
+ - ('demo', False)
+ - ('lr_finder', None)
+ - ('tensorboard_dir', None)
+ - ('tensorboard', None)
+ - ('tensorboard_custom_fn', None)
+ - ('network_config', 'PAIReD_Tagger_Training/networks/PAIReD_ParT_sv_hybrid.py')
+ - ('network_option', [])
+ - ('loss_option', [])
+ - ('model_prefix', 'models/20241028-095347_PAIReD_ParT_sv_hybrid_ranger_lr0.005_batch128/network')
+ - ('load_model_weights', None)
+ - ('num_epochs', 20)
+ - ('steps_per_epoch', None)
+ - ('steps_per_epoch_val', None)
+ - ('samples_per_epoch', None)
+ - ('samples_per_epoch_val', None)
+ - ('optimizer', 'ranger')
+ - ('optimizer_option', [])
+ - ('lr_scheduler', 'flat+decay')
+ - ('warmup_steps', 0)
+ - ('load_epoch', None)
+ - ('start_lr', 0.005)
+ - ('batch_size', 128)
+ - ('use_amp', False)
+ - ('compile_model', False)
+ - ('gpus', '0')
+ - ('predict_gpus', '0')
+ - ('num_workers', 1)
+ - ('predict', False)
+ - ('predict_output', None)
+ - ('export_onnx', None)
+ - ('io_test', False)
+ - ('copy_inputs', False)
+ - ('log_file', '')
+ - ('print', False)
+ - ('profile', False)
+ - ('backend', None)
+ - ('_auto_model_name', '20241028-095347_PAIReD_ParT_sv_hybrid_ranger_lr0.005_batch128')
+ - ('local_rank', None)
+[2024-10-28 09:53:47,736] INFO: Running in hybrid mode
+[2024-10-28 09:53:51,676] INFO: Using 125 files for training, range: (0, 0.8)
+[2024-10-28 09:53:51,676] INFO: Using 125 files for validation, range: (0.8, 1)
+[2024-10-28 09:53:51,693] INFO: [0;37mpreprocess config: {'method': 'manual', 'data_fraction': None, 'params': None}[0m
+[2024-10-28 09:53:51,693] INFO: [0;37mselection: ak.num(part_energy) > 0 & MC_higgs_valid[0m
+[2024-10-28 09:53:51,693] INFO: [0;37mtest_time_selection: ak.num(part_energy) > 0 & MC_higgs_valid[0m
+[2024-10-28 09:53:51,693] INFO: [0;37mvar_funcs:
+ - ('part_mask', 'ak.ones_like(part_energy)')
+ - ('part_pt_log', 'np.where(np.isnan(np.log(part_pt)), -1e3, np.log(part_pt))')
+ - ('part_e_log', 'np.where(np.isnan(np.log(part_energy)), -1e3, np.log(part_energy))')
+ - ('jet1_rawenergy', 'jet1_energy * (1-jet1_rawfactor)')
+ - ('jet2_rawenergy', 'jet2_energy * (1-jet2_rawfactor)')
+ - ('jet1_rawpt', 'jet1_pt * (1-jet1_rawfactor)')
+ - ('jet2_rawpt', 'jet2_pt * (1-jet2_rawfactor)')
+ - ('part_logptrel', 'np.where(np.isnan(np.log(part_pt/(jet1_rawpt+jet2_rawpt))), -1e3, np.log(part_pt/(jet1_rawpt+jet2_rawpt)))')
+ - ('part_logerel', 'np.where(np.isnan(np.log(part_energy/(jet1_rawenergy+jet2_rawenergy))), -1e3, np.log(part_energy/(jet1_rawenergy+jet2_rawenergy)))')
+ - ('part_deltaR1', 'np.hypot(part_deta1, part_dphi1)')
+ - ('part_deltaR2', 'np.hypot(part_deta2, part_dphi2)')
+ - ('part_d0', 'np.where(part_d0val==-1, -1.5, np.tanh(part_d0val))')
+ - ('part_dz', 'np.where(part_dzval==-1, -1.5, np.tanh(part_dzval))')
+ - ('sv_px', 'np.cos(sv_phi) * sv_pt')
+ - ('sv_py', 'np.sin(sv_phi) * sv_pt')
+ - ('sv_pz', 'np.sinh(sv_eta) * sv_pt')
+ - ('sv_energy', 'np.sqrt(sv_mass**2 + (sv_pt*np.cosh(sv_eta))**2)')
+ - ('sv_mask', 'ak.ones_like(sv_pt)')
+ - ('class_WpHcc', '(MC_physics_process==1)')
+ - ('class_WmHcc', '(MC_physics_process==2)')
+ - ('class_ZHcc', '(MC_physics_process==3)')
+ - ('class_WpHbb', '(MC_physics_process==11)')
+ - ('class_WmHbb', '(MC_physics_process==12)')
+ - ('class_ZHbb', '(MC_physics_process==13)')
+ - ('class_DY', '(MC_physics_process==23)')
+ - ('class_W', '(MC_physics_process==22)')
+ - ('class_TT', '(MC_physics_process==66)')
+ - ('class_XtoHH', '(MC_physics_process==25)')
+ - ('_label_', 'np.argmax(np.stack([label_CC,label_BB,label_bb,label_bx,label_cx,label_ll], axis=1), axis=1)')
+ - ('_labelcheck_', 'np.sum(np.stack([label_CC,label_BB,label_bb,label_bx,label_cx,label_ll], axis=1), axis=1)')
+ - ('target_mass', 'MC_higgs_mass')[0m
+[2024-10-28 09:53:51,693] INFO: [0;37minput_names: ('pf_features', 'pf_vectors', 'pf_mask', 'sv_features', 'sv_vectors', 'sv_mask')[0m
+[2024-10-28 09:53:51,693] INFO: [0;37minput_dicts:
+ - ('pf_features', ['part_pt_log', 'part_e_log', 'part_logptrel', 'part_logerel', 'part_deltaR1', 'part_deltaR2', 'part_charge', 'part_d0', 'part_d0err', 'part_dz', 'part_dzerr', 'part_deta1', 'part_dphi1', 'part_deta2', 'part_dphi2', 'part_puppiweight'])
+ - ('pf_vectors', ['part_px', 'part_py', 'part_pz', 'part_energy'])
+ - ('pf_mask', ['part_mask'])
+ - ('sv_features', ['sv_charge', 'sv_chi2', 'sv_dlen', 'sv_dlenSig', 'sv_dxy', 'sv_dxySig', 'sv_eta', 'sv_mass', 'sv_ndof', 'sv_ntracks', 'sv_pAngle', 'sv_phi', 'sv_pt', 'sv_x', 'sv_y', 'sv_z', 'sv_deta1', 'sv_deta2', 'sv_dphi1', 'sv_dphi2'])
+ - ('sv_vectors', ['sv_px', 'sv_py', 'sv_pz', 'sv_energy'])
+ - ('sv_mask', ['sv_mask'])[0m
+[2024-10-28 09:53:51,693] INFO: [0;37minput_shapes:
+ - ('pf_features', (-1, 16, 128))
+ - ('pf_vectors', (-1, 4, 128))
+ - ('pf_mask', (-1, 1, 128))
+ - ('sv_features', (-1, 20, 10))
+ - ('sv_vectors', (-1, 4, 10))
+ - ('sv_mask', (-1, 1, 10))[0m
+[2024-10-28 09:53:51,693] INFO: [0;37mpreprocess_params:
+ - ('part_pt_log', {'length': 128, 'pad_mode': 'wrap', 'center': 1.0, 'scale': 0.25, 'min': -5, 'max': 5, 'pad_value': 0})
+ - ('part_e_log', {'length': 128, 'pad_mode': 'wrap', 'center': 2.0, 'scale': 0.25, 'min': -5, 'max': 5, 'pad_value': 0})
+ - ('part_logptrel', {'length': 128, 'pad_mode': 'wrap', 'center': -4.7, 'scale': 0.25, 'min': -5, 'max': 5, 'pad_value': 0})
+ - ('part_logerel', {'length': 128, 'pad_mode': 'wrap', 'center': -4.7, 'scale': 0.25, 'min': -5, 'max': 5, 'pad_value': 0})
+ - ('part_deltaR1', {'length': 128, 'pad_mode': 'wrap', 'center': None, 'scale': 1, 'min': -5, 'max': 5, 'pad_value': 0})
+ - ('part_deltaR2', {'length': 128, 'pad_mode': 'wrap', 'center': None, 'scale': 1, 'min': -5, 'max': 5, 'pad_value': 0})
+ - ('part_charge', {'length': 128, 'pad_mode': 'wrap', 'center': None, 'scale': 1, 'min': -5, 'max': 5, 'pad_value': 0})
+ - ('part_d0', {'length': 128, 'pad_mode': 'wrap', 'center': None, 'scale': 1, 'min': -5, 'max': 5, 'pad_value': 0})
+ - ('part_d0err', {'length': 128, 'pad_mode': 'wrap', 'center': 0, 'scale': 1, 'min': 0, 'max': 1, 'pad_value': 0})
+ - ('part_dz', {'length': 128, 'pad_mode': 'wrap', 'center': None, 'scale': 1, 'min': -5, 'max': 5, 'pad_value': 0})
+ - ('part_dzerr', {'length': 128, 'pad_mode': 'wrap', 'center': 0, 'scale': 1, 'min': 0, 'max': 1, 'pad_value': 0})
+ - ('part_deta1', {'length': 128, 'pad_mode': 'wrap', 'center': None, 'scale': 1, 'min': -5, 'max': 5, 'pad_value': 0})
+ - ('part_dphi1', {'length': 128, 'pad_mode': 'wrap', 'center': None, 'scale': 1, 'min': -5, 'max': 5, 'pad_value': 0})
+ - ('part_deta2', {'length': 128, 'pad_mode': 'wrap', 'center': None, 'scale': 1, 'min': -5, 'max': 5, 'pad_value': 0})
+ - ('part_dphi2', {'length': 128, 'pad_mode': 'wrap', 'center': None, 'scale': 1, 'min': -5, 'max': 5, 'pad_value': 0})
+ - ('part_puppiweight', {'length': 128, 'pad_mode': 'wrap', 'center': None, 'scale': 1, 'min': -5, 'max': 5, 'pad_value': 0})
+ - ('part_px', {'length': 128, 'pad_mode': 'wrap', 'center': None, 'scale': 1, 'min': -5, 'max': 5, 'pad_value': 0})
+ - ('part_py', {'length': 128, 'pad_mode': 'wrap', 'center': None, 'scale': 1, 'min': -5, 'max': 5, 'pad_value': 0})
+ - ('part_pz', {'length': 128, 'pad_mode': 'wrap', 'center': None, 'scale': 1, 'min': -5, 'max': 5, 'pad_value': 0})
+ - ('part_energy', {'length': 128, 'pad_mode': 'wrap', 'center': None, 'scale': 1, 'min': -5, 'max': 5, 'pad_value': 0})
+ - ('part_mask', {'length': 128, 'pad_mode': 'constant', 'center': None, 'scale': 1, 'min': -5, 'max': 5, 'pad_value': 0})
+ - ('sv_charge', {'length': 10, 'pad_mode': 'wrap', 'center': None, 'scale': 1, 'min': -5, 'max': 5, 'pad_value': 0})
+ - ('sv_chi2', {'length': 10, 'pad_mode': 'wrap', 'center': 0, 'scale': 0.25, 'min': -5, 'max': 5, 'pad_value': 0})
+ - ('sv_dlen', {'length': 10, 'pad_mode': 'wrap', 'center': 0, 'scale': 0.05, 'min': -5, 'max': 5, 'pad_value': 0})
+ - ('sv_dlenSig', {'length': 10, 'pad_mode': 'wrap', 'center': 0, 'scale': 0.01, 'min': -5, 'max': 5, 'pad_value': 0})
+ - ('sv_dxy', {'length': 10, 'pad_mode': 'wrap', 'center': 0, 'scale': 0.05, 'min': -5, 'max': 5, 'pad_value': 0})
+ - ('sv_dxySig', {'length': 10, 'pad_mode': 'wrap', 'center': 0, 'scale': 0.01, 'min': -5, 'max': 5, 'pad_value': 0})
+ - ('sv_eta', {'length': 10, 'pad_mode': 'wrap', 'center': None, 'scale': 1, 'min': -5, 'max': 5, 'pad_value': 0})
+ - ('sv_mass', {'length': 10, 'pad_mode': 'wrap', 'center': 0, 'scale': 0.1, 'min': -5, 'max': 5, 'pad_value': 0})
+ - ('sv_ndof', {'length': 10, 'pad_mode': 'wrap', 'center': 0, 'scale': 0.1, 'min': -5, 'max': 5, 'pad_value': 0})
+ - ('sv_ntracks', {'length': 10, 'pad_mode': 'wrap', 'center': 0, 'scale': 0.1, 'min': -5, 'max': 5, 'pad_value': 0})
+ - ('sv_pAngle', {'length': 10, 'pad_mode': 'wrap', 'center': 0, 'scale': 0.33, 'min': -5, 'max': 5, 'pad_value': 0})
+ - ('sv_phi', {'length': 10, 'pad_mode': 'wrap', 'center': None, 'scale': 1, 'min': -5, 'max': 5, 'pad_value': 0})
+ - ('sv_pt', {'length': 10, 'pad_mode': 'wrap', 'center': 0, 'scale': 0.01, 'min': -5, 'max': 5, 'pad_value': 0})
+ - ('sv_x', {'length': 10, 'pad_mode': 'wrap', 'center': 0, 'scale': 0.2, 'min': -5, 'max': 5, 'pad_value': 0})
+ - ('sv_y', {'length': 10, 'pad_mode': 'wrap', 'center': 0, 'scale': 0.2, 'min': -5, 'max': 5, 'pad_value': 0})
+ - ('sv_z', {'length': 10, 'pad_mode': 'wrap', 'center': 0, 'scale': 0.2, 'min': -5, 'max': 5, 'pad_value': 0})
+ - ('sv_deta1', {'length': 10, 'pad_mode': 'wrap', 'center': None, 'scale': 1, 'min': -5, 'max': 5, 'pad_value': 0})
+ - ('sv_deta2', {'length': 10, 'pad_mode': 'wrap', 'center': None, 'scale': 1, 'min': -5, 'max': 5, 'pad_value': 0})
+ - ('sv_dphi1', {'length': 10, 'pad_mode': 'wrap', 'center': None, 'scale': 1, 'min': -5, 'max': 5, 'pad_value': 0})
+ - ('sv_dphi2', {'length': 10, 'pad_mode': 'wrap', 'center': None, 'scale': 1, 'min': -5, 'max': 5, 'pad_value': 0})
+ - ('sv_px', {'length': 10, 'pad_mode': 'wrap', 'center': None, 'scale': 1, 'min': -5, 'max': 5, 'pad_value': 0})
+ - ('sv_py', {'length': 10, 'pad_mode': 'wrap', 'center': None, 'scale': 1, 'min': -5, 'max': 5, 'pad_value': 0})
+ - ('sv_pz', {'length': 10, 'pad_mode': 'wrap', 'center': None, 'scale': 1, 'min': -5, 'max': 5, 'pad_value': 0})
+ - ('sv_energy', {'length': 10, 'pad_mode': 'wrap', 'center': None, 'scale': 1, 'min': -5, 'max': 5, 'pad_value': 0})
+ - ('sv_mask', {'length': 10, 'pad_mode': 'constant', 'center': None, 'scale': 1, 'min': -5, 'max': 5, 'pad_value': 0})[0m
+[2024-10-28 09:53:51,693] INFO: [0;37mlabel_names: ('_label_', 'target_mass')[0m
+[2024-10-28 09:53:51,693] INFO: [0;37mobserver_names: ('event', 'genweight', 'jet1_eta', 'jet1_phi', 'jet2_eta', 'jet2_phi', 'jet1_nparticles', 'jet2_nparticles', 'dijet_nparticles', 'dijet_eta', 'dijet_phi', 'dijet_pt', 'dijet_mass', 'dijet_index', 'MC_higgs_pt', 'MC_higgs_eta', 'MC_higgs_phi', 'MC_higgs_mass', 'MC_higgs_flav', 'MC_vector_flav', 'MC_lepton_channel', 'label_bb', 'label_cx', 'label_ll', 'label_bx', 'label_CC', 'label_BB')[0m
+[2024-10-28 09:53:51,693] INFO: [0;37mmonitor_variables: ()[0m
+[2024-10-28 09:53:51,707] INFO: [0;37mpreprocess config: {'method': 'manual', 'data_fraction': None, 'params': None}[0m
+[2024-10-28 09:53:51,707] INFO: [0;37mselection: ak.num(part_energy) > 0 & MC_higgs_valid[0m
+[2024-10-28 09:53:51,707] INFO: [0;37mtest_time_selection: ak.num(part_energy) > 0 & MC_higgs_valid[0m
+[2024-10-28 09:53:51,707] INFO: [0;37mvar_funcs:
+ - ('part_mask', 'ak.ones_like(part_energy)')
+ - ('part_pt_log', 'np.where(np.isnan(np.log(part_pt)), -1e3, np.log(part_pt))')
+ - ('part_e_log', 'np.where(np.isnan(np.log(part_energy)), -1e3, np.log(part_energy))')
+ - ('jet1_rawenergy', 'jet1_energy * (1-jet1_rawfactor)')
+ - ('jet2_rawenergy', 'jet2_energy * (1-jet2_rawfactor)')
+ - ('jet1_rawpt', 'jet1_pt * (1-jet1_rawfactor)')
+ - ('jet2_rawpt', 'jet2_pt * (1-jet2_rawfactor)')
+ - ('part_logptrel', 'np.where(np.isnan(np.log(part_pt/(jet1_rawpt+jet2_rawpt))), -1e3, np.log(part_pt/(jet1_rawpt+jet2_rawpt)))')
+ - ('part_logerel', 'np.where(np.isnan(np.log(part_energy/(jet1_rawenergy+jet2_rawenergy))), -1e3, np.log(part_energy/(jet1_rawenergy+jet2_rawenergy)))')
+ - ('part_deltaR1', 'np.hypot(part_deta1, part_dphi1)')
+ - ('part_deltaR2', 'np.hypot(part_deta2, part_dphi2)')
+ - ('part_d0', 'np.where(part_d0val==-1, -1.5, np.tanh(part_d0val))')
+ - ('part_dz', 'np.where(part_dzval==-1, -1.5, np.tanh(part_dzval))')
+ - ('sv_px', 'np.cos(sv_phi) * sv_pt')
+ - ('sv_py', 'np.sin(sv_phi) * sv_pt')
+ - ('sv_pz', 'np.sinh(sv_eta) * sv_pt')
+ - ('sv_energy', 'np.sqrt(sv_mass**2 + (sv_pt*np.cosh(sv_eta))**2)')
+ - ('sv_mask', 'ak.ones_like(sv_pt)')
+ - ('class_WpHcc', '(MC_physics_process==1)')
+ - ('class_WmHcc', '(MC_physics_process==2)')
+ - ('class_ZHcc', '(MC_physics_process==3)')
+ - ('class_WpHbb', '(MC_physics_process==11)')
+ - ('class_WmHbb', '(MC_physics_process==12)')
+ - ('class_ZHbb', '(MC_physics_process==13)')
+ - ('class_DY', '(MC_physics_process==23)')
+ - ('class_W', '(MC_physics_process==22)')
+ - ('class_TT', '(MC_physics_process==66)')
+ - ('class_XtoHH', '(MC_physics_process==25)')
+ - ('_label_', 'np.argmax(np.stack([label_CC,label_BB,label_bb,label_bx,label_cx,label_ll], axis=1), axis=1)')
+ - ('_labelcheck_', 'np.sum(np.stack([label_CC,label_BB,label_bb,label_bx,label_cx,label_ll], axis=1), axis=1)')
+ - ('target_mass', 'MC_higgs_mass')[0m
+[2024-10-28 09:53:51,707] INFO: [0;37minput_names: ('pf_features', 'pf_vectors', 'pf_mask', 'sv_features', 'sv_vectors', 'sv_mask')[0m
+[2024-10-28 09:53:51,707] INFO: [0;37minput_dicts:
+ - ('pf_features', ['part_pt_log', 'part_e_log', 'part_logptrel', 'part_logerel', 'part_deltaR1', 'part_deltaR2', 'part_charge', 'part_d0', 'part_d0err', 'part_dz', 'part_dzerr', 'part_deta1', 'part_dphi1', 'part_deta2', 'part_dphi2', 'part_puppiweight'])
+ - ('pf_vectors', ['part_px', 'part_py', 'part_pz', 'part_energy'])
+ - ('pf_mask', ['part_mask'])
+ - ('sv_features', ['sv_charge', 'sv_chi2', 'sv_dlen', 'sv_dlenSig', 'sv_dxy', 'sv_dxySig', 'sv_eta', 'sv_mass', 'sv_ndof', 'sv_ntracks', 'sv_pAngle', 'sv_phi', 'sv_pt', 'sv_x', 'sv_y', 'sv_z', 'sv_deta1', 'sv_deta2', 'sv_dphi1', 'sv_dphi2'])
+ - ('sv_vectors', ['sv_px', 'sv_py', 'sv_pz', 'sv_energy'])
+ - ('sv_mask', ['sv_mask'])[0m
+[2024-10-28 09:53:51,707] INFO: [0;37minput_shapes:
+ - ('pf_features', (-1, 16, 128))
+ - ('pf_vectors', (-1, 4, 128))
+ - ('pf_mask', (-1, 1, 128))
+ - ('sv_features', (-1, 20, 10))
+ - ('sv_vectors', (-1, 4, 10))
+ - ('sv_mask', (-1, 1, 10))[0m
+[2024-10-28 09:53:51,707] INFO: [0;37mpreprocess_params:
+ - ('part_pt_log', {'length': 128, 'pad_mode': 'wrap', 'center': 1.0, 'scale': 0.25, 'min': -5, 'max': 5, 'pad_value': 0})
+ - ('part_e_log', {'length': 128, 'pad_mode': 'wrap', 'center': 2.0, 'scale': 0.25, 'min': -5, 'max': 5, 'pad_value': 0})
+ - ('part_logptrel', {'length': 128, 'pad_mode': 'wrap', 'center': -4.7, 'scale': 0.25, 'min': -5, 'max': 5, 'pad_value': 0})
+ - ('part_logerel', {'length': 128, 'pad_mode': 'wrap', 'center': -4.7, 'scale': 0.25, 'min': -5, 'max': 5, 'pad_value': 0})
+ - ('part_deltaR1', {'length': 128, 'pad_mode': 'wrap', 'center': None, 'scale': 1, 'min': -5, 'max': 5, 'pad_value': 0})
+ - ('part_deltaR2', {'length': 128, 'pad_mode': 'wrap', 'center': None, 'scale': 1, 'min': -5, 'max': 5, 'pad_value': 0})
+ - ('part_charge', {'length': 128, 'pad_mode': 'wrap', 'center': None, 'scale': 1, 'min': -5, 'max': 5, 'pad_value': 0})
+ - ('part_d0', {'length': 128, 'pad_mode': 'wrap', 'center': None, 'scale': 1, 'min': -5, 'max': 5, 'pad_value': 0})
+ - ('part_d0err', {'length': 128, 'pad_mode': 'wrap', 'center': 0, 'scale': 1, 'min': 0, 'max': 1, 'pad_value': 0})
+ - ('part_dz', {'length': 128, 'pad_mode': 'wrap', 'center': None, 'scale': 1, 'min': -5, 'max': 5, 'pad_value': 0})
+ - ('part_dzerr', {'length': 128, 'pad_mode': 'wrap', 'center': 0, 'scale': 1, 'min': 0, 'max': 1, 'pad_value': 0})
+ - ('part_deta1', {'length': 128, 'pad_mode': 'wrap', 'center': None, 'scale': 1, 'min': -5, 'max': 5, 'pad_value': 0})
+ - ('part_dphi1', {'length': 128, 'pad_mode': 'wrap', 'center': None, 'scale': 1, 'min': -5, 'max': 5, 'pad_value': 0})
+ - ('part_deta2', {'length': 128, 'pad_mode': 'wrap', 'center': None, 'scale': 1, 'min': -5, 'max': 5, 'pad_value': 0})
+ - ('part_dphi2', {'length': 128, 'pad_mode': 'wrap', 'center': None, 'scale': 1, 'min': -5, 'max': 5, 'pad_value': 0})
+ - ('part_puppiweight', {'length': 128, 'pad_mode': 'wrap', 'center': None, 'scale': 1, 'min': -5, 'max': 5, 'pad_value': 0})
+ - ('part_px', {'length': 128, 'pad_mode': 'wrap', 'center': None, 'scale': 1, 'min': -5, 'max': 5, 'pad_value': 0})
+ - ('part_py', {'length': 128, 'pad_mode': 'wrap', 'center': None, 'scale': 1, 'min': -5, 'max': 5, 'pad_value': 0})
+ - ('part_pz', {'length': 128, 'pad_mode': 'wrap', 'center': None, 'scale': 1, 'min': -5, 'max': 5, 'pad_value': 0})
+ - ('part_energy', {'length': 128, 'pad_mode': 'wrap', 'center': None, 'scale': 1, 'min': -5, 'max': 5, 'pad_value': 0})
+ - ('part_mask', {'length': 128, 'pad_mode': 'constant', 'center': None, 'scale': 1, 'min': -5, 'max': 5, 'pad_value': 0})
+ - ('sv_charge', {'length': 10, 'pad_mode': 'wrap', 'center': None, 'scale': 1, 'min': -5, 'max': 5, 'pad_value': 0})
+ - ('sv_chi2', {'length': 10, 'pad_mode': 'wrap', 'center': 0, 'scale': 0.25, 'min': -5, 'max': 5, 'pad_value': 0})
+ - ('sv_dlen', {'length': 10, 'pad_mode': 'wrap', 'center': 0, 'scale': 0.05, 'min': -5, 'max': 5, 'pad_value': 0})
+ - ('sv_dlenSig', {'length': 10, 'pad_mode': 'wrap', 'center': 0, 'scale': 0.01, 'min': -5, 'max': 5, 'pad_value': 0})
+ - ('sv_dxy', {'length': 10, 'pad_mode': 'wrap', 'center': 0, 'scale': 0.05, 'min': -5, 'max': 5, 'pad_value': 0})
+ - ('sv_dxySig', {'length': 10, 'pad_mode': 'wrap', 'center': 0, 'scale': 0.01, 'min': -5, 'max': 5, 'pad_value': 0})
+ - ('sv_eta', {'length': 10, 'pad_mode': 'wrap', 'center': None, 'scale': 1, 'min': -5, 'max': 5, 'pad_value': 0})
+ - ('sv_mass', {'length': 10, 'pad_mode': 'wrap', 'center': 0, 'scale': 0.1, 'min': -5, 'max': 5, 'pad_value': 0})
+ - ('sv_ndof', {'length': 10, 'pad_mode': 'wrap', 'center': 0, 'scale': 0.1, 'min': -5, 'max': 5, 'pad_value': 0})
+ - ('sv_ntracks', {'length': 10, 'pad_mode': 'wrap', 'center': 0, 'scale': 0.1, 'min': -5, 'max': 5, 'pad_value': 0})
+ - ('sv_pAngle', {'length': 10, 'pad_mode': 'wrap', 'center': 0, 'scale': 0.33, 'min': -5, 'max': 5, 'pad_value': 0})
+ - ('sv_phi', {'length': 10, 'pad_mode': 'wrap', 'center': None, 'scale': 1, 'min': -5, 'max': 5, 'pad_value': 0})
+ - ('sv_pt', {'length': 10, 'pad_mode': 'wrap', 'center': 0, 'scale': 0.01, 'min': -5, 'max': 5, 'pad_value': 0})
+ - ('sv_x', {'length': 10, 'pad_mode': 'wrap', 'center': 0, 'scale': 0.2, 'min': -5, 'max': 5, 'pad_value': 0})
+ - ('sv_y', {'length': 10, 'pad_mode': 'wrap', 'center': 0, 'scale': 0.2, 'min': -5, 'max': 5, 'pad_value': 0})
+ - ('sv_z', {'length': 10, 'pad_mode': 'wrap', 'center': 0, 'scale': 0.2, 'min': -5, 'max': 5, 'pad_value': 0})
+ - ('sv_deta1', {'length': 10, 'pad_mode': 'wrap', 'center': None, 'scale': 1, 'min': -5, 'max': 5, 'pad_value': 0})
+ - ('sv_deta2', {'length': 10, 'pad_mode': 'wrap', 'center': None, 'scale': 1, 'min': -5, 'max': 5, 'pad_value': 0})
+ - ('sv_dphi1', {'length': 10, 'pad_mode': 'wrap', 'center': None, 'scale': 1, 'min': -5, 'max': 5, 'pad_value': 0})
+ - ('sv_dphi2', {'length': 10, 'pad_mode': 'wrap', 'center': None, 'scale': 1, 'min': -5, 'max': 5, 'pad_value': 0})
+ - ('sv_px', {'length': 10, 'pad_mode': 'wrap', 'center': None, 'scale': 1, 'min': -5, 'max': 5, 'pad_value': 0})
+ - ('sv_py', {'length': 10, 'pad_mode': 'wrap', 'center': None, 'scale': 1, 'min': -5, 'max': 5, 'pad_value': 0})
+ - ('sv_pz', {'length': 10, 'pad_mode': 'wrap', 'center': None, 'scale': 1, 'min': -5, 'max': 5, 'pad_value': 0})
+ - ('sv_energy', {'length': 10, 'pad_mode': 'wrap', 'center': None, 'scale': 1, 'min': -5, 'max': 5, 'pad_value': 0})
+ - ('sv_mask', {'length': 10, 'pad_mode': 'constant', 'center': None, 'scale': 1, 'min': -5, 'max': 5, 'pad_value': 0})[0m
+[2024-10-28 09:53:51,707] INFO: [0;37mlabel_names: ('_label_', 'target_mass')[0m
+[2024-10-28 09:53:51,707] INFO: [0;37mobserver_names: ()[0m
+[2024-10-28 09:53:51,707] INFO: [0;37mmonitor_variables: ()[0m
+[2024-10-28 09:53:51,721] INFO: [0;37mpreprocess config: {'method': 'manual', 'data_fraction': None, 'params': None}[0m
+[2024-10-28 09:53:51,721] INFO: [0;37mselection: ak.num(part_energy) > 0 & MC_higgs_valid[0m
+[2024-10-28 09:53:51,721] INFO: [0;37mtest_time_selection: ak.num(part_energy) > 0 & MC_higgs_valid[0m
+[2024-10-28 09:53:51,721] INFO: [0;37mvar_funcs:
+ - ('part_mask', 'ak.ones_like(part_energy)')
+ - ('part_pt_log', 'np.where(np.isnan(np.log(part_pt)), -1e3, np.log(part_pt))')
+ - ('part_e_log', 'np.where(np.isnan(np.log(part_energy)), -1e3, np.log(part_energy))')
+ - ('jet1_rawenergy', 'jet1_energy * (1-jet1_rawfactor)')
+ - ('jet2_rawenergy', 'jet2_energy * (1-jet2_rawfactor)')
+ - ('jet1_rawpt', 'jet1_pt * (1-jet1_rawfactor)')
+ - ('jet2_rawpt', 'jet2_pt * (1-jet2_rawfactor)')
+ - ('part_logptrel', 'np.where(np.isnan(np.log(part_pt/(jet1_rawpt+jet2_rawpt))), -1e3, np.log(part_pt/(jet1_rawpt+jet2_rawpt)))')
+ - ('part_logerel', 'np.where(np.isnan(np.log(part_energy/(jet1_rawenergy+jet2_rawenergy))), -1e3, np.log(part_energy/(jet1_rawenergy+jet2_rawenergy)))')
+ - ('part_deltaR1', 'np.hypot(part_deta1, part_dphi1)')
+ - ('part_deltaR2', 'np.hypot(part_deta2, part_dphi2)')
+ - ('part_d0', 'np.where(part_d0val==-1, -1.5, np.tanh(part_d0val))')
+ - ('part_dz', 'np.where(part_dzval==-1, -1.5, np.tanh(part_dzval))')
+ - ('sv_px', 'np.cos(sv_phi) * sv_pt')
+ - ('sv_py', 'np.sin(sv_phi) * sv_pt')
+ - ('sv_pz', 'np.sinh(sv_eta) * sv_pt')
+ - ('sv_energy', 'np.sqrt(sv_mass**2 + (sv_pt*np.cosh(sv_eta))**2)')
+ - ('sv_mask', 'ak.ones_like(sv_pt)')
+ - ('class_WpHcc', '(MC_physics_process==1)')
+ - ('class_WmHcc', '(MC_physics_process==2)')
+ - ('class_ZHcc', '(MC_physics_process==3)')
+ - ('class_WpHbb', '(MC_physics_process==11)')
+ - ('class_WmHbb', '(MC_physics_process==12)')
+ - ('class_ZHbb', '(MC_physics_process==13)')
+ - ('class_DY', '(MC_physics_process==23)')
+ - ('class_W', '(MC_physics_process==22)')
+ - ('class_TT', '(MC_physics_process==66)')
+ - ('class_XtoHH', '(MC_physics_process==25)')
+ - ('_label_', 'np.argmax(np.stack([label_CC,label_BB,label_bb,label_bx,label_cx,label_ll], axis=1), axis=1)')
+ - ('_labelcheck_', 'np.sum(np.stack([label_CC,label_BB,label_bb,label_bx,label_cx,label_ll], axis=1), axis=1)')
+ - ('target_mass', 'MC_higgs_mass')[0m
+[2024-10-28 09:53:51,721] INFO: [0;37minput_names: ('pf_features', 'pf_vectors', 'pf_mask', 'sv_features', 'sv_vectors', 'sv_mask')[0m
+[2024-10-28 09:53:51,721] INFO: [0;37minput_dicts:
+ - ('pf_features', ['part_pt_log', 'part_e_log', 'part_logptrel', 'part_logerel', 'part_deltaR1', 'part_deltaR2', 'part_charge', 'part_d0', 'part_d0err', 'part_dz', 'part_dzerr', 'part_deta1', 'part_dphi1', 'part_deta2', 'part_dphi2', 'part_puppiweight'])
+ - ('pf_vectors', ['part_px', 'part_py', 'part_pz', 'part_energy'])
+ - ('pf_mask', ['part_mask'])
+ - ('sv_features', ['sv_charge', 'sv_chi2', 'sv_dlen', 'sv_dlenSig', 'sv_dxy', 'sv_dxySig', 'sv_eta', 'sv_mass', 'sv_ndof', 'sv_ntracks', 'sv_pAngle', 'sv_phi', 'sv_pt', 'sv_x', 'sv_y', 'sv_z', 'sv_deta1', 'sv_deta2', 'sv_dphi1', 'sv_dphi2'])
+ - ('sv_vectors', ['sv_px', 'sv_py', 'sv_pz', 'sv_energy'])
+ - ('sv_mask', ['sv_mask'])[0m
+[2024-10-28 09:53:51,721] INFO: [0;37minput_shapes:
+ - ('pf_features', (-1, 16, 128))
+ - ('pf_vectors', (-1, 4, 128))
+ - ('pf_mask', (-1, 1, 128))
+ - ('sv_features', (-1, 20, 10))
+ - ('sv_vectors', (-1, 4, 10))
+ - ('sv_mask', (-1, 1, 10))[0m
+[2024-10-28 09:53:51,721] INFO: [0;37mpreprocess_params:
+ - ('part_pt_log', {'length': 128, 'pad_mode': 'wrap', 'center': 1.0, 'scale': 0.25, 'min': -5, 'max': 5, 'pad_value': 0})
+ - ('part_e_log', {'length': 128, 'pad_mode': 'wrap', 'center': 2.0, 'scale': 0.25, 'min': -5, 'max': 5, 'pad_value': 0})
+ - ('part_logptrel', {'length': 128, 'pad_mode': 'wrap', 'center': -4.7, 'scale': 0.25, 'min': -5, 'max': 5, 'pad_value': 0})
+ - ('part_logerel', {'length': 128, 'pad_mode': 'wrap', 'center': -4.7, 'scale': 0.25, 'min': -5, 'max': 5, 'pad_value': 0})
+ - ('part_deltaR1', {'length': 128, 'pad_mode': 'wrap', 'center': None, 'scale': 1, 'min': -5, 'max': 5, 'pad_value': 0})
+ - ('part_deltaR2', {'length': 128, 'pad_mode': 'wrap', 'center': None, 'scale': 1, 'min': -5, 'max': 5, 'pad_value': 0})
+ - ('part_charge', {'length': 128, 'pad_mode': 'wrap', 'center': None, 'scale': 1, 'min': -5, 'max': 5, 'pad_value': 0})
+ - ('part_d0', {'length': 128, 'pad_mode': 'wrap', 'center': None, 'scale': 1, 'min': -5, 'max': 5, 'pad_value': 0})
+ - ('part_d0err', {'length': 128, 'pad_mode': 'wrap', 'center': 0, 'scale': 1, 'min': 0, 'max': 1, 'pad_value': 0})
+ - ('part_dz', {'length': 128, 'pad_mode': 'wrap', 'center': None, 'scale': 1, 'min': -5, 'max': 5, 'pad_value': 0})
+ - ('part_dzerr', {'length': 128, 'pad_mode': 'wrap', 'center': 0, 'scale': 1, 'min': 0, 'max': 1, 'pad_value': 0})
+ - ('part_deta1', {'length': 128, 'pad_mode': 'wrap', 'center': None, 'scale': 1, 'min': -5, 'max': 5, 'pad_value': 0})
+ - ('part_dphi1', {'length': 128, 'pad_mode': 'wrap', 'center': None, 'scale': 1, 'min': -5, 'max': 5, 'pad_value': 0})
+ - ('part_deta2', {'length': 128, 'pad_mode': 'wrap', 'center': None, 'scale': 1, 'min': -5, 'max': 5, 'pad_value': 0})
+ - ('part_dphi2', {'length': 128, 'pad_mode': 'wrap', 'center': None, 'scale': 1, 'min': -5, 'max': 5, 'pad_value': 0})
+ - ('part_puppiweight', {'length': 128, 'pad_mode': 'wrap', 'center': None, 'scale': 1, 'min': -5, 'max': 5, 'pad_value': 0})
+ - ('part_px', {'length': 128, 'pad_mode': 'wrap', 'center': None, 'scale': 1, 'min': -5, 'max': 5, 'pad_value': 0})
+ - ('part_py', {'length': 128, 'pad_mode': 'wrap', 'center': None, 'scale': 1, 'min': -5, 'max': 5, 'pad_value': 0})
+ - ('part_pz', {'length': 128, 'pad_mode': 'wrap', 'center': None, 'scale': 1, 'min': -5, 'max': 5, 'pad_value': 0})
+ - ('part_energy', {'length': 128, 'pad_mode': 'wrap', 'center': None, 'scale': 1, 'min': -5, 'max': 5, 'pad_value': 0})
+ - ('part_mask', {'length': 128, 'pad_mode': 'constant', 'center': None, 'scale': 1, 'min': -5, 'max': 5, 'pad_value': 0})
+ - ('sv_charge', {'length': 10, 'pad_mode': 'wrap', 'center': None, 'scale': 1, 'min': -5, 'max': 5, 'pad_value': 0})
+ - ('sv_chi2', {'length': 10, 'pad_mode': 'wrap', 'center': 0, 'scale': 0.25, 'min': -5, 'max': 5, 'pad_value': 0})
+ - ('sv_dlen', {'length': 10, 'pad_mode': 'wrap', 'center': 0, 'scale': 0.05, 'min': -5, 'max': 5, 'pad_value': 0})
+ - ('sv_dlenSig', {'length': 10, 'pad_mode': 'wrap', 'center': 0, 'scale': 0.01, 'min': -5, 'max': 5, 'pad_value': 0})
+ - ('sv_dxy', {'length': 10, 'pad_mode': 'wrap', 'center': 0, 'scale': 0.05, 'min': -5, 'max': 5, 'pad_value': 0})
+ - ('sv_dxySig', {'length': 10, 'pad_mode': 'wrap', 'center': 0, 'scale': 0.01, 'min': -5, 'max': 5, 'pad_value': 0})
+ - ('sv_eta', {'length': 10, 'pad_mode': 'wrap', 'center': None, 'scale': 1, 'min': -5, 'max': 5, 'pad_value': 0})
+ - ('sv_mass', {'length': 10, 'pad_mode': 'wrap', 'center': 0, 'scale': 0.1, 'min': -5, 'max': 5, 'pad_value': 0})
+ - ('sv_ndof', {'length': 10, 'pad_mode': 'wrap', 'center': 0, 'scale': 0.1, 'min': -5, 'max': 5, 'pad_value': 0})
+ - ('sv_ntracks', {'length': 10, 'pad_mode': 'wrap', 'center': 0, 'scale': 0.1, 'min': -5, 'max': 5, 'pad_value': 0})
+ - ('sv_pAngle', {'length': 10, 'pad_mode': 'wrap', 'center': 0, 'scale': 0.33, 'min': -5, 'max': 5, 'pad_value': 0})
+ - ('sv_phi', {'length': 10, 'pad_mode': 'wrap', 'center': None, 'scale': 1, 'min': -5, 'max': 5, 'pad_value': 0})
+ - ('sv_pt', {'length': 10, 'pad_mode': 'wrap', 'center': 0, 'scale': 0.01, 'min': -5, 'max': 5, 'pad_value': 0})
+ - ('sv_x', {'length': 10, 'pad_mode': 'wrap', 'center': 0, 'scale': 0.2, 'min': -5, 'max': 5, 'pad_value': 0})
+ - ('sv_y', {'length': 10, 'pad_mode': 'wrap', 'center': 0, 'scale': 0.2, 'min': -5, 'max': 5, 'pad_value': 0})
+ - ('sv_z', {'length': 10, 'pad_mode': 'wrap', 'center': 0, 'scale': 0.2, 'min': -5, 'max': 5, 'pad_value': 0})
+ - ('sv_deta1', {'length': 10, 'pad_mode': 'wrap', 'center': None, 'scale': 1, 'min': -5, 'max': 5, 'pad_value': 0})
+ - ('sv_deta2', {'length': 10, 'pad_mode': 'wrap', 'center': None, 'scale': 1, 'min': -5, 'max': 5, 'pad_value': 0})
+ - ('sv_dphi1', {'length': 10, 'pad_mode': 'wrap', 'center': None, 'scale': 1, 'min': -5, 'max': 5, 'pad_value': 0})
+ - ('sv_dphi2', {'length': 10, 'pad_mode': 'wrap', 'center': None, 'scale': 1, 'min': -5, 'max': 5, 'pad_value': 0})
+ - ('sv_px', {'length': 10, 'pad_mode': 'wrap', 'center': None, 'scale': 1, 'min': -5, 'max': 5, 'pad_value': 0})
+ - ('sv_py', {'length': 10, 'pad_mode': 'wrap', 'center': None, 'scale': 1, 'min': -5, 'max': 5, 'pad_value': 0})
+ - ('sv_pz', {'length': 10, 'pad_mode': 'wrap', 'center': None, 'scale': 1, 'min': -5, 'max': 5, 'pad_value': 0})
+ - ('sv_energy', {'length': 10, 'pad_mode': 'wrap', 'center': None, 'scale': 1, 'min': -5, 'max': 5, 'pad_value': 0})
+ - ('sv_mask', {'length': 10, 'pad_mode': 'constant', 'center': None, 'scale': 1, 'min': -5, 'max': 5, 'pad_value': 0})[0m
+[2024-10-28 09:53:51,721] INFO: [0;37mlabel_names: ('_label_', 'target_mass')[0m
+[2024-10-28 09:53:51,721] INFO: [0;37mobserver_names: ('event', 'genweight', 'jet1_eta', 'jet1_phi', 'jet2_eta', 'jet2_phi', 'jet1_nparticles', 'jet2_nparticles', 'dijet_nparticles', 'dijet_eta', 'dijet_phi', 'dijet_pt', 'dijet_mass', 'dijet_index', 'MC_higgs_pt', 'MC_higgs_eta', 'MC_higgs_phi', 'MC_higgs_mass', 'MC_higgs_flav', 'MC_vector_flav', 'MC_lepton_channel', 'label_bb', 'label_cx', 'label_ll', 'label_bx', 'label_CC', 'label_BB')[0m
+[2024-10-28 09:53:51,721] INFO: [0;37mmonitor_variables: ()[0m
+[2024-10-28 09:53:51,735] INFO: [0;37mpreprocess config: {'method': 'manual', 'data_fraction': None, 'params': None}[0m
+[2024-10-28 09:53:51,735] INFO: [0;37mselection: ak.num(part_energy) > 0 & MC_higgs_valid[0m
+[2024-10-28 09:53:51,735] INFO: [0;37mtest_time_selection: ak.num(part_energy) > 0 & MC_higgs_valid[0m
+[2024-10-28 09:53:51,735] INFO: [0;37mvar_funcs:
+ - ('part_mask', 'ak.ones_like(part_energy)')
+ - ('part_pt_log', 'np.where(np.isnan(np.log(part_pt)), -1e3, np.log(part_pt))')
+ - ('part_e_log', 'np.where(np.isnan(np.log(part_energy)), -1e3, np.log(part_energy))')
+ - ('jet1_rawenergy', 'jet1_energy * (1-jet1_rawfactor)')
+ - ('jet2_rawenergy', 'jet2_energy * (1-jet2_rawfactor)')
+ - ('jet1_rawpt', 'jet1_pt * (1-jet1_rawfactor)')
+ - ('jet2_rawpt', 'jet2_pt * (1-jet2_rawfactor)')
+ - ('part_logptrel', 'np.where(np.isnan(np.log(part_pt/(jet1_rawpt+jet2_rawpt))), -1e3, np.log(part_pt/(jet1_rawpt+jet2_rawpt)))')
+ - ('part_logerel', 'np.where(np.isnan(np.log(part_energy/(jet1_rawenergy+jet2_rawenergy))), -1e3, np.log(part_energy/(jet1_rawenergy+jet2_rawenergy)))')
+ - ('part_deltaR1', 'np.hypot(part_deta1, part_dphi1)')
+ - ('part_deltaR2', 'np.hypot(part_deta2, part_dphi2)')
+ - ('part_d0', 'np.where(part_d0val==-1, -1.5, np.tanh(part_d0val))')
+ - ('part_dz', 'np.where(part_dzval==-1, -1.5, np.tanh(part_dzval))')
+ - ('sv_px', 'np.cos(sv_phi) * sv_pt')
+ - ('sv_py', 'np.sin(sv_phi) * sv_pt')
+ - ('sv_pz', 'np.sinh(sv_eta) * sv_pt')
+ - ('sv_energy', 'np.sqrt(sv_mass**2 + (sv_pt*np.cosh(sv_eta))**2)')
+ - ('sv_mask', 'ak.ones_like(sv_pt)')
+ - ('class_WpHcc', '(MC_physics_process==1)')
+ - ('class_WmHcc', '(MC_physics_process==2)')
+ - ('class_ZHcc', '(MC_physics_process==3)')
+ - ('class_WpHbb', '(MC_physics_process==11)')
+ - ('class_WmHbb', '(MC_physics_process==12)')
+ - ('class_ZHbb', '(MC_physics_process==13)')
+ - ('class_DY', '(MC_physics_process==23)')
+ - ('class_W', '(MC_physics_process==22)')
+ - ('class_TT', '(MC_physics_process==66)')
+ - ('class_XtoHH', '(MC_physics_process==25)')
+ - ('_label_', 'np.argmax(np.stack([label_CC,label_BB,label_bb,label_bx,label_cx,label_ll], axis=1), axis=1)')
+ - ('_labelcheck_', 'np.sum(np.stack([label_CC,label_BB,label_bb,label_bx,label_cx,label_ll], axis=1), axis=1)')
+ - ('target_mass', 'MC_higgs_mass')[0m
+[2024-10-28 09:53:51,735] INFO: [0;37minput_names: ('pf_features', 'pf_vectors', 'pf_mask', 'sv_features', 'sv_vectors', 'sv_mask')[0m
+[2024-10-28 09:53:51,735] INFO: [0;37minput_dicts:
+ - ('pf_features', ['part_pt_log', 'part_e_log', 'part_logptrel', 'part_logerel', 'part_deltaR1', 'part_deltaR2', 'part_charge', 'part_d0', 'part_d0err', 'part_dz', 'part_dzerr', 'part_deta1', 'part_dphi1', 'part_deta2', 'part_dphi2', 'part_puppiweight'])
+ - ('pf_vectors', ['part_px', 'part_py', 'part_pz', 'part_energy'])
+ - ('pf_mask', ['part_mask'])
+ - ('sv_features', ['sv_charge', 'sv_chi2', 'sv_dlen', 'sv_dlenSig', 'sv_dxy', 'sv_dxySig', 'sv_eta', 'sv_mass', 'sv_ndof', 'sv_ntracks', 'sv_pAngle', 'sv_phi', 'sv_pt', 'sv_x', 'sv_y', 'sv_z', 'sv_deta1', 'sv_deta2', 'sv_dphi1', 'sv_dphi2'])
+ - ('sv_vectors', ['sv_px', 'sv_py', 'sv_pz', 'sv_energy'])
+ - ('sv_mask', ['sv_mask'])[0m
+[2024-10-28 09:53:51,735] INFO: [0;37minput_shapes:
+ - ('pf_features', (-1, 16, 128))
+ - ('pf_vectors', (-1, 4, 128))
+ - ('pf_mask', (-1, 1, 128))
+ - ('sv_features', (-1, 20, 10))
+ - ('sv_vectors', (-1, 4, 10))
+ - ('sv_mask', (-1, 1, 10))[0m
+[2024-10-28 09:53:51,735] INFO: [0;37mpreprocess_params:
+ - ('part_pt_log', {'length': 128, 'pad_mode': 'wrap', 'center': 1.0, 'scale': 0.25, 'min': -5, 'max': 5, 'pad_value': 0})
+ - ('part_e_log', {'length': 128, 'pad_mode': 'wrap', 'center': 2.0, 'scale': 0.25, 'min': -5, 'max': 5, 'pad_value': 0})
+ - ('part_logptrel', {'length': 128, 'pad_mode': 'wrap', 'center': -4.7, 'scale': 0.25, 'min': -5, 'max': 5, 'pad_value': 0})
+ - ('part_logerel', {'length': 128, 'pad_mode': 'wrap', 'center': -4.7, 'scale': 0.25, 'min': -5, 'max': 5, 'pad_value': 0})
+ - ('part_deltaR1', {'length': 128, 'pad_mode': 'wrap', 'center': None, 'scale': 1, 'min': -5, 'max': 5, 'pad_value': 0})
+ - ('part_deltaR2', {'length': 128, 'pad_mode': 'wrap', 'center': None, 'scale': 1, 'min': -5, 'max': 5, 'pad_value': 0})
+ - ('part_charge', {'length': 128, 'pad_mode': 'wrap', 'center': None, 'scale': 1, 'min': -5, 'max': 5, 'pad_value': 0})
+ - ('part_d0', {'length': 128, 'pad_mode': 'wrap', 'center': None, 'scale': 1, 'min': -5, 'max': 5, 'pad_value': 0})
+ - ('part_d0err', {'length': 128, 'pad_mode': 'wrap', 'center': 0, 'scale': 1, 'min': 0, 'max': 1, 'pad_value': 0})
+ - ('part_dz', {'length': 128, 'pad_mode': 'wrap', 'center': None, 'scale': 1, 'min': -5, 'max': 5, 'pad_value': 0})
+ - ('part_dzerr', {'length': 128, 'pad_mode': 'wrap', 'center': 0, 'scale': 1, 'min': 0, 'max': 1, 'pad_value': 0})
+ - ('part_deta1', {'length': 128, 'pad_mode': 'wrap', 'center': None, 'scale': 1, 'min': -5, 'max': 5, 'pad_value': 0})
+ - ('part_dphi1', {'length': 128, 'pad_mode': 'wrap', 'center': None, 'scale': 1, 'min': -5, 'max': 5, 'pad_value': 0})
+ - ('part_deta2', {'length': 128, 'pad_mode': 'wrap', 'center': None, 'scale': 1, 'min': -5, 'max': 5, 'pad_value': 0})
+ - ('part_dphi2', {'length': 128, 'pad_mode': 'wrap', 'center': None, 'scale': 1, 'min': -5, 'max': 5, 'pad_value': 0})
+ - ('part_puppiweight', {'length': 128, 'pad_mode': 'wrap', 'center': None, 'scale': 1, 'min': -5, 'max': 5, 'pad_value': 0})
+ - ('part_px', {'length': 128, 'pad_mode': 'wrap', 'center': None, 'scale': 1, 'min': -5, 'max': 5, 'pad_value': 0})
+ - ('part_py', {'length': 128, 'pad_mode': 'wrap', 'center': None, 'scale': 1, 'min': -5, 'max': 5, 'pad_value': 0})
+ - ('part_pz', {'length': 128, 'pad_mode': 'wrap', 'center': None, 'scale': 1, 'min': -5, 'max': 5, 'pad_value': 0})
+ - ('part_energy', {'length': 128, 'pad_mode': 'wrap', 'center': None, 'scale': 1, 'min': -5, 'max': 5, 'pad_value': 0})
+ - ('part_mask', {'length': 128, 'pad_mode': 'constant', 'center': None, 'scale': 1, 'min': -5, 'max': 5, 'pad_value': 0})
+ - ('sv_charge', {'length': 10, 'pad_mode': 'wrap', 'center': None, 'scale': 1, 'min': -5, 'max': 5, 'pad_value': 0})
+ - ('sv_chi2', {'length': 10, 'pad_mode': 'wrap', 'center': 0, 'scale': 0.25, 'min': -5, 'max': 5, 'pad_value': 0})
+ - ('sv_dlen', {'length': 10, 'pad_mode': 'wrap', 'center': 0, 'scale': 0.05, 'min': -5, 'max': 5, 'pad_value': 0})
+ - ('sv_dlenSig', {'length': 10, 'pad_mode': 'wrap', 'center': 0, 'scale': 0.01, 'min': -5, 'max': 5, 'pad_value': 0})
+ - ('sv_dxy', {'length': 10, 'pad_mode': 'wrap', 'center': 0, 'scale': 0.05, 'min': -5, 'max': 5, 'pad_value': 0})
+ - ('sv_dxySig', {'length': 10, 'pad_mode': 'wrap', 'center': 0, 'scale': 0.01, 'min': -5, 'max': 5, 'pad_value': 0})
+ - ('sv_eta', {'length': 10, 'pad_mode': 'wrap', 'center': None, 'scale': 1, 'min': -5, 'max': 5, 'pad_value': 0})
+ - ('sv_mass', {'length': 10, 'pad_mode': 'wrap', 'center': 0, 'scale': 0.1, 'min': -5, 'max': 5, 'pad_value': 0})
+ - ('sv_ndof', {'length': 10, 'pad_mode': 'wrap', 'center': 0, 'scale': 0.1, 'min': -5, 'max': 5, 'pad_value': 0})
+ - ('sv_ntracks', {'length': 10, 'pad_mode': 'wrap', 'center': 0, 'scale': 0.1, 'min': -5, 'max': 5, 'pad_value': 0})
+ - ('sv_pAngle', {'length': 10, 'pad_mode': 'wrap', 'center': 0, 'scale': 0.33, 'min': -5, 'max': 5, 'pad_value': 0})
+ - ('sv_phi', {'length': 10, 'pad_mode': 'wrap', 'center': None, 'scale': 1, 'min': -5, 'max': 5, 'pad_value': 0})
+ - ('sv_pt', {'length': 10, 'pad_mode': 'wrap', 'center': 0, 'scale': 0.01, 'min': -5, 'max': 5, 'pad_value': 0})
+ - ('sv_x', {'length': 10, 'pad_mode': 'wrap', 'center': 0, 'scale': 0.2, 'min': -5, 'max': 5, 'pad_value': 0})
+ - ('sv_y', {'length': 10, 'pad_mode': 'wrap', 'center': 0, 'scale': 0.2, 'min': -5, 'max': 5, 'pad_value': 0})
+ - ('sv_z', {'length': 10, 'pad_mode': 'wrap', 'center': 0, 'scale': 0.2, 'min': -5, 'max': 5, 'pad_value': 0})
+ - ('sv_deta1', {'length': 10, 'pad_mode': 'wrap', 'center': None, 'scale': 1, 'min': -5, 'max': 5, 'pad_value': 0})
+ - ('sv_deta2', {'length': 10, 'pad_mode': 'wrap', 'center': None, 'scale': 1, 'min': -5, 'max': 5, 'pad_value': 0})
+ - ('sv_dphi1', {'length': 10, 'pad_mode': 'wrap', 'center': None, 'scale': 1, 'min': -5, 'max': 5, 'pad_value': 0})
+ - ('sv_dphi2', {'length': 10, 'pad_mode': 'wrap', 'center': None, 'scale': 1, 'min': -5, 'max': 5, 'pad_value': 0})
+ - ('sv_px', {'length': 10, 'pad_mode': 'wrap', 'center': None, 'scale': 1, 'min': -5, 'max': 5, 'pad_value': 0})
+ - ('sv_py', {'length': 10, 'pad_mode': 'wrap', 'center': None, 'scale': 1, 'min': -5, 'max': 5, 'pad_value': 0})
+ - ('sv_pz', {'length': 10, 'pad_mode': 'wrap', 'center': None, 'scale': 1, 'min': -5, 'max': 5, 'pad_value': 0})
+ - ('sv_energy', {'length': 10, 'pad_mode': 'wrap', 'center': None, 'scale': 1, 'min': -5, 'max': 5, 'pad_value': 0})
+ - ('sv_mask', {'length': 10, 'pad_mode': 'constant', 'center': None, 'scale': 1, 'min': -5, 'max': 5, 'pad_value': 0})[0m
+[2024-10-28 09:53:51,735] INFO: [0;37mlabel_names: ('_label_', 'target_mass')[0m
+[2024-10-28 09:53:51,735] INFO: [0;37mobserver_names: ()[0m
+[2024-10-28 09:53:51,735] INFO: [0;37mmonitor_variables: ()[0m
+[2024-10-28 09:53:51,821] INFO: Network options: {}
+[2024-10-28 09:53:51,821] INFO: Model config: {'pf_input_dim': 16, 'sv_input_dim': 20, 'num_classes': 9, 'pair_input_dim': 4, 'embed_dims': [128, 512, 20], 'pair_embed_dims': [64, 64, 64], 'num_heads': 2, 'num_layers': 8, 'num_cls_layers': 2, 'block_params': None, 'cls_block_params': {'dropout': 0, 'attn_dropout': 0, 'activation_dropout': 0}, 'fc_params': [], 'activation': 'gelu', 'trim': True, 'for_inference': False}
+[2024-10-28 09:53:51,919] INFO: cfg_block: {'embed_dim': 20, 'num_heads': 2, 'ffn_ratio': 4, 'dropout': 0.1, 'attn_dropout': 0.1, 'activation_dropout': 0.1, 'add_bias_kv': False, 'activation': 'gelu', 'scale_fc': True, 'scale_attn': True, 'scale_heads': True, 'scale_resids': True}
+[2024-10-28 09:53:51,919] INFO: cfg_cls_block: {'embed_dim': 20, 'num_heads': 2, 'ffn_ratio': 4, 'dropout': 0, 'attn_dropout': 0, 'activation_dropout': 0, 'add_bias_kv': False, 'activation': 'gelu', 'scale_fc': True, 'scale_attn': True, 'scale_heads': True, 'scale_resids': True}
+[2024-10-28 09:53:52,046] INFO: [0;37mWarning: module SequenceTrimmer is treated as a zero-op.[0m
+[2024-10-28 09:53:52,046] INFO: [0;37mWarning: module Embed is treated as a zero-op.[0m
+[2024-10-28 09:53:52,046] INFO: [0;37mWarning: module Identity is treated as a zero-op.[0m
+[2024-10-28 09:53:52,046] INFO: [0;37mWarning: module GELU is treated as a zero-op.[0m
+[2024-10-28 09:53:52,046] INFO: [0;37mWarning: module PairEmbed is treated as a zero-op.[0m
+[2024-10-28 09:53:52,046] INFO: [0;37mWarning: module LayerNorm is treated as a zero-op.[0m
+[2024-10-28 09:53:52,046] INFO: [0;37mWarning: module NonDynamicallyQuantizableLinear is treated as a zero-op.[0m
+[2024-10-28 09:53:52,047] INFO: [0;37mWarning: module Dropout is treated as a zero-op.[0m
+[2024-10-28 09:53:52,047] INFO: [0;37mWarning: module Block is treated as a zero-op.[0m
+[2024-10-28 09:53:52,047] INFO: [0;37mWarning: module ParticleTransformer is treated as a zero-op.[0m
+[2024-10-28 09:53:52,047] INFO: [0;37mWarning: module ParticleTransformerTagger is treated as a zero-op.[0m
+/oscar/home/trussel1/PAIReD_jet_tagging/PAIReD_Tagger_Training/networks/ParticleTransformer.py:588: FutureWarning: `torch.cuda.amp.autocast(args...)` is deprecated. Please use `torch.amp.autocast('cuda', args...)` instead.
+  with torch.cuda.amp.autocast(enabled=self.use_amp):
+/oscar/home/trussel1/PAIReD_jet_tagging/PAIReD_Tagger_Training/networks/ParticleTransformer.py:468: FutureWarning: `torch.cuda.amp.autocast(args...)` is deprecated. Please use `torch.amp.autocast('cuda', args...)` instead.
+  with torch.cuda.amp.autocast(enabled=self.use_amp):
+/users/trussel1/miniconda3/envs/weaver/lib/python3.10/site-packages/torch/nn/functional.py:5193: UserWarning: Support for mismatched key_padding_mask and attn_mask is deprecated. Use same type for both instead.
+  warnings.warn(
+[2024-10-28 09:53:52,460] INFO: [0;37mParticleTransformerTagger(
+  |0.06 M, 95.116% Params, 89.686 MMac, 100.000% MACs|
+  (pf_trimmer): SequenceTrimmer(|0.0 M, 0.000% Params, 0.0 Mac, 0.000% MACs|)
+  (sv_trimmer): SequenceTrimmer(|0.0 M, 0.000% Params, 0.0 Mac, 0.000% MACs|)
+  (pf_embed): Embed(
+    |0.0 M, 0.590% Params, 40.98 KMac, 0.046% MACs|
+    (input_bn): BatchNorm1d(16, eps=1e-05, momentum=0.1, affine=True, track_running_stats=True, |0.0 M, 0.051% Params, 0.0 Mac, 0.000% MACs|)
+    (embed): Linear(in_features=16, out_features=20, bias=True, |0.0 M, 0.539% Params, 40.98 KMac, 0.046% MACs|)
+  )
+  (sv_embed): Embed(
+    |0.0 M, 0.729% Params, 4.02 KMac, 0.004% MACs|
+    (input_bn): BatchNorm1d(20, eps=1e-05, momentum=0.1, affine=True, track_running_stats=True, |0.0 M, 0.063% Params, 0.0 Mac, 0.000% MACs|)
+    (embed): Linear(in_features=20, out_features=20, bias=True, |0.0 M, 0.666% Params, 4.02 KMac, 0.004% MACs|)
+  )
+  (part): ParticleTransformer(
+    |0.059 M, 93.797% Params, 89.641 MMac, 99.950% MACs|
+    (trimmer): SequenceTrimmer(|0.0 M, 0.000% Params, 0.0 Mac, 0.000% MACs|)
+    (embed): Identity(|0.0 M, 0.000% Params, 0.0 Mac, 0.000% MACs|)
+    (pair_embed): PairEmbed(
+      |0.009 M, 14.534% Params, 87.911 MMac, 98.021% MACs|
+      (embed): Sequential(
+        |0.009 M, 14.534% Params, 87.911 MMac, 98.021% MACs|
+        (0): BatchNorm1d(4, eps=1e-05, momentum=0.1, affine=True, track_running_stats=True, |0.0 M, 0.013% Params, 76.728 KMac, 0.086% MACs|)
+        (1): Conv1d(4, 64, kernel_size=(1,), stride=(1,), |0.0 M, 0.507% Params, 3.069 MMac, 3.422% MACs|)
+        (2): BatchNorm1d(64, eps=1e-05, momentum=0.1, affine=True, track_running_stats=True, |0.0 M, 0.203% Params, 1.228 MMac, 1.369% MACs|)
+        (3): GELU(approximate='none', |0.0 M, 0.000% Params, 0.0 Mac, 0.000% MACs|)
+        (4): Conv1d(64, 64, kernel_size=(1,), stride=(1,), |0.004 M, 6.596% Params, 39.899 MMac, 44.487% MACs|)
+        (5): BatchNorm1d(64, eps=1e-05, momentum=0.1, affine=True, track_running_stats=True, |0.0 M, 0.203% Params, 1.228 MMac, 1.369% MACs|)
+        (6): GELU(approximate='none', |0.0 M, 0.000% Params, 0.0 Mac, 0.000% MACs|)
+        (7): Conv1d(64, 64, kernel_size=(1,), stride=(1,), |0.004 M, 6.596% Params, 39.899 MMac, 44.487% MACs|)
+        (8): BatchNorm1d(64, eps=1e-05, momentum=0.1, affine=True, track_running_stats=True, |0.0 M, 0.203% Params, 1.228 MMac, 1.369% MACs|)
+        (9): GELU(approximate='none', |0.0 M, 0.000% Params, 0.0 Mac, 0.000% MACs|)
+        (10): Conv1d(64, 2, kernel_size=(1,), stride=(1,), |0.0 M, 0.206% Params, 1.247 MMac, 1.390% MACs|)
+        (11): BatchNorm1d(2, eps=1e-05, momentum=0.1, affine=True, track_running_stats=True, |0.0 M, 0.006% Params, 38.364 KMac, 0.043% MACs|)
+        (12): GELU(approximate='none', |0.0 M, 0.000% Params, 0.0 Mac, 0.000% MACs|)
+      )
+    )
+    (blocks): ModuleList(
+      (0): Block(
+        |0.005 M, 7.896% Params, 1.476 MMac, 1.646% MACs|
+        (pre_attn_norm): LayerNorm((20,), eps=1e-05, elementwise_affine=True, |0.0 M, 0.000% Params, 0.0 Mac, 0.000% MACs|)
+        (attn): MultiheadAttention(
+          |0.002 M, 2.664% Params, 1.034 MMac, 1.153% MACs|
+          (out_proj): NonDynamicallyQuantizableLinear(in_features=20, out_features=20, bias=True, |0.0 M, 0.000% Params, 0.0 Mac, 0.000% MACs|)
+        )
+        (post_attn_norm): LayerNorm((20,), eps=1e-05, elementwise_affine=True, |0.0 M, 0.000% Params, 0.0 Mac, 0.000% MACs|)
+        (dropout): Dropout(p=0.1, inplace=False, |0.0 M, 0.000% Params, 0.0 Mac, 0.000% MACs|)
+        (pre_fc_norm): LayerNorm((20,), eps=1e-05, elementwise_affine=True, |0.0 M, 0.000% Params, 0.0 Mac, 0.000% MACs|)
+        (fc1): Linear(in_features=20, out_features=80, bias=True, |0.002 M, 2.664% Params, 220.88 KMac, 0.246% MACs|)
+        (act): GELU(approximate='none', |0.0 M, 0.000% Params, 0.0 Mac, 0.000% MACs|)
+        (act_dropout): Dropout(p=0.1, inplace=False, |0.0 M, 0.000% Params, 0.0 Mac, 0.000% MACs|)
+        (post_fc_norm): LayerNorm((80,), eps=1e-05, elementwise_affine=True, |0.0 M, 0.000% Params, 0.0 Mac, 0.000% MACs|)
+        (fc2): Linear(in_features=80, out_features=20, bias=True, |0.002 M, 2.569% Params, 220.82 KMac, 0.246% MACs|)
+      )
+      (1-7): 7 x Block(
+        |0.005 M, 7.896% Params, 0.0 Mac, 0.000% MACs|
+        (pre_attn_norm): LayerNorm((20,), eps=1e-05, elementwise_affine=True, |0.0 M, 0.000% Params, 0.0 Mac, 0.000% MACs|)
+        (attn): MultiheadAttention(
+          |0.002 M, 2.664% Params, 0.0 Mac, 0.000% MACs|
+          (out_proj): NonDynamicallyQuantizableLinear(in_features=20, out_features=20, bias=True, |0.0 M, 0.000% Params, 0.0 Mac, 0.000% MACs|)
+        )
+        (post_attn_norm): LayerNorm((20,), eps=1e-05, elementwise_affine=True, |0.0 M, 0.000% Params, 0.0 Mac, 0.000% MACs|)
+        (dropout): Dropout(p=0.1, inplace=False, |0.0 M, 0.000% Params, 0.0 Mac, 0.000% MACs|)
+        (pre_fc_norm): LayerNorm((20,), eps=1e-05, elementwise_affine=True, |0.0 M, 0.000% Params, 0.0 Mac, 0.000% MACs|)
+        (fc1): Linear(in_features=20, out_features=80, bias=True, |0.002 M, 2.664% Params, 0.0 Mac, 0.000% MACs|)
+        (act): GELU(approximate='none', |0.0 M, 0.000% Params, 0.0 Mac, 0.000% MACs|)
+        (act_dropout): Dropout(p=0.1, inplace=False, |0.0 M, 0.000% Params, 0.0 Mac, 0.000% MACs|)
+        (post_fc_norm): LayerNorm((80,), eps=1e-05, elementwise_affine=True, |0.0 M, 0.000% Params, 0.0 Mac, 0.000% MACs|)
+        (fc2): Linear(in_features=80, out_features=20, bias=True, |0.002 M, 2.569% Params, 0.0 Mac, 0.000% MACs|)
+      )
+    )
+    (cls_blocks): ModuleList(
+      (0-1): 2 x Block(
+        |0.005 M, 7.896% Params, 126.758 KMac, 0.141% MACs|
+        (pre_attn_norm): LayerNorm((20,), eps=1e-05, elementwise_affine=True, |0.0 M, 0.000% Params, 0.0 Mac, 0.000% MACs|)
+        (attn): MultiheadAttention(
+          |0.002 M, 2.664% Params, 123.458 KMac, 0.138% MACs|
+          (out_proj): NonDynamicallyQuantizableLinear(in_features=20, out_features=20, bias=True, |0.0 M, 0.000% Params, 0.0 Mac, 0.000% MACs|)
+        )
+        (post_attn_norm): LayerNorm((20,), eps=1e-05, elementwise_affine=True, |0.0 M, 0.000% Params, 0.0 Mac, 0.000% MACs|)
+        (dropout): Dropout(p=0, inplace=False, |0.0 M, 0.000% Params, 0.0 Mac, 0.000% MACs|)
+        (pre_fc_norm): LayerNorm((20,), eps=1e-05, elementwise_affine=True, |0.0 M, 0.000% Params, 0.0 Mac, 0.000% MACs|)
+        (fc1): Linear(in_features=20, out_features=80, bias=True, |0.002 M, 2.664% Params, 1.68 KMac, 0.002% MACs|)
+        (act): GELU(approximate='none', |0.0 M, 0.000% Params, 0.0 Mac, 0.000% MACs|)
+        (act_dropout): Dropout(p=0, inplace=False, |0.0 M, 0.000% Params, 0.0 Mac, 0.000% MACs|)
+        (post_fc_norm): LayerNorm((80,), eps=1e-05, elementwise_affine=True, |0.0 M, 0.000% Params, 0.0 Mac, 0.000% MACs|)
+        (fc2): Linear(in_features=80, out_features=20, bias=True, |0.002 M, 2.569% Params, 1.62 KMac, 0.002% MACs|)
+      )
+    )
+    (norm): LayerNorm((20,), eps=1e-05, elementwise_affine=True, |0.0 M, 0.000% Params, 0.0 Mac, 0.000% MACs|)
+    (fc): Sequential(
+      |0.0 M, 0.300% Params, 189.0 Mac, 0.000% MACs|
+      (0): Linear(in_features=20, out_features=9, bias=True, |0.0 M, 0.300% Params, 189.0 Mac, 0.000% MACs|)
+    )
+  )
+)[0m
+[2024-10-28 09:53:52,462] INFO: Computational complexity:       89.69 MMac
+[2024-10-28 09:53:52,462] INFO: Number of parameters:           63.07 k 
+[2024-10-28 09:53:52,463] INFO: Using loss function HybridLoss(
+  (loss_cls_fn): CrossEntropyLoss()
+  (loss_reg_fn): LogCoshLoss()
+  (loss_err_fn_minus): QuantileLoss()
+  (loss_err_fn_plus): QuantileLoss()
+) with options {}
+[2024-10-28 09:53:52,726] INFO: Optimizer options: {}
+[2024-10-28 09:53:56,620] INFO: --------------------------------------------------
+[2024-10-28 09:53:56,620] INFO: Epoch #0 training
+0it [00:00, ?it/s]0it [00:00, ?it/s]
+Traceback (most recent call last):
+  File "/oscar/home/trussel1/PAIReD_jet_tagging/PAIReD_Tagger_Training/weaver-core-hybrid/weaver/train.py", line 933, in <module>
+    main()
+  File "/oscar/home/trussel1/PAIReD_jet_tagging/PAIReD_Tagger_Training/weaver-core-hybrid/weaver/train.py", line 929, in main
+    _main(args)
+  File "/oscar/home/trussel1/PAIReD_jet_tagging/PAIReD_Tagger_Training/weaver-core-hybrid/weaver/train.py", line 797, in _main
+    train(model, loss_func, opt, scheduler, train_loader, dev, epoch,
+  File "/oscar/home/trussel1/PAIReD_jet_tagging/PAIReD_Tagger_Training/weaver-core-hybrid/weaver/utils/nn/tools.py", line 479, in train_hybrid
+    for X, y, _ in tq:
+  File "/users/trussel1/miniconda3/envs/weaver/lib/python3.10/site-packages/tqdm/std.py", line 1181, in __iter__
+    for obj in iterable:
+  File "/users/trussel1/miniconda3/envs/weaver/lib/python3.10/site-packages/torch/utils/data/dataloader.py", line 630, in __next__
+    data = self._next_data()
+  File "/users/trussel1/miniconda3/envs/weaver/lib/python3.10/site-packages/torch/utils/data/dataloader.py", line 1344, in _next_data
+    return self._process_data(data)
+  File "/users/trussel1/miniconda3/envs/weaver/lib/python3.10/site-packages/torch/utils/data/dataloader.py", line 1370, in _process_data
+    data.reraise()
+  File "/users/trussel1/miniconda3/envs/weaver/lib/python3.10/site-packages/torch/_utils.py", line 706, in reraise
+    raise exception
+AssertionError: Caught AssertionError in DataLoader worker process 0.
+Original Traceback (most recent call last):
+  File "/users/trussel1/miniconda3/envs/weaver/lib/python3.10/site-packages/torch/utils/data/_utils/worker.py", line 253, in _worker_loop
+    fetcher = _DatasetKind.create_fetcher(dataset_kind, dataset, auto_collation, collate_fn, drop_last)
+  File "/users/trussel1/miniconda3/envs/weaver/lib/python3.10/site-packages/torch/utils/data/dataloader.py", line 80, in create_fetcher
+    return _utils.fetch._IterableDatasetFetcher(dataset, auto_collation, collate_fn, drop_last)
+  File "/users/trussel1/miniconda3/envs/weaver/lib/python3.10/site-packages/torch/utils/data/_utils/fetch.py", line 22, in __init__
+    self.dataset_iter = iter(dataset)
+  File "/oscar/home/trussel1/PAIReD_jet_tagging/PAIReD_Tagger_Training/weaver-core-hybrid/weaver/utils/dataset.py", line 365, in __iter__
+    return _SimpleIter(**kwargs)
+  File "/oscar/home/trussel1/PAIReD_jet_tagging/PAIReD_Tagger_Training/weaver-core-hybrid/weaver/utils/dataset.py", line 145, in __init__
+    assert(len(new_files) > 0)
+AssertionError
+
+train.sh: line 11: --data-test: command not found
+train.sh: line 18: --train-val-split: command not found

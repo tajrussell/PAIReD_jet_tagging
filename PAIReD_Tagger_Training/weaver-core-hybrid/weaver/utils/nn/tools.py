@@ -4,6 +4,7 @@ import tqdm
 import time
 import torch
 import os
+import json
 
 from collections import defaultdict, Counter
 from .metrics import evaluate_metrics
@@ -473,27 +474,67 @@ def train_hybrid(model, loss_func, opt, scheduler, train_loader, dev, epoch, ste
     sum_sqr_err = 0
     count = 0
     start_time = time.time()
+    #print()
     with tqdm.tqdm(train_loader) as tq:
         for X, y, _ in tq:
+            #print("WHAT IS Y", y)
             inputs = [X[k].to(dev) for k in data_config.input_names]
-            # for classification
+            #print()
+
             label_cls = y['_label_'].long()
-            try:
+            if "_label_mask" in y:
                 label_mask = y['_label_mask'].bool()
-            except KeyError:
+            else:
                 label_mask = None
+                #print("label mask = NONE")
             label_cls = _flatten_label(label_cls, label_mask)
             label_counter.update(label_cls.cpu().numpy())
             label_cls = label_cls.to(dev)
-
+            #print("New label cls", label_cls)
             # for regression
             label_reg = [y[n].float().to(dev).unsqueeze(1) for n in data_config.label_names[1:]]
             label_reg = torch.cat(label_reg, dim=1)
+            
+            #if not os.path.exists("j1.json"):
+            #     j1 = {
+            #         "target_class" : label_cls.tolist()[0],
+            #         "target_mass" : label_reg.tolist()[0],
+            #         "pf_features" : {
+            #             "len": len(inputs[0][0]),
+            #             "features": dict()
+            #         },
+            #         "pf_vectors" : {
+            #             "len": len(inputs[1][0]),
+            #             "features": dict()
+            #         },
+            #         "pf_mask" : {
+            #             "len": len(inputs[2][0]),
+            #             "features": dict()
+            #         },
+            #         "sv_features" : {
+            #             "len": len(inputs[3][0]),
+            #             "features": dict()
+            #         },
+            #         "sv_vectors" : {
+            #             "len": len(inputs[4][0]),
+            #             "features": dict()
+            #         },
+            #         "sv_mask" : {
+            #             "len": len(inputs[5][0]),
+            #             "features": dict()
+            #         }
+            #     }
+            #     for sub_idx, sub_input in enumerate(j1.values()):
+            #         if sub_idx < 2: continue
+            #         for feat_idx in range(sub_input["len"]):
+            #             sub_input["features"][str(feat_idx)] = inputs[sub_idx-2][0][feat_idx].tolist()
+            #     with open("j1.json", 'w') as json_file:
+            #         json.dump(j1, json_file, indent=4)
             n_reg = label_reg.shape[1]
             # print("Regression labels:", data_config.label_names[1:])
             # print("n_reg:", n_reg)
             # print("label_reg:", label_reg)
-
+            #print("label reg", label_reg)
             num_examples = label_reg.shape[0]
             opt.zero_grad()
             with torch.cuda.amp.autocast(enabled=grad_scaler is not None):
@@ -504,12 +545,18 @@ def train_hybrid(model, loss_func, opt, scheduler, train_loader, dev, epoch, ste
                 preds_err_minus = model_output[:, -(n_reg):]
                 loss, loss_monitor = loss_func(logits, preds_reg, preds_err_plus, preds_err_minus, label_cls, label_reg)
             if grad_scaler is None:
+                #print("GRAD SCALER NONE")
+                
                 loss.backward()
+                #print("pf embed weight gradient", model.pf_embed.embed.weight.grad)
+                #print("pf embed bias gradient", model.pf_embed.embed.bias.grad)
                 torch.nn.utils.clip_grad_norm_(model.parameters(), 10)
+                #print("\n OPTIMIZING")
                 opt.step()
             else:
                 grad_scaler.scale(loss).backward()
                 torch.nn.utils.clip_grad_norm_(model.parameters(), 10)
+                #print("\n OPTIMIZING")
                 grad_scaler.step(opt)
                 grad_scaler.update()
 
@@ -576,7 +623,6 @@ def train_hybrid(model, loss_func, opt, scheduler, train_loader, dev, epoch, ste
 
             if steps_per_epoch is not None and num_batches >= steps_per_epoch:
                 break
-
     time_diff = time.time() - start_time
     _logger.info('Processed %d entries in total (avg. speed %.1f entries/s)' % (count, count / time_diff))
     _logger.info('Train AvgLossCls: %.5f, AvgLossReg: %.5f, AvgLossErr: %.5f, AvgLossTot: %.5f, AvgAcc: %.5f, AvgMSE: %.5f, AvgMAE: %.5f' %
