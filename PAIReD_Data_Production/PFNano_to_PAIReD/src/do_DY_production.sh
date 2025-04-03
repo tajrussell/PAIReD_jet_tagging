@@ -1,14 +1,17 @@
 #!/bin/bash
 outdir="/home/trussel1/PAIReD_jet_tagging/PAIReD_Data_Production/PFNano_to_PAIReD/data/DY"
+outdir_test="/home/trussel1/PAIReD_jet_tagging/PAIReD_Data_Production/PFNano_to_PAIReD/data/test/DY"
 temp_input="PFNano.root"
 temp_output="PAIReD.root"
+temp_output_test="PAIReD_test.root"
 export X509_USER_PROXY=/isilon/data/users/trussel1/x509up_user.pem
 here=${PWD}
 
-mkdir -p execute/job_$3
-cd execute/job_$3
+mkdir -p execute/job_DY_$3
+cd execute/job_DY_$3
 
-cp -r /home/trussel1/PAIReD_jet_tagging/PAIReD_Data_Production/PFNano_to_PAIReD/src .
+cp /home/trussel1/PAIReD_jet_tagging/PAIReD_Data_Production/PFNano_to_PAIReD/src/processFileToPAIReD.py .
+cp -r /home/trussel1/PAIReD_jet_tagging/PAIReD_Data_Production/PFNano_to_PAIReD/src/tools .
 ulimit -s unlimited
 cd src
 
@@ -16,9 +19,10 @@ cp /isilon/hadoop/store/group/common/bruxhcc/DYto2L-4Jets_MLL-50_2J_TuneCP5_13p6
 source /home/trussel1/miniconda3/etc/profile.d/conda.sh
 conda activate nano2paired
 
-python processFileToPAIReD.py $temp_input ${temp_output} --physicsprocess 23
+python processFileToPAIReD.py $temp_input ${temp_output} --physicsprocess 23 -g Ellipse
 
 cp $temp_output $outdir/$2
+cp $temp_output_test $outdir_test/$2
 
 cd $here/execute/
-rm -r job_$3
+rm -r job_DY_$3

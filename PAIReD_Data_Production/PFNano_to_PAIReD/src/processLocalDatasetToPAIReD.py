@@ -26,7 +26,6 @@ def process(inputpath, outputpath, batchsize, N_update,
     # get index of the PFNanoAOD file and define the output file path
     i = inputfile.rpartition("_")[-1][:-5]
     PAIReDpath = outputpath + "/PAIReD_%s.root" % i
-
     # check if file even exists
     try:
         makeNtuplesPAIReDjointMC(PFNanopath, PAIReDpath, batchsize = batchsize,

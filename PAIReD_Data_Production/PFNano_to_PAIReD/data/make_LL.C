@@ -68,5 +68,8 @@ void make_LL_dir(const char* input_dir) {
 }
 
 void make_LL() {
-    make_LL_dir("BGtoHH");
+    make_LL_dir("XtoHH/MX-500-1000");
+    make_LL_dir("test/XtoHH/MX-500-1000");
+    make_LL_dir("XtoHH/MX-1000-4000");
+    make_LL_dir("test/XtoHH/MX-1000-4000");
 }

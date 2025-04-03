@@ -31,7 +31,7 @@ import awkward as ak
 import numpy as np
 from tools.helpers import deltaR, deltaPhi, Phi_mpi_pi, shiftPhi
 
-def isInPAIReD(eta_j1, eta_j2, phi_j1, phi_j2, eta_p, phi_p):
+def isInPAIReD(eta_j1, eta_j2, phi_j1, phi_j2, eta_p, phi_p, return_semimajor=False):
     
     semimajoradd = 1.
 
@@ -95,4 +95,5 @@ def isInPAIReD(eta_j1, eta_j2, phi_j1, phi_j2, eta_p, phi_p):
 
     # if particle is in the ellipse,
     # the sum of the distances will be less than 2*semimajor
-    return d_sum < 2*semimajor
+    if return_semimajor: return d_sum < 2*semimajor, semimajor*2#+d_12/2
+    else: return d_sum < 2*semimajor

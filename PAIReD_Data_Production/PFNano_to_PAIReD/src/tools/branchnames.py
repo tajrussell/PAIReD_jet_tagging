@@ -6,7 +6,7 @@ BranchNames = {
               "d0err", "dzval", "dzerr", "mass", "puppiweight",
               "px", "py", "pz", "energy",
               "deta1", "deta2", "dphi1", "dphi2",
-              "jetindex", "in_jet1", "in_jet2"],
+              "jetindex", "in_jet1", "in_jet2","jetindex_cut"],
     "sv":    ["charge", "chi2", "dlen", "dlenSig", 
               "dxy", "dxySig", "eta", "mass", "ndof",
               "ntracks", "pAngle", "phi", "pt",
@@ -15,15 +15,15 @@ BranchNames = {
     "jet":   ["eta", "phi", "pt", "nparticles", "energy", "rawfactor",
               "index"],
     "dijet": ["eta", "phi", "pt", "mass", "nparticles",
-              "index"],
+              "index", "ak4_mass", "pnet_mass"],
     "singleValues": ['event', 'genweight','run', 'pv_n', 'pv_ngood', 'fgrfccpu', 'fgrfcc', 'Pileup_nPU',
                      'MC_higgs_pt','MC_higgs_eta','MC_higgs_phi','MC_higgs_mass',
                      'MC_gendijet_pt','MC_gendijet_eta','MC_gendijet_phi','MC_gendijet_mass',
                      'MC_genjet1_flav','MC_genjet2_flav','MC_genjet1_matched','MC_genjet2_matched',
                      'MC_n_c','MC_vector_flav', 'MC_lepton_channel',
                      'MC_drqq','MC_higgs_flav', 'MC_higgs_valid',
-                     'MC_physics_process',
-                     'label_bb','label_cx','label_ll','label_bx', 'label_CC', 'label_BB']
+                     'MC_physics_process', 'extra_jets',
+                     'label_bb','label_cx','label_ll','label_bx', 'label_CC', 'label_BB', 'label_LL']
 }
 
 
@@ -88,5 +88,7 @@ outputTreeType =  {
     'label_bb': "int8",
     'label_bx': "int8",
     'label_cx': "int8",
-    'label_ll': "int8"
+    'label_ll': "int8",
+    'label_LL': "int8",
+    'extra_jets': "int8",
     }

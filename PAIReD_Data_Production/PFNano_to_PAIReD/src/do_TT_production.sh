@@ -1,7 +1,9 @@
 #!/bin/bash
 outdir="/home/trussel1/PAIReD_jet_tagging/PAIReD_Data_Production/PFNano_to_PAIReD/data/TT"
+outdir_test="/home/trussel1/PAIReD_jet_tagging/PAIReD_Data_Production/PFNano_to_PAIReD/data/test/TT"
 temp_input="PFNano.root"
 temp_output="PAIReD.root"
+temp_output_test="PAIReD_test.root"
 export X509_USER_PROXY=/isilon/data/users/trussel1/x509up_user.pem
 here=${PWD}
 
@@ -19,6 +21,7 @@ conda activate nano2paired
 python processFileToPAIReD.py $temp_input ${temp_output} --physicsprocess 66
 
 cp $temp_output $outdir/$2
+cp $temp_output_test $outdir_test/$2
 
 cd $here/execute/
 rm -r job_$3

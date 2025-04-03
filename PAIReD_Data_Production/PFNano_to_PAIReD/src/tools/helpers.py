@@ -330,4 +330,114 @@ def getJetClusterIndex(Events):
 
     return jetclusterindex
 
+
+def getJetClusterIndexCut(Events, Jetcut):
+    num = ak.num(Events.PFCands_pt)
+
+    # Compute cumulative sum to shift per-event indices
+    cum = np.cumsum(num) - num
+
+    # Extract jet indices for each particle
+    jet_indices = Events.JetPFCands_jetIdx
+
+    # Ensure valid indices by bounding them within the Jetcut shape
+    max_idx = Jetcut.shape[1] - 1  # Maximum valid index for Jetcut
+    bounded_jet_indices = ak.where(jet_indices < 0, 0, jet_indices)  # Replace -1 with 0 (won't be used)
+    bounded_jet_indices = ak.where(bounded_jet_indices > max_idx, max_idx, bounded_jet_indices)  # Clip to max_idx
+
+    # Create mask for valid jets
+    valid_jets = ak.fill_none(ak.where(jet_indices >= 0, Jetcut[bounded_jet_indices], False), False)
+
+    # Set particles to -1 if their associated jet fails the cut
+    filtered_jet_indices = ak.where(valid_jets, jet_indices, -1)
+
+    # Flatten particle indices for assignment
+    indices = ak.flatten(Events.JetPFCands_pFCandsIdx + cum, None)
+    jet_indices_flat = ak.flatten(filtered_jet_indices, None)
+
+    # Initialize array with -1 for unassociated particles
+    jetclusterindex = -np.ones(np.sum(num))
+
+    # Assign valid jet indices only where they are not -1
+    mask = jet_indices_flat != -1
+    jetclusterindex[indices[mask]] = jet_indices_flat[mask]
+
+    # Unflatten to match event structure
+    jetclusterindex = ak.unflatten(jetclusterindex, num)
+
+    return jetclusterindex
+
 # ******************************************************************************
+
+"""
+ * Function: isClustered
+ * ---------------------
+Determine whether or not candidates are clustered to either of the jets
+
+Parameters
+----------
+jet1_idx, jet2_idx: int or array of ints
+    index of constituent jets making up the PAIReD jet
+
+part_jetclusteridx: int or array of ints
+    Index of the jet each particle was clustered to
+
+Returns
+-------
+isInCluster: Boolean or array of booleans
+    mask to keep only candidates that were clustered to the given jets
+"""
+
+def isClustered(jet1_idx, jet2_idx, part_jetclusteridx):
+    j1_idx = ak.unflatten(jet1_idx, 1, axis=-1)
+    j2_idx = ak.unflatten(jet2_idx, 1, axis=-1)
+    p_idx = ak.unflatten(part_jetclusteridx, 1, axis=0)
+    #print(j1_idx)
+    #print(j2_idx)
+    #print(p_idx)
+    isInCluster = (p_idx == j1_idx) | (p_idx == j2_idx)    
+    #print(isInCluster)
+    #return isInCluster
+    return isInCluster, (p_idx==j1_idx), (p_idx==j2_idx)
+
+
+"""
+ * Function: isHighPt
+ * ---------------------
+select the highest pt particles that are also in the paired jet
+
+Parameters
+----------
+isInPAIReD: array of booleans
+    indicates whether or not each particle is in the paired jet
+
+part_pt: float or array of floats
+    particle flow candidate pt
+
+num_highest: int
+    number of high pt candidates to keep
+
+Returns
+-------
+isHigh: array of booleans with the same dimension as isInPAIReD
+    mask to keep only candidates among the num_highest highest pt jets
+"""
+
+def isHighPt(isInPAIReD, part_pt, cutoff=500): #num_highest=10):
+    # restructure pf pt so that isInPAIReD mask can be applied
+    pf_pt = ak.unflatten(part_pt, 1, axis=0)
+    pf_pt = ak.broadcast_arrays(pf_pt, isInPAIReD)[0]
+    pt_in_jet = isInPAIReD * pf_pt
+    return pt_in_jet > cutoff
+    # alternative for N highest pt jets
+    # sort by pt for each jet
+    #sorted_idx = ak.argsort(pt_in_jet, axis=-1, ascending=False)
+    #sorted_idx_padded = ak.pad_none(sorted_idx, num_highest, axis=-1)
+
+    # Apply mask to keep only up to `num_highest` entries per jet
+    #mask = ak.local_index(sorted_idx_padded, axis=-1) < num_highest
+    #top_indices = sorted_idx_padded[mask]
+
+    # Mask particles that are within the top num_highest by pt
+    #isHigh = ak.fill_none(ak.any(sorted_idx == top_indices[:, :, None], axis=-1), False)
+    #return isHigh
