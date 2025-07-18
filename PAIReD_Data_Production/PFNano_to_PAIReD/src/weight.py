@@ -10,31 +10,40 @@ import glob
 #dijet_pt_bins = np.array([0.0, 137.9, 251.4, 381.5, 715.7, 99999.9])
 
 mc_mass_bins = np.array([25, 35, 45, 55, 65, 75, 85, 95, 105, 115, 125, 135, 145, 155, 165, 175, 185, 195, 205, 215, 225, 235, 245])
-reweight_classes = ['label_BB', 'label_CC', 'label_bx', 'label_cx', 'label_ll']
-class_weights = {'label_BB': 1.0, 'label_CC': 1.0, 'label_bx': 0.12, 'label_cx': 0.22, 'label_ll': .85}
-class_counts = {'label_BB': 0, 'label_CC': 0, 'label_bx': 0, 'label_cx': 0, 'label_ll': 0}
+reweight_classes = ['label_BB', 'label_CC', 'label_bb', 'label_bx', 'label_cx', 'label_ll']
+class_weights = {'label_BB': 1.0, 'label_CC': 1.0, 'label_bb': 0.08, 'label_bx': 0.18, 'label_cx': 0.28, 'label_ll': 0.7}
+class_counts = {'label_BB': 0, 'label_CC': 0, 'label_bb': 0, 'label_bx': 0, 'label_cx': 0, 'label_ll': 0}
 reweight_threshold = 0.1
 
-directories = ["../data/XtoHH/MX-500-1000/", "../data/XtoHH/MX-1000-4000/", "../data/DY"]
+directories = ["../data/clustered_1GeV/XtoHH/MX-500-1000/", "../data/clustered_1GeV/XtoHH/MX-1000-4000/", "../data/clustered_1GeV/DY", "../data/clustered_1GeV/TT", "../data/clustered_1GeV/ZHvar"]
 event_counts = defaultdict(lambda: defaultdict(lambda: defaultdict(float)))
 
 def find_quantiles(directories):
     cc_dijet_pt = []
     cc_gendijet_mass = []
+    num_jets = dict()
     for directory in directories:
         files = glob.glob(f"{directory}/*.root")
+        num_jets[directory] = 0
         for file_name in files:
             print(f"Processing file: {file_name}")
             with uproot.open(file_name) as f:
                 tree = f["tree"]
                 arrays = tree.arrays(["dijet_pt", "MC_gendijet_mass", "genweight", "label_CC"], library="np") 
                 dijet_pt = arrays["dijet_pt"]
-                #gendijet_mass = arrays["MC_gendijet_mass"]
+                num_jets[directory] += len(dijet_pt)/0.9
+                gendijet_mass = arrays["MC_gendijet_mass"]
                 cc_mask = arrays["label_CC"] == 1
                 cc_dijet_pt.extend(dijet_pt[cc_mask])
-                #cc_gendijet_mass.extend(gendijet_mass[cc_mask]) 
+                cc_gendijet_mass.extend(gendijet_mass[cc_mask])
+        print(directory, num_jets[directory], "jets total")
     dijet_pt_quartiles = np.percentile(np.array(cc_dijet_pt), [25, 50, 75])
-    #gendijet_mass_quartiles = np.percentile(np.array(cc_gendijet_mass), [25, 50, 75])
+    gendijet_mass_quartiles = np.percentile(np.array(cc_gendijet_mass), [10,20,30,40,50,60,70,80,90,100])
+    print("HERE ARE THE QUANTILES")
+    print(gendijet_mass_quartiles)
+    print("HERE ARE THE JET COUNTS")
+    for key, val in num_jets.items():
+        print(key, val)
     return np.concatenate(([0], dijet_pt_quartiles, [9999999]))#, np.concatenate(([0], gendijet_mass_quartiles, [9999999]))
 
 dijet_pt_bins = find_quantiles(directories)
@@ -62,6 +71,7 @@ def process_files(directory):
                     class_counts[label] += 1
     for label, count in class_counts.items():
         print(label, count)
+    
 
 def compute_weights():
     weights = {}

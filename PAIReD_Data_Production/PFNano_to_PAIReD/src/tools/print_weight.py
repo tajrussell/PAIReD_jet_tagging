@@ -18,7 +18,7 @@ def write_weights_to_text(weights, file_path, dijet_pt_bins, mc_mass_bins, rewei
         file.write('    dijet_pt:\n')
         for pt in dijet_pt_bins:
             file.write(f'    - {pt}\n')
-        file.write('    dijet_mass:\n')
+        file.write('    MC_gendijet_mass:\n')
         for mass in mc_mass_bins:
             file.write(f'    - {mass}\n')
         file.write(f'  reweight_threshold: {reweight_threshold}\n')
@@ -43,7 +43,7 @@ def write_weights_to_text(weights, file_path, dijet_pt_bins, mc_mass_bins, rewei
                         file.write(f'      - {weight_value}\n')
 
 if __name__ == '__main__':
-    reweight_classes = ['label_BB', 'label_CC', 'label_bx', 'label_cx', 'label_ll']
+    reweight_classes = ['label_BB', 'label_CC', 'label_bb', 'label_bx', 'label_cx', 'label_ll']
     weights = read_weights_from_file('reweight.root', reweight_classes)
     dijet_pt_bins = [0.00000000e+00, 3.03419350e+02, 4.66926422e+02, 9.08118271e+02, 9.99999900e+06]
     mc_mass_bins = [25, 35, 45, 55, 65, 75, 85, 95, 105, 115, 125, 135, 145, 155, 165, 175, 185, 195, 205, 215, 225, 235, 245]

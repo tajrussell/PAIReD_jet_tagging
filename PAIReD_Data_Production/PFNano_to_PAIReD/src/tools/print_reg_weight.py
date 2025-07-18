@@ -18,7 +18,7 @@ def write_weights_to_text(weights, file_path, dijet_pt_bins, mc_mass_bins, rewei
         file.write('    dijet_pt:\n')
         for pt in dijet_pt_bins:
             file.write(f'    - {pt}\n')
-        file.write('    dijet_mass:\n')
+        file.write('    MC_higgs_mass:\n')
         for mass in mc_mass_bins:
             file.write(f'    - {mass}\n')
         file.write(f'  reweight_threshold: {reweight_threshold}\n')

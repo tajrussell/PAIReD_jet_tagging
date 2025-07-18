@@ -23,11 +23,13 @@ import numpy as np
 import vector
 import uproot
 from tools.branchnames import BranchNames
-from tools.helpers import isoLeptonCut, deltaPhi, getJetClusterIndex, _is_rootcompat, isClustered, isHighPt, getJetClusterIndexCut
+from tools.helpers import isoLeptonCut, deltaPhi, getJetClusterIndex, _is_rootcompat, isClustered, isHighPt, soft_drop, get_constituent_indices
+#from tools.helpers import getJetClusterIndexCut
 from tools.getMCInfo import getMCInfo
 from tools.PAIReD_geometries.ellipse import isInPAIReD
 import fastjet
 import sys
+import matplotlib.pyplot as plt
 #sys.path.append('/home/trussel1/PAIReD_jet_tagging/PAIReD_Data_Production/PFNano_to_PAIReD/src/')
 #import fjcontrib
 
@@ -77,8 +79,8 @@ def processEvents(Events, physics_process=0, PAIReD_geometry="Ellipse"):
             "d0err": Events.PFCands_d0Err[s], "dzval": Events.PFCands_dz[s],
             "dzerr": Events.PFCands_dzErr[s], "mass": Events.PFCands_mass[s],
             "puppiweight": Events.PFCands_puppiWeight[s],
-            "jetindex": getJetClusterIndex(Events)[s],
-            "jetindex_cut": getJetClusterIndexCut(Events, Jetcut)[s]}
+            "jetindex": getJetClusterIndex(Events)[s]}
+            #"jetindex_cut": getJetClusterIndexCut(Events, Jetcut)[s]}
     
     # sort the secondary vertices (SV) according to their dlenSig
     s = ak.argsort(Events.SV_dlenSig, ascending=False, axis=1)
@@ -90,6 +92,7 @@ def processEvents(Events, physics_process=0, PAIReD_geometry="Ellipse"):
             (isoLeptonCut(Events)) &
             (Events.Jet_jetId > 4)
             )
+    vector.register_awkward()
     Jet4 = vector.zip({"eta": Events.Jet_eta[Jetcut], "phi": Events.Jet_phi[Jetcut],
             "pt": Events.Jet_pt[Jetcut], "mass": Events.Jet_mass[Jetcut]})
     # create jet object
@@ -98,7 +101,17 @@ def processEvents(Events, physics_process=0, PAIReD_geometry="Ellipse"):
             "nparticles": Events.Jet_nConstituents[Jetcut],
             "rawfactor": Events.Jet_rawFactor[Jetcut],
             "index": ak.local_index(Events.Jet_pt, axis=1)[Jetcut],
-            "PNetRegPtRawCorr": Events.Jet_PNetRegPtRawCorr[Jetcut]})
+            "PNetRegPtRawCorr": Events.Jet_PNetRegPtRawCorr[Jetcut],
+            "hadronFlavour": Events.Jet_hadronFlavour[Jetcut],
+            "pnet_CvL": Events.Jet_btagPNetCvL[Jetcut],
+            "pnet_CvB": Events.Jet_btagPNetCvB[Jetcut],
+            "pnet_B": Events.Jet_btagPNetB[Jetcut],
+            "part_CvL": Events.Jet_btagRobustParTAK4CvL[Jetcut],
+            "part_CvB": Events.Jet_btagRobustParTAK4CvB[Jetcut],
+            "part_B": Events.Jet_btagRobustParTAK4B[Jetcut],
+            })
+    
+    allJet = ak.unflatten(Jet, 1)
 
     # get all jet pair combinations
     Jet = ak.combinations(Jet, 2, axis=1, fields=["j1", "j2"],
@@ -108,15 +121,33 @@ def processEvents(Events, physics_process=0, PAIReD_geometry="Ellipse"):
             axis=1, fields=["j1", "j2"], replacement=False)
 
     isInJets = isInPAIReD(Jet.j1.eta, Jet.j2.eta, Jet.j1.phi, Jet.j2.phi, Events.Jet_eta[Jetcut], Events.Jet_phi[Jetcut])
-    #print(isInJets.tolist())
+    #allJet = allJet * ak.ones_like(isInJets)
+
+    jet_is_c = (allJet.hadronFlavour * ak.ones_like(isInJets))[isInJets] == 4
+    jet_is_b = (allJet.hadronFlavour * ak.ones_like(isInJets))[isInJets] == 5
+    two_bjets = ak.sum(jet_is_b, axis=2) == 2
+    two_cjets = ~two_bjets & (ak.sum(jet_is_c, axis=2) == 2)
+    extra_jets = vector.zip({"pt": (allJet.pt * ak.ones_like(isInJets))[isInJets],
+                        "eta": (allJet.eta * ak.ones_like(isInJets))[isInJets],
+                        "phi": (allJet.phi * ak.ones_like(isInJets))[isInJets],
+                        "energy": (allJet.energy * ak.ones_like(isInJets))[isInJets]})
+    pnet_pt_factor = (1-(allJet.rawfactor * ak.ones_like(isInJets))[isInJets]) * (allJet.PNetRegPtRawCorr * ak.ones_like(isInJets))[isInJets]
+    extra_pnets = vector.zip({"pt": extra_jets.pt * pnet_pt_factor,
+                         "phi": extra_jets.phi,
+                         "eta": extra_jets.eta,
+                         "energy": extra_jets.energy})
     ExtraJets = ak.sum(isInJets, axis=2) - 2
+    dijet_hf_mass = two_bjets * ak.sum(extra_jets[jet_is_b], axis=2).mass
+    dijet_hf_mass_pnet = two_bjets * ak.sum(extra_pnets[jet_is_b], axis=2).mass
+    dijet_hf_mass = dijet_hf_mass + (two_cjets * ak.sum(extra_jets[jet_is_c], axis=2).mass)
+    dijet_hf_mass_pnet = dijet_hf_mass + (two_cjets * ak.sum(extra_pnets[jet_is_c], axis=2).mass)
 
     # get particles inside the PAIReD jet
     if "Cluster" in PAIReD_geometry:
         isInPart, isJ1, isJ2 = isClustered(Jet.j1.index, Jet.j2.index, Part["jetindex"])
         if "HighPT" in PAIReD_geometry:
             isInEllipse = isInPAIReD(Jet.j1.eta, Jet.j2.eta, Jet.j1.phi, Jet.j2.phi, Part["eta"], Part["phi"])           
-            isHighPtInEllipse = isHighPt(isInEllipse, Part["pt"])
+            isHighPtInEllipse = isHighPt(isInEllipse, Part["pt"], cutoff=500)
 
             #total_parts = ak.sum((isInPart) > -1)
             total_clustered = ak.sum(isInPart)
@@ -162,23 +193,68 @@ def processEvents(Events, physics_process=0, PAIReD_geometry="Ellipse"):
         #print(Part[name])
     # Run AK clustering for AKX geometry and redo Part
     if PAIReD_geometry == "AKX":
-        vector.register_awkward()
+        survives_drop = ak.zeros_like(Part["pt"], dtype=bool).to_list()
         major_axes = ak.flatten(major_axes)
-        part_4vecs = vector.zip({"eta": Part["eta"], "phi": Part["phi"], "pt": Part["pt"], "mass": Part["mass"]})
-        jetdef = fastjet.JetDefinition(fastjet.antikt_algorithm, 3.14)
-        cluster = fastjet.ClusterSequence(part_4vecs, jetdef)
-        soft_drop_groomer = fastjet.contrib.SoftDrop(0.1, 0.0)
-        jets = cluster.inclusive_jets()
-        softdrop_jets = [soft_drop_groomer.result(jet) for jet in jets]
-        print(softdrop_jets)
-        #print(jets[0])
-        #print(cluster.constituent_index()[0])
-        #softdrop_remain = [jet[0].soft_drop(0.1, 0).constituent_index() for jet in jets]
-        #print(softdrop_remain)
-                #print(part_dijet_idx.to_list())
-                #new_isInPart = (part_dijet_idx == 0)
-                #for name in Part.keys():
-                #    Part[name][i][j] = Part[name][i][j][new_isInPart]
+        major_axes = ak.flatten(major_axes)
+        #print(major_axes)
+        #print(len(Part["pt"]))
+        #print(ak.num(Part["pt"]))
+        #print(ak.num(Part["pt"], axis=2))
+        #print(Part["pt"])
+        axis_idx = 0
+        ratios_kept = dict()
+        for zcut in [0.1, 0.2, 0.3, 0.5, 0.7]:
+            ratios_kept[zcut] = dict()
+            for beta in [0,1]:
+                ratios_kept[zcut][beta] = []
+        for event_idx in range(len(Part["pt"])):
+            for dijet_idx in range(ak.num(Part["pt"])[event_idx]):
+                #print("new jet")
+                jetparticles = []
+                for part_idx in range(ak.num(Part["pt"], axis=2)[event_idx][dijet_idx]):
+                    ppx = Part["pt"][event_idx][dijet_idx][part_idx] * np.cos(Part["phi"][event_idx][dijet_idx][part_idx])
+                    ppy = Part["pt"][event_idx][dijet_idx][part_idx] * np.sin(Part["phi"][event_idx][dijet_idx][part_idx])
+                    ppz = Part["pt"][event_idx][dijet_idx][part_idx] * np.sinh(Part["eta"][event_idx][dijet_idx][part_idx])
+                    pE  = np.sqrt(ppx**2 + ppy**2 + ppz**2 + Part["mass"][event_idx][dijet_idx][part_idx]**2)
+                    #print(ppx, ppy, ppz, pE)
+                    pj = fastjet.PseudoJet(float(ppx), float(ppy), float(ppz), float(pE))
+                    pj.set_user_index(part_idx)
+                    jetparticles.append(pj)
+                    #part_4vecs = vector.zip({"eta": Part["eta"], "phi": Part["phi"], "pt": Part["pt"], "mass": Part["mass"]})
+                jetdef = fastjet.JetDefinition(fastjet.cambridge_algorithm, major_axes[axis_idx])
+                cluster = fastjet.ClusterSequence(jetparticles, jetdef)
+                cjet = cluster.inclusive_jets()
+                assert(len(cjet) == 1)
+                #print(len(cjet))
+                for zcut in [0.1, 0.2, 0.3, 0.5, 0.7]:
+                    for beta in [0,1]:
+                        hard_jet = soft_drop(cjet[0], zcut=zcut, beta=beta, R0=major_axes[axis_idx])
+                        ratios_kept[zcut][beta].append(len(get_constituent_indices(hard_jet)) / ak.num(Part['pt'], axis=2)[event_idx][dijet_idx])
+                hard_jet = soft_drop(cjet[0], zcut=0.1, beta=1, R0=major_axes[axis_idx])
+                #print(f"Ratio of particles kept: {len(get_constituent_indices(hard_jet)) / ak.num(Part['pt'], axis=2)[event_idx][dijet_idx]:.2f}, Particles in original jet: {ak.num(Part['pt'], axis=2)[event_idx][dijet_idx]}")
+                for part_idx in get_constituent_indices(hard_jet):
+                    #print("saving", part_idx)
+                    survives_drop[event_idx][dijet_idx][part_idx] = True
+                axis_idx += 1
+        survives_drop = ak.Array(survives_drop)
+        for name in Part.keys():
+            Part[name] = Part[name][survives_drop]
+        plt.figure(figsize=(10, 6))
+        for zcut, beta_dict in ratios_kept.items():
+            for beta, ratios in beta_dict.items():
+                label = f"zcut={zcut}, beta={beta}"  # Label for the legend
+                plt.hist(ratios, bins=np.linspace(0,1,20), histtype='step', label=label, density=True, cumulative=True)
+        plt.xlabel("Ratio of particles kept", fontsize=14)
+        plt.ylabel("Cumulative Frequency", fontsize=14)
+        plt.title("Histogram of Ratios of Particles Kept", fontsize=16)
+        # Add legend to differentiate each combination
+        plt.legend(title="zcut and beta combinations", loc='upper left', fontsize=12)
+        # Show the plot
+        plt.tight_layout()
+        plt.savefig("zbeta.png")
+        plt.clf()
+
+            
 
 
     # make SV arrays broadcastable with isInSV
@@ -239,15 +315,20 @@ def processEvents(Events, physics_process=0, PAIReD_geometry="Ellipse"):
     #print(jet1)
     jet1_4vec = vector.zip({"eta": jet1.eta, "phi": jet1.phi, "pt": jet1.pt, "E": jet1.energy})
     jet2_4vec = vector.zip({"eta": jet2.eta, "phi": jet2.phi, "pt": jet2.pt, "E": jet2.energy})
-    print(1-jet1.rawfactor)
-    jet1_4vec_pnet = vector.zip({"eta": jet1.eta, "phi": jet1.phi, "pt": jet1.pt * jet1.PNetRegPtRawCorr / (1-jet1.rawfactor), "E": jet1.energy})
-    jet2_4vec_pnet = vector.zip({"eta": jet2.eta, "phi": jet2.phi, "pt": jet2.pt * jet2.PNetRegPtRawCorr / (1-jet2.rawfactor), "E": jet2.energy})
+    #print(1-jet1.rawfactor)
+    jet1_4vec_pnet = vector.zip({"eta": jet1.eta, "phi": jet1.phi, "pt": jet1.pt * jet1.PNetRegPtRawCorr * (1-jet1.rawfactor), "E": jet1.energy})
+    jet2_4vec_pnet = vector.zip({"eta": jet2.eta, "phi": jet2.phi, "pt": jet2.pt * jet2.PNetRegPtRawCorr * (1-jet2.rawfactor), "E": jet2.energy})
+    jet1_4vec_pnet_alt = vector.zip({"eta": jet1.eta, "phi": jet1.phi, "pt": jet1.pt * jet1.PNetRegPtRawCorr * (1-jet1.rawfactor), "E": jet1.energy * (1-jet1.rawfactor)})
+    jet2_4vec_pnet_alt = vector.zip({"eta": jet2.eta, "phi": jet2.phi, "pt": jet2.pt * jet2.PNetRegPtRawCorr * (1-jet2.rawfactor), "E": jet2.energy * (1-jet2.rawfactor)})
     dijet = ak.zip({"eta": Dijet4.eta, "phi": Dijet4.phi,
                     "pt": Dijet4.pt, "mass": Dijet4.mass,
                     "nparticles": ak.num(part, axis=2),
                     "index": ak.local_index(Jet.j1, axis=1),
                     "ak4_mass": (jet1_4vec+jet2_4vec).mass,
-                    "pnet_mass": (jet1_4vec_pnet+jet2_4vec_pnet).mass})
+                    "pnet_mass": abs((jet1_4vec_pnet+jet2_4vec_pnet).mass),
+                    "pnet_mass_alt": abs((jet1_4vec_pnet_alt+jet2_4vec_pnet_alt).mass),
+                    "hf_mass_pnet": dijet_hf_mass_pnet,
+                    "hf_mass": dijet_hf_mass})
 
     # prepare other single value branches
     ones = ak.ones_like(Jet.j1.phi)
@@ -294,6 +375,7 @@ def processEvents(Events, physics_process=0, PAIReD_geometry="Ellipse"):
     flattened_Data = dict()
     # remove the dimension of N_events
     for name in DataPAIReD.keys():
+        #print(name)
         flat_precut = ak.copy(ak.flatten(DataPAIReD[name], axis=1))
         if DataPAIReD[name].fields:
             postcut_dict = dict()
@@ -333,10 +415,36 @@ def processEvents(Events, physics_process=0, PAIReD_geometry="Ellipse"):
         training_weights = training_weights + ak.where(label_mask, label_reweights, 0)
     flattened_Data["training_weight"] = training_weights'''
 
-    num_jets = len(flattened_Data["event"])
-    np.random.seed(0)
-    rand_idx = np.random.permutation(num_jets)
-    split_idx = int(0.9 * num_jets)
+    if False:
+        num_jets = len(flattened_Data["event"])
+        np.random.seed(0)
+        rand_idx = np.random.permutation(num_jets)
+        split_idx = int(0.9 * num_jets)
+        train_idx = rand_idx[:split_idx]
+        test_idx = rand_idx[split_idx:]
+    else:
+        event_set = set(flattened_Data['event'].tolist())
+        rand_idx = np.random.permutation(len(event_set))
+        if physics_process == 25:
+            split_ratio = 0.045
+        elif physics_process == 26:
+            split_ratio = 0.9
+        elif physics_process == 66:
+            split_ratio = 0.01
+        elif physics_process == 23:
+            split_ratio = 0.9
+        split_idx = int(split_ratio * len(event_set))
+        test_split_idx = int(split_ratio * 1.1 * len(event_set))
+        train_events = np.array(list(event_set))[rand_idx[:split_idx]]
+        test_events = np.array(list(event_set))[rand_idx[split_idx:test_split_idx]]
+        jet_events = np.array(flattened_Data['event'])
+        #print(len(jet_events), jet_events)
+        train_idx = np.isin(jet_events, train_events)
+        #print(len(train_idx), train_idx)
+        #print(ak.num(jet_events), ak.num(train_idx))
+        test_idx = np.isin(jet_events, test_events)
+        #print(len(test_idx), test_idx)
+
     split_data, split_data_test = dict(), dict()
     #print(ak.num(flattened_Data["part"].pt))
     for name in flattened_Data.keys():
@@ -345,12 +453,12 @@ def processEvents(Events, physics_process=0, PAIReD_geometry="Ellipse"):
             split_data_test_dict = dict()
             for i,n in enumerate(flattened_Data[name].fields):
                 presplit = ak.unzip(flattened_Data[name], highlevel=True)[i]
-                split_data_test_dict[n] = presplit[rand_idx[split_idx:]]
-                split_data_dict[n] = presplit[rand_idx[:split_idx]]
+                split_data_test_dict[n] = presplit[test_idx]
+                split_data_dict[n] = presplit[train_idx]
             split_data_test[name] = ak.zip(split_data_test_dict)
             split_data[name] = ak.zip(split_data_dict)
         else:
-            split_data_test[name] = flattened_Data[name][rand_idx[split_idx:]]
-            split_data[name] = flattened_Data[name][rand_idx[:split_idx]]
+            split_data_test[name] = flattened_Data[name][test_idx]
+            split_data[name] = flattened_Data[name][train_idx]
     #print(ak.num(split_data["part"].pt))
     return split_data, split_data_test

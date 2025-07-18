@@ -24,6 +24,7 @@ import numpy as np
 import vector
 import awkward as ak
 import itertools
+import fastjet
 from tools.branchnames import BranchNames
 
 # ******************************************************************************
@@ -331,7 +332,7 @@ def getJetClusterIndex(Events):
     return jetclusterindex
 
 
-def getJetClusterIndexCut(Events, Jetcut):
+'''def getJetClusterIndexCut(Events, Jetcut):
     num = ak.num(Events.PFCands_pt)
 
     # Compute cumulative sum to shift per-event indices
@@ -365,7 +366,7 @@ def getJetClusterIndexCut(Events, Jetcut):
     # Unflatten to match event structure
     jetclusterindex = ak.unflatten(jetclusterindex, num)
 
-    return jetclusterindex
+    return jetclusterindex'''
 
 # ******************************************************************************
 
@@ -441,3 +442,28 @@ def isHighPt(isInPAIReD, part_pt, cutoff=500): #num_highest=10):
     # Mask particles that are within the top num_highest by pt
     #isHigh = ak.fill_none(ak.any(sorted_idx == top_indices[:, :, None], axis=-1), False)
     #return isHigh
+
+def soft_drop(jet, zcut=0.1, beta=0.0, R0=10):
+    current = jet
+    while current.has_structure():
+        if len(current.pieces()) == 2: j1, j2 = current.pieces()
+        else: return current
+        z = min(j1.pt(), j2.pt()) / (j1.pt() + j2.pt())
+        dR12 = deltaR(j1.eta(), j2.eta(), j1.phi(), j2.phi())
+        if z > zcut * (dR12 / R0)**beta: return current
+        else: current = j1 if j1.pt() > j2.pt() else j2
+    return current
+
+def get_constituent_indices(jet):
+    # If the jet can be declustered, recursively get pieces
+    if len(jet.pieces()) == 2:
+        j1, j2 = jet.pieces()
+        return get_constituent_indices(j1) + get_constituent_indices(j2)
+    else:
+        # If it's a final particle, return its user_index
+        if jet.has_constituents():
+            # Base case: this jet wasn't created by clustering
+            return [p.user_index() for p in jet.constituents()]
+        else:
+            # Truly a leaf node (just in case)
+            return [jet.user_index()]

@@ -15,7 +15,7 @@ class_weights = {'label_BB': 1.0, 'label_CC': 1.0}
 class_counts = {'label_BB': 0, 'label_CC': 0}
 reweight_threshold = 0.1
 
-directories = ["../data/XtoHH/MX-500-1000/", "../data/XtoHH/MX-1000-4000/"]
+directories = ["../data/clustered_1GeV/XtoHH/MX-500-1000/", "../data/clustered_1GeV/XtoHH/MX-1000-4000/"]
 event_counts = defaultdict(lambda: defaultdict(lambda: defaultdict(float)))
 
 def find_quantiles(directories):

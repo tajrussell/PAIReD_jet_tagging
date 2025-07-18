@@ -1,88 +1,89 @@
-"""
- * Function: getMCInfo
- * ----------------------
-Get the relevant true MC information of the event.
+def descript():
+    """
+    * Function: getMCInfo
+    * ----------------------
+    Get the relevant true MC information of the event.
 
-Parameters
-----------
-Events : event tree object
-    Object containing all information of multiple simulated events.
-isInGenPart : bool (array)
-    Boolean holding the information whether the generated particle is inside the
-    PAIReD jet or not.
-Jet_genJetIdx : array / ak-zip type object
-    Indices of the matched generated jets to the reconstructed AK4 jets
-Jetcut : bool (array)
-    Boolean holding the information whether the AK4 jet is accepted or not.
+    Parameters
+    ----------
+    Events : event tree object
+        Object containing all information of multiple simulated events.
+    isInGenPart : bool (array)
+        Boolean holding the information whether the generated particle is inside the
+        PAIReD jet or not.
+    Jet_genJetIdx : array / ak-zip type object
+        Indices of the matched generated jets to the reconstructed AK4 jets
+    Jetcut : bool (array)
+        Boolean holding the information whether the AK4 jet is accepted or not.
 
 
-Returns
--------
-MCInfo : dict
-    A dictionary with the following content:
-        "MC_higgs_pt" : float (array)
-            Higgs transverse momentum (length of the array = number of jet pairs).
-        "MC_higgs_eta" : float (array)
-            Higgs pseudorapidity (length of the array = number of jet pairs).
-        "MC_higgs_phi" : float (array)
-            Higgs phi angle (length of the array = number of jet pairs).
-        "MC_higgs_mass" : float (array)
-            Higgs mass (length of the array = number of jet pairs).
-        "MC_higgs_flav" : int (array)
-            Generated flavor number in Higgs decay:
-            - digit represents the flavor of the daughter particle 
-               (e.g., 1 for d, 3 for s, or 5 for b)
-            - if there is no vector boson, = 0
-        "MC_vector_flav" : int (array)
-            Generated flavor number in vector boson decay:
-            - digit represents the flavor of the daughter particles 
-               (11 for e-like,  13 for mu-like, 15 for tau-like)
-            - if there is no vector boson, = 0
-        "MC_lepton channel" : int (array)
-            number of charged leptons the vector boson decays into (0L, 1L, 2L).
-        "MC_gendijet_pt" : float (array)
-            Combined GenJet transverse momentum (length of the array = number of jet pairs).
-        "MC_gendijet_eta" : float (array)
-            Combined GenJet pseudorapidity (length of the array = number of jet pairs).
-        "MC_gendijet_phi" : float (array)
-            Combined GenJet phi angle (length of the array = number of jet pairs).
-        "MC_gendijet_mass" : float (array)
-            Combined GenJet mass (length of the array = number of jet pairs).
-        "MC_genjet1_flav" : float (array)
-            Parton flavour of the GenJet matched to the first AK4 jet. 
-            In case of no match = 0 (length of the array = number of jet pairs).
-        "MC_genjet2_flav" : float (array)
-            Parton flavour of the GenJet matched to the second AK4 jet. 
-            In case of no match = 0 (length of the array = number of jet pairs).
-        "MC_genjet1_matched" : bool (array)
-            Boolean whether first AK4 jet has a matched GenJet 
-            (length of the array = number of jet pairs).
-        "MC_genjet2_matched" : bool (array)
-            Boolean whether second AK4 jet has a matched GenJet 
-            (length of the array = number of jet pairs).
-        "MC_drqq" : float (array)
-            Delta R between decay products of the Higgs (length of array = number of jet
-            pairs).
-        "MC_n_c" : int (array)
-            Number of c jets in the event (length of the array = number of jet pairs).
-        "label_BB" : bool (array)
-            True label for BB PAIReD jets.
-        "label_CC" : bool (array)
-            True label for CC PAIReD jets.
-        "label_LL" : bool (array)
-            True label for LL PAIReD jets.
-        "label_ll" : bool (array)
-            True label for ll PAIReD jets.
-        "label_bb" : bool (array)
-            True label for bb PAIReD jets.
-        "label_bl" : bool (array)
-            True label for bl PAIReD jets.
-        "label_cc" : bool (array)
-            True label for cc PAIReD jets.
-        "label_cl" : bool (array)
-            True label for cl PAIReD jets.
-        
-"""
+    Returns
+    -------
+    MCInfo : dict
+        A dictionary with the following content:
+            "MC_higgs_pt" : float (array)
+                Higgs transverse momentum (length of the array = number of jet pairs).
+            "MC_higgs_eta" : float (array)
+                Higgs pseudorapidity (length of the array = number of jet pairs).
+            "MC_higgs_phi" : float (array)
+                Higgs phi angle (length of the array = number of jet pairs).
+            "MC_higgs_mass" : float (array)
+                Higgs mass (length of the array = number of jet pairs).
+            "MC_higgs_flav" : int (array)
+                Generated flavor number in Higgs decay:
+                - digit represents the flavor of the daughter particle 
+                (e.g., 1 for d, 3 for s, or 5 for b)
+                - if there is no vector boson, = 0
+            "MC_vector_flav" : int (array)
+                Generated flavor number in vector boson decay:
+                - digit represents the flavor of the daughter particles 
+                (11 for e-like,  13 for mu-like, 15 for tau-like)
+                - if there is no vector boson, = 0
+            "MC_lepton channel" : int (array)
+                number of charged leptons the vector boson decays into (0L, 1L, 2L).
+            "MC_gendijet_pt" : float (array)
+                Combined GenJet transverse momentum (length of the array = number of jet pairs).
+            "MC_gendijet_eta" : float (array)
+                Combined GenJet pseudorapidity (length of the array = number of jet pairs).
+            "MC_gendijet_phi" : float (array)
+                Combined GenJet phi angle (length of the array = number of jet pairs).
+            "MC_gendijet_mass" : float (array)
+                Combined GenJet mass (length of the array = number of jet pairs).
+            "MC_genjet1_flav" : float (array)
+                Parton flavour of the GenJet matched to the first AK4 jet. 
+                In case of no match = 0 (length of the array = number of jet pairs).
+            "MC_genjet2_flav" : float (array)
+                Parton flavour of the GenJet matched to the second AK4 jet. 
+                In case of no match = 0 (length of the array = number of jet pairs).
+            "MC_genjet1_matched" : bool (array)
+                Boolean whether first AK4 jet has a matched GenJet 
+                (length of the array = number of jet pairs).
+            "MC_genjet2_matched" : bool (array)
+                Boolean whether second AK4 jet has a matched GenJet 
+                (length of the array = number of jet pairs).
+            "MC_drqq" : float (array)
+                Delta R between decay products of the Higgs (length of array = number of jet
+                pairs).
+            "MC_n_c" : int (array)
+                Number of c jets in the event (length of the array = number of jet pairs).
+            "label_BB" : bool (array)
+                True label for BB PAIReD jets.
+            "label_CC" : bool (array)
+                True label for CC PAIReD jets.
+            "label_LL" : bool (array)
+                True label for LL PAIReD jets.
+            "label_ll" : bool (array)
+                True label for ll PAIReD jets.
+            "label_bb" : bool (array)
+                True label for bb PAIReD jets.
+            "label_bl" : bool (array)
+                True label for bl PAIReD jets.
+            "label_cc" : bool (array)
+                True label for cc PAIReD jets.
+            "label_cl" : bool (array)
+                True label for cl PAIReD jets.    
+    """
+    return
 
 # Include dependencies
 import awkward as ak
@@ -90,7 +91,7 @@ import numpy as np
 import vector
 from tools.helpers import deltaR
 
-def processHiggs_HH(Events, isInGenPart, higgs_idx, MCInfo):
+def processHiggs_HH(Events, isInGenPart, higgs_idx, MCInfo, Jetcut):
     # process fake higgs
     ones = ak.ones_like(isInGenPart[:,:,0])
     singleInfo = dict()
@@ -106,6 +107,21 @@ def processHiggs_HH(Events, isInGenPart, higgs_idx, MCInfo):
         d2_eta = Events.GenPart_eta[d2]
         d1_phi = Events.GenPart_phi[d1]
         d2_phi = Events.GenPart_phi[d2]
+
+        jet_shape = ak.ones_like(Events.Jet_eta[Jetcut])
+        d1_jet_dR = deltaR(ak.unflatten(d1_eta, 1)*jet_shape, Events.Jet_eta[Jetcut], ak.unflatten(d1_phi, 1)*jet_shape, Events.Jet_phi[Jetcut])
+        d2_jet_dR = deltaR(ak.unflatten(d2_eta, 1)*jet_shape, Events.Jet_eta[Jetcut], ak.unflatten(d2_phi, 1)*jet_shape, Events.Jet_phi[Jetcut])
+        d1_jet_idx = ak.argmin(d1_jet_dR, axis=1)
+        d2_jet_idx = ak.argmin(d2_jet_dR, axis=1)
+        d1_jet = vector.zip({"eta": Events.Jet_eta[Jetcut][d1_jet_idx], "phi": Events.Jet_phi[Jetcut][d1_jet_idx], "pt": Events.Jet_pt[Jetcut][d1_jet_idx], "mass": Events.Jet_mass[Jetcut][d1_jet_idx]})
+        d2_jet = vector.zip({"eta": Events.Jet_eta[Jetcut][d2_jet_idx], "phi": Events.Jet_phi[Jetcut][d2_jet_idx], "pt": Events.Jet_pt[Jetcut][d2_jet_idx], "mass": Events.Jet_mass[Jetcut][d2_jet_idx]})
+        d1_jet_pnet = vector.zip({"eta": Events.Jet_eta[Jetcut][d1_jet_idx], "phi": Events.Jet_phi[Jetcut][d1_jet_idx], "pt": Events.Jet_pt[Jetcut][d1_jet_idx]*Events.Jet_PNetRegPtRawCorr[Jetcut][d1_jet_idx]*(1-Events.Jet_rawFactor[Jetcut][d1_jet_idx]), "mass": Events.Jet_mass[Jetcut][d1_jet_idx]})
+        d2_jet_pnet = vector.zip({"eta": Events.Jet_eta[Jetcut][d2_jet_idx], "phi": Events.Jet_phi[Jetcut][d2_jet_idx], "pt": Events.Jet_pt[Jetcut][d2_jet_idx]*Events.Jet_PNetRegPtRawCorr[Jetcut][d2_jet_idx]*(1-Events.Jet_rawFactor[Jetcut][d2_jet_idx]), "mass": Events.Jet_mass[Jetcut][d2_jet_idx]})
+        singleInfo["dijet_hmass_"+str(i)] = ak.flatten(ak.where(d1_jet_idx != d2_jet_idx, (d1_jet+d2_jet).mass, d1_jet.mass))
+        singleInfo["dijet_hmass_pnet_"+str(i)] = ak.flatten(ak.where(d1_jet_idx != d2_jet_idx, (d1_jet_pnet+d2_jet_pnet).mass, d1_jet_pnet.mass))
+        singleInfo["d1_jet_idx_"+str(i)] = ak.flatten(d1_jet_idx)
+        singleInfo["d2_jet_idx_"+str(i)] = ak.flatten(d2_jet_idx)
+        
         d1_pid = abs(Events.GenPart_pdgId[d1])
         d2_pid = abs(Events.GenPart_pdgId[d2])
         # ΔR_qq between the two daughter particles
@@ -139,6 +155,11 @@ def processHiggs_HH(Events, isInGenPart, higgs_idx, MCInfo):
     singleInfo["label_CC_0"] = singleInfo["label_CC_0"] * use_h_0
     singleInfo["label_CC_1"] = singleInfo["label_CC_1"] * use_h_1
 
+    MCInfo["dijet_hmass"] = (singleInfo["dijet_hmass_0"] * use_h_0) + (singleInfo["dijet_hmass_1"] * use_h_1)
+    MCInfo["dijet_hmass_pnet"] = (singleInfo["dijet_hmass_pnet_0"] * use_h_0) + (singleInfo["dijet_hmass_pnet_1"] * use_h_1)
+    MCInfo["d1_jet_idx"] = (singleInfo["d1_jet_idx_0"] * use_h_0) + (singleInfo["d1_jet_idx_1"] * use_h_1)
+    MCInfo["d2_jet_idx"] = (singleInfo["d2_jet_idx_0"] * use_h_0) + (singleInfo["d2_jet_idx_1"] * use_h_1)
+
     MCInfo["label_BB"] = singleInfo["label_BB_0"] | singleInfo["label_BB_1"]
     MCInfo["label_CC"] = (~MCInfo["label_BB"]) & (singleInfo["label_CC_0"] | singleInfo["label_CC_1"])
 
@@ -146,13 +167,95 @@ def processHiggs_HH(Events, isInGenPart, higgs_idx, MCInfo):
     MCInfo["MC_higgs_valid"] = MCInfo["MC_higgs_valid"] * ((singleInfo["h_daughters_in_0"] == 0) | (singleInfo["h_hadronic_0"] > 0))[:,:,0]
     MCInfo["MC_higgs_valid"] = MCInfo["MC_higgs_valid"] * ((singleInfo["h_daughters_in_1"] == 0) | (singleInfo["h_hadronic_1"] > 0))[:,:,0]
 
-
     MCInfo["MC_higgs_mass"] = ((use_h_0) * singleInfo["MC_higgs_mass_0"]) + ((use_h_1) * singleInfo["MC_higgs_mass_1"])
     MCInfo["MC_higgs_pt"] = ((use_h_0) * singleInfo["MC_higgs_pt_0"]) + ((use_h_1) * singleInfo["MC_higgs_pt_1"])
     MCInfo["MC_higgs_eta"] = ((use_h_0) * singleInfo["MC_higgs_eta_0"]) + ((use_h_1) * singleInfo["MC_higgs_eta_1"])
     MCInfo["MC_higgs_phi"] = ((use_h_0) * singleInfo["MC_higgs_phi_0"]) + ((use_h_1) * singleInfo["MC_higgs_phi_1"])
     MCInfo["MC_drqq"] = ((use_h_0) * singleInfo["MC_drqq_0"]) + ((use_h_1) * singleInfo["MC_drqq_1"])
     MCInfo["MC_higgs_flav"] = ((use_h_0) * singleInfo["MC_higgs_flav_0"]) + ((use_h_1) * singleInfo["MC_higgs_flav_1"])
+
+def processHiggs_VH(Events, isInGenPart, higgs_idx, MCInfo, Jetcut):
+    # process fake higgs
+    ones = ak.ones_like(isInGenPart[:,:,0])
+
+    MCInfo["MC_higgs_pt"] = ones * Events.GenPart_pt[higgs_idx][:,0]
+    MCInfo["MC_higgs_eta"] = ones * Events.GenPart_eta[higgs_idx][:,0]
+    MCInfo["MC_higgs_phi"] = ones * Events.GenPart_phi[higgs_idx][:,0]
+    MCInfo["MC_higgs_mass"] = ones * Events.GenPart_mass[higgs_idx][:,0]
+    d1 = ak.argmax(1*(Events.GenPart_genPartIdxMother == higgs_idx[:,0]), axis=1, keepdims=True)
+    d2 = ak.argmax(ak.local_index(Events.GenPart_pdgId, axis=1)*(Events.GenPart_genPartIdxMother == higgs_idx[:,0]), axis=1, keepdims=True)
+    # kinematics of the daughter particles
+    d1_eta = Events.GenPart_eta[d1]
+    d2_eta = Events.GenPart_eta[d2]
+    d1_phi = Events.GenPart_phi[d1]
+    d2_phi = Events.GenPart_phi[d2]
+
+    jet_shape = ak.ones_like(Events.Jet_eta[Jetcut])
+    d1_jet_dR = deltaR(ak.unflatten(d1_eta, 1)*jet_shape, Events.Jet_eta[Jetcut], ak.unflatten(d1_phi, 1)*jet_shape, Events.Jet_phi[Jetcut])
+    d2_jet_dR = deltaR(ak.unflatten(d2_eta, 1)*jet_shape, Events.Jet_eta[Jetcut], ak.unflatten(d2_phi, 1)*jet_shape, Events.Jet_phi[Jetcut])
+    MCInfo["d1_jet_idx"] = ak.argmin(d1_jet_dR, axis=1)
+    MCInfo["d2_jet_idx"] = ak.argmin(d2_jet_dR, axis=1)
+    d1_jet = vector.zip({"eta": Events.Jet_eta[Jetcut][MCInfo["d1_jet_idx"]], 
+                         "phi": Events.Jet_phi[Jetcut][MCInfo["d1_jet_idx"]], 
+                         "pt": Events.Jet_pt[Jetcut][MCInfo["d1_jet_idx"]], 
+                         "mass": Events.Jet_mass[Jetcut][MCInfo["d1_jet_idx"]]
+                        })
+    d2_jet = vector.zip({"eta": Events.Jet_eta[Jetcut][MCInfo["d2_jet_idx"]], 
+                         "phi": Events.Jet_phi[Jetcut][MCInfo["d2_jet_idx"]], 
+                         "pt": Events.Jet_pt[Jetcut][MCInfo["d2_jet_idx"]], 
+                         "mass": Events.Jet_mass[Jetcut][MCInfo["d2_jet_idx"]]
+                        })
+    d1_jet_pnet = vector.zip({"eta": Events.Jet_eta[Jetcut][MCInfo["d1_jet_idx"]], 
+                              "phi": Events.Jet_phi[Jetcut][MCInfo["d1_jet_idx"]], 
+                              "pt": Events.Jet_pt[Jetcut][MCInfo["d1_jet_idx"]]*Events.Jet_PNetRegPtRawCorr[Jetcut][MCInfo["d1_jet_idx"]]*(1-Events.Jet_rawFactor[Jetcut][MCInfo["d1_jet_idx"]]), 
+                              "mass": Events.Jet_mass[Jetcut][MCInfo["d1_jet_idx"]]
+                            })
+    d2_jet_pnet = vector.zip({"eta": Events.Jet_eta[Jetcut][MCInfo["d2_jet_idx"]], 
+                              "phi": Events.Jet_phi[Jetcut][MCInfo["d2_jet_idx"]], 
+                              "pt": Events.Jet_pt[Jetcut][MCInfo["d2_jet_idx"]]*Events.Jet_PNetRegPtRawCorr[Jetcut][MCInfo["d2_jet_idx"]]*(1-Events.Jet_rawFactor[Jetcut][MCInfo["d2_jet_idx"]]), 
+                              "mass": Events.Jet_mass[Jetcut][MCInfo["d2_jet_idx"]]
+                            })
+    MCInfo["dijet_hmass"] = ak.where(MCInfo["d1_jet_idx"] != MCInfo["d2_jet_idx"], (d1_jet+d2_jet).mass, d1_jet.mass)
+    MCInfo["dijet_hmass_pnet"] = ak.where(MCInfo["d1_jet_idx"] != MCInfo["d2_jet_idx"], (d1_jet_pnet+d2_jet_pnet).mass, d1_jet_pnet.mass)
+    
+    d1_pid = abs(Events.GenPart_pdgId[d1])
+    d2_pid = abs(Events.GenPart_pdgId[d2])
+    # ΔR_qq between the two daughter particles
+    MCInfo["MC_drqq"] = ones * deltaR(d1_eta, d2_eta, d1_phi, d2_phi)[:,0]
+    # check if daughter particles are b or c
+    d1_is_b = ak.unflatten(d1_pid==5, 1, axis=0)
+    d2_is_b = ak.unflatten(d2_pid==5, 1, axis=0)
+    d1_is_c = ak.unflatten(d1_pid==4, 1, axis=0)
+    d2_is_c = ak.unflatten(d2_pid==4, 1, axis=0)
+    d1_is_s = ak.unflatten(d1_pid==3, 1, axis=0)
+    d2_is_s = ak.unflatten(d2_pid==3, 1, axis=0)
+    h_hadronic = ((d1_is_b & d2_is_b) | (d1_is_c & d2_is_c) | (d1_is_s & d2_is_s)) * ones
+    # check if daughter particles are in PAIReD jet
+    ones_ = ak.unflatten(ones, 1, axis=-1)
+    d1_isIn = isInGenPart[ones_*d1]
+    d2_isIn = isInGenPart[ones_*d2]
+    # count how many lie inside (0, 1 or 2?)
+    h_daughters_in = (1*d1_isIn + d2_isIn)
+    use_h = ((h_daughters_in == 2) & (h_hadronic))[:,:,0]
+    # label the jet pairs:
+    MCInfo["label_BB"] = ( d1_is_b * d2_is_b )[:,:,0] * use_h
+    MCInfo["label_CC"] = ( d1_is_c * d2_is_c )[:,:,0] * use_h
+    MCInfo["MC_higgs_flav"] = ones * d1_pid[:,0]
+    MCInfo["MC_higgs_valid"] = ((h_daughters_in == 0) | (h_hadronic > 0))[:,:,0]
+    MCInfo["dijet_hmass"] = ak.flatten(MCInfo["dijet_hmass"]) * use_h
+    MCInfo["dijet_hmass_pnet"] = ak.flatten(MCInfo["dijet_hmass_pnet"]) * use_h
+    MCInfo["d1_jet_idx"] = ak.flatten(MCInfo["d1_jet_idx"]) * use_h
+    MCInfo["d2_jet_idx"] = ak.flatten(MCInfo["d2_jet_idx"]) * use_h
+
+    #print(MCInfo["label_BB"])
+    #print(MCInfo["MC_higgs_valid"])
+    lepton_indices = ak.local_index(Events.GenPart_pdgId, axis=1)[((abs(Events.GenPart_pdgId) == 11) | (abs(Events.GenPart_pdgId) == 13) | (abs(Events.GenPart_pdgId) == 15)) * (Events.GenPart_statusFlags%2 == 1) * ((Events.GenPart_statusFlags >> 12)%2 == 1)]
+    if ak.all(ak.num(lepton_indices) == 2):
+        #print("ITS WORKING DDONT WORRY")
+        for i in range(2):
+            lep_isIn = isInGenPart[ones_*lepton_indices[:,i]]
+            # count how many lie inside (0, 1 or 2?)
+            MCInfo["MC_higgs_valid"] = MCInfo["MC_higgs_valid"] * (~lep_isIn[:,:,0])
 
 def processHiggs_DY(Events, isInGenPart, MCInfo):
     ones = ak.ones_like(isInGenPart[:,:,0])
@@ -166,6 +269,10 @@ def processHiggs_DY(Events, isInGenPart, MCInfo):
     MCInfo["MC_drqq"] = ak.zeros_like(ones)
     MCInfo["label_BB"] = ak.zeros_like(ones)
     MCInfo["label_CC"] = ak.zeros_like(ones)
+    MCInfo["dijet_hmass"] = ak.zeros_like(ones)
+    MCInfo["dijet_hmass_pnet"] = ak.zeros_like(ones)
+    MCInfo["d1_jet_idx"] = ak.zeros_like(ones)
+    MCInfo["d2_jet_idx"] = ak.zeros_like(ones)
     # get indices of vector bosons
     lepton_indices = ak.local_index(Events.GenPart_pdgId, axis=1)[((abs(Events.GenPart_pdgId) == 11) | (abs(Events.GenPart_pdgId) == 13) | (abs(Events.GenPart_pdgId) == 15)) * (Events.GenPart_statusFlags%2 == 1) * ((Events.GenPart_statusFlags >> 12)%2 == 1)]
     #print('leptons', lepton_indices)
@@ -187,6 +294,10 @@ def processHiggs_TT(Events, isInGenPart, MCInfo):
     MCInfo["MC_drqq"] = ak.zeros_like(ones)
     MCInfo["label_BB"] = ak.zeros_like(ones)
     MCInfo["label_CC"] = ak.zeros_like(ones)
+    MCInfo["dijet_hmass"] = ak.zeros_like(ones)
+    MCInfo["dijet_hmass_pnet"] = ak.zeros_like(ones)
+    MCInfo["d1_jet_idx"] = ak.zeros_like(ones)
+    MCInfo["d2_jet_idx"] = ak.zeros_like(ones)
 
 def getMCInfo(Events, isInGenPart, Jet_genJetIdx, Jetcut, physics_process):
     # check if there is a Higgs in the event
@@ -227,11 +338,17 @@ def getMCInfo(Events, isInGenPart, Jet_genJetIdx, Jetcut, physics_process):
         "label_cx" : None,
         "label_ll" : None,
         "label_LL": None,
+        "dijet_hmass": None,
+        "dijet_hmass_pnet": None,
+        "d1_jet_idx": None,
+        "d2_jet_idx": None
     }
     # get the higgs information
-    if physics_process == 25: processHiggs_HH(Events, isInGenPart, higgs_indices, MCInfo)
+    if physics_process == 25: processHiggs_HH(Events, isInGenPart, higgs_indices, MCInfo, Jetcut)
+    elif physics_process == 26: processHiggs_VH(Events, isInGenPart, higgs_indices, MCInfo, Jetcut)
     elif physics_process == 23: processHiggs_DY(Events, isInGenPart, MCInfo)
     elif physics_process == 66: processHiggs_TT(Events, isInGenPart, MCInfo)
+    #print(ak.num(MCInfo["dijet_hmass"], axis=1))
     # get c/b quarks in GenParts
     # ensure that statusFlags bit 13 is True (isLastCopy)
     # reject quarks without mother particle (mostly pile-up)
@@ -259,7 +376,7 @@ def getMCInfo(Events, isInGenPart, Jet_genJetIdx, Jetcut, physics_process):
     #  - label cl: if no b quarks but one or more c quarks
     #  - label ll: if no b and no c quarks
     
-    if physics_process == 2525 or physics_process == 66: MCInfo["label_bb"] = (~MCInfo["label_CC"]) & (~MCInfo["label_BB"]) & (Nbottoms > 1)
+    MCInfo["label_bb"] = (~MCInfo["label_CC"]) & (~MCInfo["label_BB"]) & (Nbottoms > 1)
     MCInfo["label_LL"] = (~MCInfo["label_CC"]) & (~MCInfo["label_BB"])
     MCInfo["label_bx"] = (~MCInfo["label_CC"]) & (~MCInfo["label_BB"]) & (~MCInfo["label_bb"]) & (Nbottoms > 0)
     MCInfo["label_cx"] = (~MCInfo["label_CC"]) & (~MCInfo["label_BB"]) & (Nbottoms == 0) & (Ncharms > 0)

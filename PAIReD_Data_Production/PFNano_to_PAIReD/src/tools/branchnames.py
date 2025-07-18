@@ -6,16 +6,16 @@ BranchNames = {
               "d0err", "dzval", "dzerr", "mass", "puppiweight",
               "px", "py", "pz", "energy",
               "deta1", "deta2", "dphi1", "dphi2",
-              "jetindex", "in_jet1", "in_jet2","jetindex_cut"],
+              "jetindex", "in_jet1", "in_jet2"],
     "sv":    ["charge", "chi2", "dlen", "dlenSig", 
               "dxy", "dxySig", "eta", "mass", "ndof",
               "ntracks", "pAngle", "phi", "pt",
               "x", "y", "z",
               "deta1", "deta2", "dphi1", "dphi2"],
-    "jet":   ["eta", "phi", "pt", "nparticles", "energy", "rawfactor",
-              "index"],
+    "jet":   ["eta", "phi", "pt", "nparticles", "energy", "rawfactor", "hadronFlavour", "PNetRegPtRawCorr",
+              "index", "pnet_CvL", "pnet_CvB", "pnet_B", "part_CvL", "part_CvB", "part_B"],
     "dijet": ["eta", "phi", "pt", "mass", "nparticles",
-              "index", "ak4_mass", "pnet_mass"],
+              "index", "ak4_mass", "pnet_mass",  "pnet_mass_alt", "hf_mass", "hf_mass_pnet"],
     "singleValues": ['event', 'genweight','run', 'pv_n', 'pv_ngood', 'fgrfccpu', 'fgrfcc', 'Pileup_nPU',
                      'MC_higgs_pt','MC_higgs_eta','MC_higgs_phi','MC_higgs_mass',
                      'MC_gendijet_pt','MC_gendijet_eta','MC_gendijet_phi','MC_gendijet_mass',
@@ -23,7 +23,9 @@ BranchNames = {
                      'MC_n_c','MC_vector_flav', 'MC_lepton_channel',
                      'MC_drqq','MC_higgs_flav', 'MC_higgs_valid',
                      'MC_physics_process', 'extra_jets',
-                     'label_bb','label_cx','label_ll','label_bx', 'label_CC', 'label_BB', 'label_LL']
+                     'dijet_hmass_pnet', 'dijet_hmass'
+                     'label_bb','label_cx','label_ll','label_bx', 'label_CC', 'label_BB', 'label_LL',
+                     'd1_jet_idx', 'd2_jet_idx']
 }
 
 
@@ -91,4 +93,8 @@ outputTreeType =  {
     'label_ll': "int8",
     'label_LL': "int8",
     'extra_jets': "int8",
+    'dijet_hmass_pnet': "float32",
+    'dijet_hmass': "float32",
+    'd1_jet_idx': "uint8",
+    'd2_jet_idx': "uint8",
     }
