@@ -24,7 +24,7 @@ BranchNames = {
                      'MC_drqq','MC_higgs_flav', 'MC_higgs_valid',
                      'MC_physics_process', 'extra_jets',
                      'dijet_hmass_pnet', 'dijet_hmass'
-                     'label_bb','label_cx','label_ll','label_bx', 'label_CC', 'label_BB', 'label_LL',
+                     'label_bb','label_cx','label_ll','label_bx', 'label_CC', 'label_BB', 'label_LL', 'label_elCC', 'label_elBB'
                      'd1_jet_idx', 'd2_jet_idx']
 }
 
@@ -87,6 +87,8 @@ outputTreeType =  {
     'MC_physics_process': "uint8",
     'label_BB': "int8",
     'label_CC': "int8",
+    'label_elBB': "int8",
+    'label_elCC': "int8",
     'label_bb': "int8",
     'label_bx': "int8",
     'label_cx': "int8",

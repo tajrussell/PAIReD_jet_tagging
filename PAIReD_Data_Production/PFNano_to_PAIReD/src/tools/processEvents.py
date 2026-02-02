@@ -348,6 +348,10 @@ def processEvents(Events, physics_process=0, PAIReD_geometry="Ellipse"):
 
     if MCInfo == False:
         return False
+    MCInfo["label_BB"] = MCInfo["label_elBB"] & (jet1["hadronFlavour"] == 5) & (jet2["hadronFlavour"] == 5)
+    MCInfo["label_CC"] = MCInfo["label_elCC"] & (jet1["hadronFlavour"] == 4) & (jet2["hadronFlavour"] == 4)
+    MCInfo["label_elBB"] = MCInfo["label_elBB"] & (~MCInfo["label_BB"])
+    MCInfo["label_elCC"] = MCInfo["label_elCC"] & (~MCInfo["label_CC"])
 
     DataPAIReD = {
         "event" : event,
@@ -426,11 +430,11 @@ def processEvents(Events, physics_process=0, PAIReD_geometry="Ellipse"):
         event_set = set(flattened_Data['event'].tolist())
         rand_idx = np.random.permutation(len(event_set))
         if physics_process == 25:
-            split_ratio = 0.045
+            split_ratio = 0.06
         elif physics_process == 26:
             split_ratio = 0.9
         elif physics_process == 66:
-            split_ratio = 0.01
+            split_ratio = 0.012
         elif physics_process == 23:
             split_ratio = 0.9
         split_idx = int(split_ratio * len(event_set))

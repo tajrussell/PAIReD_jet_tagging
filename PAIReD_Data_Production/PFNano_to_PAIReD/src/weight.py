@@ -10,9 +10,9 @@ import glob
 #dijet_pt_bins = np.array([0.0, 137.9, 251.4, 381.5, 715.7, 99999.9])
 
 mc_mass_bins = np.array([25, 35, 45, 55, 65, 75, 85, 95, 105, 115, 125, 135, 145, 155, 165, 175, 185, 195, 205, 215, 225, 235, 245])
-reweight_classes = ['label_BB', 'label_CC', 'label_bb', 'label_bx', 'label_cx', 'label_ll']
-class_weights = {'label_BB': 1.0, 'label_CC': 1.0, 'label_bb': 0.08, 'label_bx': 0.18, 'label_cx': 0.28, 'label_ll': 0.7}
-class_counts = {'label_BB': 0, 'label_CC': 0, 'label_bb': 0, 'label_bx': 0, 'label_cx': 0, 'label_ll': 0}
+reweight_classes = ['label_BB', 'label_CC', 'label_elBB', 'label_elCC', 'label_bb', 'label_bx', 'label_cx', 'label_ll']
+class_weights = {'label_BB': 0.025, 'label_CC': 0.09, 'label_elBB': 1.0, 'label_elCC': 1.0, 'label_bb': 0.06, 'label_bx': 0.08, 'label_cx': 0.2, 'label_ll': 0.7}
+class_counts = {'label_BB': 0, 'label_CC': 0, 'label_elBB': 0, 'label_elCC': 0, 'label_bb': 0, 'label_bx': 0, 'label_cx': 0, 'label_ll': 0}
 reweight_threshold = 0.1
 
 directories = ["../data/clustered_1GeV/XtoHH/MX-500-1000/", "../data/clustered_1GeV/XtoHH/MX-1000-4000/", "../data/clustered_1GeV/DY", "../data/clustered_1GeV/TT", "../data/clustered_1GeV/ZHvar"]
@@ -41,12 +41,9 @@ def find_quantiles(directories):
     gendijet_mass_quartiles = np.percentile(np.array(cc_gendijet_mass), [10,20,30,40,50,60,70,80,90,100])
     print("HERE ARE THE QUANTILES")
     print(gendijet_mass_quartiles)
-    print("HERE ARE THE JET COUNTS")
-    for key, val in num_jets.items():
-        print(key, val)
-    return np.concatenate(([0], dijet_pt_quartiles, [9999999]))#, np.concatenate(([0], gendijet_mass_quartiles, [9999999]))
+    return np.concatenate(([0], dijet_pt_quartiles, [9999999])), num_jets#, np.concatenate(([0], gendijet_mass_quartiles, [9999999]))
 
-dijet_pt_bins = find_quantiles(directories)
+dijet_pt_bins, num_jets = find_quantiles(directories)
 print(dijet_pt_bins)
 #print(mc_mass_bins)
 
@@ -104,23 +101,30 @@ def plot_weights(weights, final=False):
         plt.close(fig)
 
 def adjust_weights(weights):
-    max_weight = 0
+    label_max_weights = {label: 0 for label in reweight_classes}
     for pt_idx in event_counts:
         for mass_idx in event_counts[pt_idx]:
             for label in reweight_classes:
-                if weights[(pt_idx, mass_idx)][label] > max_weight: max_weight = weights[(pt_idx, mass_idx)][label]
+                w = weights[(pt_idx, mass_idx)][label]
+                if w > label_max_weights[label]:
+                    label_max_weights[label] = w
+    global_max = max(label_max_weights.values())
     for pt_idx in event_counts:
         for mass_idx in event_counts[pt_idx]:
             for label in reweight_classes:
-                weights[(pt_idx, mass_idx)][label] = max(weights[(pt_idx, mass_idx)][label]/max_weight, reweight_threshold)
-    return weights
+                weights[(pt_idx, mass_idx)][label] = max(
+                    weights[(pt_idx, mass_idx)][label] / global_max,
+                    reweight_threshold,
+                )
+    return weights, label_max_weights, global_max
+
 
 for directory in directories:
     process_files(directory)
 
 weights = compute_weights()
 plot_weights(weights)
-weights = adjust_weights(weights)
+weights, max_weights, global_max_weight = adjust_weights(weights)
 plot_weights(weights, final=True)
 sorted_weights = sorted(weights.items())
 print(dijet_pt_bins)
@@ -135,5 +139,15 @@ with uproot.recreate("reweight.root") as file:
     file["tree"] = {"weights": output_array}
 
 print("Weights saved to reweight.root")
+
+print("Numbers of jets / number of ZHvar jets")
+ZHvar_njets = num_jets["../data/clustered_1GeV/ZHvar"]
+for key, val in num_jets.items():
+    print(key, val/ZHvar_njets)
+
+print("Adjusted max weights per label")
+for key, val in max_weights.items():
+    print(key, val/global_max_weight)
+
 
 

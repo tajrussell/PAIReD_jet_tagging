@@ -144,24 +144,24 @@ def processHiggs_HH(Events, isInGenPart, higgs_idx, MCInfo, Jetcut):
         # - BB if both daughters are b quarks and inside the PAIReD jet
         # - CC if both daughters are c quarks and inside the PAIReD jet
         # - LL else
-        singleInfo["label_BB_"+str(i)] = ( d1_is_b * d2_is_b )[:,:,0]
-        singleInfo["label_CC_"+str(i)] = ( d1_is_c * d2_is_c )[:,:,0]
+        singleInfo["label_elBB_"+str(i)] = ( d1_is_b * d2_is_b )[:,:,0]
+        singleInfo["label_elCC_"+str(i)] = ( d1_is_c * d2_is_c )[:,:,0]
         singleInfo["MC_higgs_flav_"+str(i)] = ones * d1_pid[:,0]
 
     use_h_0 = ((singleInfo["h_daughters_in_0"] == 2) * (singleInfo["h_daughters_in_1"] == 0) * (singleInfo["h_hadronic_0"]))[:,:,0]
     use_h_1 = ((singleInfo["h_daughters_in_1"] == 2) * (singleInfo["h_daughters_in_0"] == 0) * (singleInfo["h_hadronic_1"]))[:,:,0]
-    singleInfo["label_BB_0"] = singleInfo["label_BB_0"] * use_h_0
-    singleInfo["label_BB_1"] = singleInfo["label_BB_1"] * use_h_1
-    singleInfo["label_CC_0"] = singleInfo["label_CC_0"] * use_h_0
-    singleInfo["label_CC_1"] = singleInfo["label_CC_1"] * use_h_1
+    singleInfo["label_elBB_0"] = singleInfo["label_elBB_0"] * use_h_0
+    singleInfo["label_elBB_1"] = singleInfo["label_elBB_1"] * use_h_1
+    singleInfo["label_elCC_0"] = singleInfo["label_elCC_0"] * use_h_0
+    singleInfo["label_elCC_1"] = singleInfo["label_elCC_1"] * use_h_1
 
     MCInfo["dijet_hmass"] = (singleInfo["dijet_hmass_0"] * use_h_0) + (singleInfo["dijet_hmass_1"] * use_h_1)
     MCInfo["dijet_hmass_pnet"] = (singleInfo["dijet_hmass_pnet_0"] * use_h_0) + (singleInfo["dijet_hmass_pnet_1"] * use_h_1)
     MCInfo["d1_jet_idx"] = (singleInfo["d1_jet_idx_0"] * use_h_0) + (singleInfo["d1_jet_idx_1"] * use_h_1)
     MCInfo["d2_jet_idx"] = (singleInfo["d2_jet_idx_0"] * use_h_0) + (singleInfo["d2_jet_idx_1"] * use_h_1)
 
-    MCInfo["label_BB"] = singleInfo["label_BB_0"] | singleInfo["label_BB_1"]
-    MCInfo["label_CC"] = (~MCInfo["label_BB"]) & (singleInfo["label_CC_0"] | singleInfo["label_CC_1"])
+    MCInfo["label_elBB"] = singleInfo["label_elBB_0"] | singleInfo["label_elBB_1"]
+    MCInfo["label_elCC"] = (~MCInfo["label_elBB"]) & (singleInfo["label_elCC_0"] | singleInfo["label_elCC_1"])
 
     MCInfo["MC_higgs_valid"] = ((singleInfo["h_daughters_in_0"] + singleInfo["h_daughters_in_1"]) < 3)[:,:,0]
     MCInfo["MC_higgs_valid"] = MCInfo["MC_higgs_valid"] * ((singleInfo["h_daughters_in_0"] == 0) | (singleInfo["h_hadronic_0"] > 0))[:,:,0]
@@ -238,8 +238,8 @@ def processHiggs_VH(Events, isInGenPart, higgs_idx, MCInfo, Jetcut):
     h_daughters_in = (1*d1_isIn + d2_isIn)
     use_h = ((h_daughters_in == 2) & (h_hadronic))[:,:,0]
     # label the jet pairs:
-    MCInfo["label_BB"] = ( d1_is_b * d2_is_b )[:,:,0] * use_h
-    MCInfo["label_CC"] = ( d1_is_c * d2_is_c )[:,:,0] * use_h
+    MCInfo["label_elBB"] = ( d1_is_b * d2_is_b )[:,:,0] * use_h
+    MCInfo["label_elCC"] = ( d1_is_c * d2_is_c )[:,:,0] * use_h
     MCInfo["MC_higgs_flav"] = ones * d1_pid[:,0]
     MCInfo["MC_higgs_valid"] = ((h_daughters_in == 0) | (h_hadronic > 0))[:,:,0]
     MCInfo["dijet_hmass"] = ak.flatten(MCInfo["dijet_hmass"]) * use_h
@@ -267,8 +267,8 @@ def processHiggs_DY(Events, isInGenPart, MCInfo):
     MCInfo["MC_higgs_flav"] = ak.zeros_like(ones)
     MCInfo["MC_higgs_valid"] = ak.ones_like(ones)
     MCInfo["MC_drqq"] = ak.zeros_like(ones)
-    MCInfo["label_BB"] = ak.zeros_like(ones)
-    MCInfo["label_CC"] = ak.zeros_like(ones)
+    MCInfo["label_elBB"] = ak.zeros_like(ones)
+    MCInfo["label_elCC"] = ak.zeros_like(ones)
     MCInfo["dijet_hmass"] = ak.zeros_like(ones)
     MCInfo["dijet_hmass_pnet"] = ak.zeros_like(ones)
     MCInfo["d1_jet_idx"] = ak.zeros_like(ones)
@@ -292,8 +292,8 @@ def processHiggs_TT(Events, isInGenPart, MCInfo):
     MCInfo["MC_higgs_flav"] = ak.zeros_like(ones)
     MCInfo["MC_higgs_valid"] = ak.ones_like(ones)
     MCInfo["MC_drqq"] = ak.zeros_like(ones)
-    MCInfo["label_BB"] = ak.zeros_like(ones)
-    MCInfo["label_CC"] = ak.zeros_like(ones)
+    MCInfo["label_elBB"] = ak.zeros_like(ones)
+    MCInfo["label_elCC"] = ak.zeros_like(ones)
     MCInfo["dijet_hmass"] = ak.zeros_like(ones)
     MCInfo["dijet_hmass_pnet"] = ak.zeros_like(ones)
     MCInfo["d1_jet_idx"] = ak.zeros_like(ones)
@@ -331,8 +331,8 @@ def getMCInfo(Events, isInGenPart, Jet_genJetIdx, Jetcut, physics_process):
         "MC_genjet2_matched" : None,
         "MC_drqq" : ak.zeros_like(ones),
         "MC_n_c" : ak.ones_like(ones),
-        "label_BB" : None,
-        "label_CC" : None,
+        "label_elBB" : None,
+        "label_elCC" : None,
         "label_bb" : ak.full_like(ones, False),
         "label_bx" : None,
         "label_cx" : None,
@@ -376,11 +376,11 @@ def getMCInfo(Events, isInGenPart, Jet_genJetIdx, Jetcut, physics_process):
     #  - label cl: if no b quarks but one or more c quarks
     #  - label ll: if no b and no c quarks
     
-    MCInfo["label_bb"] = (~MCInfo["label_CC"]) & (~MCInfo["label_BB"]) & (Nbottoms > 1)
-    MCInfo["label_LL"] = (~MCInfo["label_CC"]) & (~MCInfo["label_BB"])
-    MCInfo["label_bx"] = (~MCInfo["label_CC"]) & (~MCInfo["label_BB"]) & (~MCInfo["label_bb"]) & (Nbottoms > 0)
-    MCInfo["label_cx"] = (~MCInfo["label_CC"]) & (~MCInfo["label_BB"]) & (Nbottoms == 0) & (Ncharms > 0)
-    MCInfo["label_ll"] = (~MCInfo["label_CC"]) & (~MCInfo["label_BB"]) & (Nbottoms == 0) & (Ncharms == 0)
+    MCInfo["label_bb"] = (~MCInfo["label_elCC"]) & (~MCInfo["label_elBB"]) & (Nbottoms > 1)
+    MCInfo["label_LL"] = (~MCInfo["label_elCC"]) & (~MCInfo["label_elBB"])
+    MCInfo["label_bx"] = (~MCInfo["label_elCC"]) & (~MCInfo["label_elBB"]) & (~MCInfo["label_bb"]) & (Nbottoms > 0)
+    MCInfo["label_cx"] = (~MCInfo["label_elCC"]) & (~MCInfo["label_elBB"]) & (Nbottoms == 0) & (Ncharms > 0)
+    MCInfo["label_ll"] = (~MCInfo["label_elCC"]) & (~MCInfo["label_elBB"]) & (Nbottoms == 0) & (Ncharms == 0)
 
     # check if there is a vector boson in the event
     hasVector = ak.any((abs(Events.GenPart_pdgId) == 23) | (abs(Events.GenPart_pdgId) == 24), axis=1)

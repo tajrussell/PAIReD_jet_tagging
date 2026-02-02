@@ -13,7 +13,6 @@ cd execute/job_X51C_$3
 cp /home/trussel1/PAIReD_jet_tagging/PAIReD_Data_Production/PFNano_to_PAIReD/src/processFileToPAIReD.py .
 cp -r /home/trussel1/PAIReD_jet_tagging/PAIReD_Data_Production/PFNano_to_PAIReD/src/tools .
 ulimit -s unlimited
-cd src
 
 cp /home/trussel1/bruxhcc/XtoHH_MX-500to1000/$1 $temp_input
 source /home/trussel1/miniconda3/etc/profile.d/conda.sh
