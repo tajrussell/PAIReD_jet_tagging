@@ -140,40 +140,25 @@ def processEvents(Events, physics_process=0, PAIReD_geometry="Ellipse"):
     dijet_hf_mass = two_bjets * ak.sum(extra_jets[jet_is_b], axis=2).mass
     dijet_hf_mass_pnet = two_bjets * ak.sum(extra_pnets[jet_is_b], axis=2).mass
     dijet_hf_mass = dijet_hf_mass + (two_cjets * ak.sum(extra_jets[jet_is_c], axis=2).mass)
-    dijet_hf_mass_pnet = dijet_hf_mass + (two_cjets * ak.sum(extra_pnets[jet_is_c], axis=2).mass)
+    dijet_hf_mass_pnet = dijet_hf_mass_pnet + (two_cjets * ak.sum(extra_pnets[jet_is_c], axis=2).mass)
 
     # get particles inside the PAIReD jet
     if "Cluster" in PAIReD_geometry:
         isInPart, isJ1, isJ2 = isClustered(Jet.j1.index, Jet.j2.index, Part["jetindex"])
+
         if "HighPT" in PAIReD_geometry:
             isInEllipse = isInPAIReD(Jet.j1.eta, Jet.j2.eta, Jet.j1.phi, Jet.j2.phi, Part["eta"], Part["phi"])           
             isHighPtInEllipse = isHighPt(isInEllipse, Part["pt"], cutoff=500)
-
-            #total_parts = ak.sum((isInPart) > -1)
             total_clustered = ak.sum(isInPart)
-            #total_ellipse = ak.sum(isInEllipse)
             isClusteredInEllipse = (isInEllipse) & (isInPart)
-            #isJ1InEllipse = (isJ1) & (isInEllipse)
-            #isJ2InEllipse = (isJ2) & (isInEllipse)
-            #total_j1_ellipse = ak.sum(isJ1InEllipse)
-            #total_j2_ellipse = ak.sum(isJ2InEllipse)
             total_clustered_ellipse = ak.sum(isClusteredInEllipse)
-            
-            #print("Ratio of particles that are clustered:", total_clustered/total_parts)
-            #print("Ratio of particles that are in ellipses:", total_ellipse/total_parts)
-            #print("Ratio of particles in ellipse that are clustered:", total_clustered_ellipse/total_ellipse)
-            #print("Ratio of clustered particles that are in the ellipse:", total_clustered_ellipse/total_clustered)
-            #print("Ratio of particles in ellipse clustered to jet 1:", total_j1_ellipse/total_ellipse)
-            #print("Ratio of particles in ellipse clustered to jet 2:", total_j2_ellipse/total_ellipse)
-            
             isInPart = (isInPart) | (isHighPtInEllipse)
-            #print(ak.sum(isInEllipse, axis=-1))
-            #print(ak.sum(isInPart, axis=-1))
+
     elif PAIReD_geometry == "AKX":
         isInPart, major_axes = isInPAIReD(Jet.j1.eta, Jet.j2.eta, Jet.j1.phi, Jet.j2.phi, Part["eta"], Part["phi"], return_semimajor=True)
+
     else:
         isInPart = isInPAIReD(Jet.j1.eta, Jet.j2.eta, Jet.j1.phi, Jet.j2.phi, Part["eta"], Part["phi"])
-        #print(ak.sum(isInPart, axis=-1))
     # get the generated particles inside the PAIReD jet
     isInGenPart = isInPAIReD(Jet.j1.eta, Jet.j2.eta, Jet.j1.phi, Jet.j2.phi,
                 Events.GenPart_eta, Events.GenPart_phi)
@@ -187,36 +172,31 @@ def processEvents(Events, physics_process=0, PAIReD_geometry="Ellipse"):
     for name in Part.keys():
         Part[name] = ak.unflatten(Part[name], 1, axis=0)
         Part[name], isInPart = ak.broadcast_arrays(Part[name], isInPart)
-        #print(ak.sum(isInPart, axis=-1))
         Part[name] = Part[name][isInPart]
-        #print(name)
-        #print(Part[name])
+
     # Run AK clustering for AKX geometry and redo Part
     if PAIReD_geometry == "AKX":
         survives_drop = ak.zeros_like(Part["pt"], dtype=bool).to_list()
         major_axes = ak.flatten(major_axes)
         major_axes = ak.flatten(major_axes)
-        #print(major_axes)
-        #print(len(Part["pt"]))
-        #print(ak.num(Part["pt"]))
-        #print(ak.num(Part["pt"], axis=2))
-        #print(Part["pt"])
         axis_idx = 0
         ratios_kept = dict()
+
         for zcut in [0.1, 0.2, 0.3, 0.5, 0.7]:
             ratios_kept[zcut] = dict()
             for beta in [0,1]:
                 ratios_kept[zcut][beta] = []
+
         for event_idx in range(len(Part["pt"])):
             for dijet_idx in range(ak.num(Part["pt"])[event_idx]):
                 #print("new jet")
                 jetparticles = []
+
                 for part_idx in range(ak.num(Part["pt"], axis=2)[event_idx][dijet_idx]):
                     ppx = Part["pt"][event_idx][dijet_idx][part_idx] * np.cos(Part["phi"][event_idx][dijet_idx][part_idx])
                     ppy = Part["pt"][event_idx][dijet_idx][part_idx] * np.sin(Part["phi"][event_idx][dijet_idx][part_idx])
                     ppz = Part["pt"][event_idx][dijet_idx][part_idx] * np.sinh(Part["eta"][event_idx][dijet_idx][part_idx])
                     pE  = np.sqrt(ppx**2 + ppy**2 + ppz**2 + Part["mass"][event_idx][dijet_idx][part_idx]**2)
-                    #print(ppx, ppy, ppz, pE)
                     pj = fastjet.PseudoJet(float(ppx), float(ppy), float(ppz), float(pE))
                     pj.set_user_index(part_idx)
                     jetparticles.append(pj)
@@ -225,7 +205,7 @@ def processEvents(Events, physics_process=0, PAIReD_geometry="Ellipse"):
                 cluster = fastjet.ClusterSequence(jetparticles, jetdef)
                 cjet = cluster.inclusive_jets()
                 assert(len(cjet) == 1)
-                #print(len(cjet))
+
                 for zcut in [0.1, 0.2, 0.3, 0.5, 0.7]:
                     for beta in [0,1]:
                         hard_jet = soft_drop(cjet[0], zcut=zcut, beta=beta, R0=major_axes[axis_idx])
@@ -233,9 +213,9 @@ def processEvents(Events, physics_process=0, PAIReD_geometry="Ellipse"):
                 hard_jet = soft_drop(cjet[0], zcut=0.1, beta=1, R0=major_axes[axis_idx])
                 #print(f"Ratio of particles kept: {len(get_constituent_indices(hard_jet)) / ak.num(Part['pt'], axis=2)[event_idx][dijet_idx]:.2f}, Particles in original jet: {ak.num(Part['pt'], axis=2)[event_idx][dijet_idx]}")
                 for part_idx in get_constituent_indices(hard_jet):
-                    #print("saving", part_idx)
                     survives_drop[event_idx][dijet_idx][part_idx] = True
                 axis_idx += 1
+
         survives_drop = ak.Array(survives_drop)
         for name in Part.keys():
             Part[name] = Part[name][survives_drop]
@@ -253,9 +233,6 @@ def processEvents(Events, physics_process=0, PAIReD_geometry="Ellipse"):
         plt.tight_layout()
         plt.savefig("zbeta.png")
         plt.clf()
-
-            
-
 
     # make SV arrays broadcastable with isInSV
     # and drop all SVs that are not in the PAIReD jet
@@ -275,7 +252,6 @@ def processEvents(Events, physics_process=0, PAIReD_geometry="Ellipse"):
     Part["py"] = Part4.py
     Part["pz"] = Part4.pz
     Part["energy"] = Part4.E
-    #print(Part["energy"])
     # calculate deta and dphi with respect to the jets
     # (part_eta - jet1_eta) * (jet1_eta > 0 ? 1 : -1)
     Part["deta1"] = (Part["eta"] - Jet.j1.eta) * (-1)**(Jet.j1.eta < 0)
@@ -341,8 +317,6 @@ def processEvents(Events, physics_process=0, PAIReD_geometry="Ellipse"):
     fgrfcc = Events.Rho_fixedGridRhoFastjetCentralCalo * ones
     fgrfccpu = Events.Rho_fixedGridRhoFastjetCentralChargedPileUp * ones
     MC_physics_process = physics_process * ones
-    #print("part.pt")
-    #print(ak.num(part.pt, axis=-1))
     # get summarized information from the MC simulation
     MCInfo = getMCInfo(Events, isInGenPart, Jet_genJetIdx, Jetcut, physics_process)
 
@@ -386,71 +360,31 @@ def processEvents(Events, physics_process=0, PAIReD_geometry="Ellipse"):
             for i,n in enumerate(DataPAIReD[name].fields):
                 precut = ak.unzip(DataPAIReD[name], highlevel=True)[i]
                 postcut_dict[n] = precut[total_cut]
-                #if name == "part" and n == "pt":
-                #    print(precut)
-                #    print(ak.num(precut, axis=-1))
-                #    print(postcut_dict[n])
-                #    print(ak.num(postcut_dict[n], axis=-1))
             postcut = ak.zip(postcut_dict)
         else:
             postcut = ak.copy(DataPAIReD[name][total_cut])
         flattened = ak.copy(ak.flatten(postcut, axis=1))
         flattened_Data[name] = flattened
-    '''# add reweighting
-    reweights = dict()
-    with uproot.open("tools/reweight.root") as file:
-        reweights["label_BB"] = file["tree"]["weights_label_BB"].array()
-        reweights["label_CC"] = file["tree"]["weights_label_CC"].array()
-        reweights["label_bx"] = file["tree"]["weights_label_bx"].array()
-        reweights["label_cx"] = file["tree"]["weights_label_cx"].array()
-        reweights["label_ll"] = file["tree"]["weights_label_ll"].array()
-    #dijet_pt_bins = np.array([0.0, 195.8, 381.5, 99999.9])
-    dijet_pt_bins = np.array([0.00000000e+00, 3.03419350e+02, 4.66926422e+02, 9.08118271e+02, 9.99999900e+06])
-    mc_mass_bins = np.array([25, 35, 45, 55, 65, 75, 85, 95, 105, 115, 125, 135, 145, 155, 165, 175, 185, 195, 205, 215, 225, 235, 245])
-    pt_idx = np.digitize(flattened_Data["dijet"]["pt"], dijet_pt_bins) - 1
-    mass_idx = np.digitize(flattened_Data["MC_gendijet_mass"], mc_mass_bins) - 1
-    weight_mask = (pt_idx >= 0) & (pt_idx < len(dijet_pt_bins)-1) & (mass_idx >= 0) & (mass_idx < len(mc_mass_bins)-1)
-    weight_idx = pt_idx*(len(mc_mass_bins)-1) + mass_idx
-    weight_idx = np.where(weight_mask, weight_idx, 0)
-    training_weights = ak.zeros_like(weight_idx, dtype=float)
-    for label in ["label_BB", "label_CC", "label_bx", "label_cx", "label_ll"]:
-        label_mask = ak.Array(weight_mask) & ak.fill_none(flattened_Data[label], False)
-        label_reweights = ak.Array(reweights[label][weight_idx])
-        training_weights = training_weights + ak.where(label_mask, label_reweights, 0)
-    flattened_Data["training_weight"] = training_weights'''
 
-    if False:
-        num_jets = len(flattened_Data["event"])
-        np.random.seed(0)
-        rand_idx = np.random.permutation(num_jets)
-        split_idx = int(0.9 * num_jets)
-        train_idx = rand_idx[:split_idx]
-        test_idx = rand_idx[split_idx:]
-    else:
-        event_set = set(flattened_Data['event'].tolist())
-        rand_idx = np.random.permutation(len(event_set))
-        if physics_process == 25:
-            split_ratio = 0.06
-        elif physics_process == 26:
-            split_ratio = 0.9
-        elif physics_process == 66:
-            split_ratio = 0.012
-        elif physics_process == 23:
-            split_ratio = 0.9
-        split_idx = int(split_ratio * len(event_set))
-        test_split_idx = int(split_ratio * 1.1 * len(event_set))
-        train_events = np.array(list(event_set))[rand_idx[:split_idx]]
-        test_events = np.array(list(event_set))[rand_idx[split_idx:test_split_idx]]
-        jet_events = np.array(flattened_Data['event'])
-        #print(len(jet_events), jet_events)
-        train_idx = np.isin(jet_events, train_events)
-        #print(len(train_idx), train_idx)
-        #print(ak.num(jet_events), ak.num(train_idx))
-        test_idx = np.isin(jet_events, test_events)
-        #print(len(test_idx), test_idx)
+    event_set = set(flattened_Data['event'].tolist())
+    rand_idx = np.random.permutation(len(event_set))
+    if physics_process == 25:
+        split_ratio = 0.06
+    elif physics_process == 26:
+        split_ratio = 0.9
+    elif physics_process == 66:
+        split_ratio = 0.012
+    elif physics_process == 23:
+        split_ratio = 0.9
+    split_idx = int(split_ratio * len(event_set))
+    test_split_idx = int(split_ratio * 1.1 * len(event_set))
+    train_events = np.array(list(event_set))[rand_idx[:split_idx]]
+    test_events = np.array(list(event_set))[rand_idx[split_idx:test_split_idx]]
+    jet_events = np.array(flattened_Data['event'])
+    train_idx = np.isin(jet_events, train_events)
+    test_idx = np.isin(jet_events, test_events)
 
     split_data, split_data_test = dict(), dict()
-    #print(ak.num(flattened_Data["part"].pt))
     for name in flattened_Data.keys():
         if flattened_Data[name].fields:
             split_data_dict = dict()
@@ -464,5 +398,4 @@ def processEvents(Events, physics_process=0, PAIReD_geometry="Ellipse"):
         else:
             split_data_test[name] = flattened_Data[name][test_idx]
             split_data[name] = flattened_Data[name][train_idx]
-    #print(ak.num(split_data["part"].pt))
     return split_data, split_data_test
