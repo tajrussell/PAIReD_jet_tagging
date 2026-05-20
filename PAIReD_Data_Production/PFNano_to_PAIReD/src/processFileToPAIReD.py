@@ -33,6 +33,7 @@ import json
 import time
 import argparse
 import os
+import hashlib
 
 # ******************************************************************************
 
@@ -73,8 +74,14 @@ Returns
     nothing, but creates an output file with the transformed data
 """
 
+def stable_hash64(s):
+    return np.frombuffer(
+        hashlib.sha1(s.encode()).digest()[:8],
+        dtype=np.uint64
+    )[0]
+
 def makeNtuplesPAIReDjointMC(inputFilePath, outputFilePath, batchsize = "10 MB",
-    N_update = 10, N_events_to_process = -1, physics_process = 0, PAIReD_geometry = "Ellipse"):
+    N_update = 10, N_events_to_process = -1, physics_process = 0, PAIReD_geometry = "Ellipse", file_label=0):
 
     print("\n*****************************************************************")
     print("  Start makeNtuplesPAIReDjointMC()")
@@ -142,7 +149,7 @@ def makeNtuplesPAIReDjointMC(inputFilePath, outputFilePath, batchsize = "10 MB",
                     continue
 
                 # process the events
-                DataPAIReD, testDataPAIReD = processEvents(Events, physics_process=physics_process, PAIReD_geometry=PAIReD_geometry)
+                DataPAIReD, testDataPAIReD = processEvents(Events, physics_process=physics_process, PAIReD_geometry=PAIReD_geometry, file_label=file_label)
                 # check if processing worked
                 if DataPAIReD == False:
                     print("   * Batch %i was not processed" % N_processed)
@@ -175,13 +182,14 @@ if __name__ == "__main__":
     parser = argparse.ArgumentParser(description="Process MC PFNano files to the PAIReD data format for training.")
     parser.add_argument("inputFilePath", help="Path to the ROOT input file (NanoAOD processed by PFNano, has to contain particle flow candidates (PFcands))")
     parser.add_argument("outputFilePath",  help="Path and name of the ROOT output file")
-    parser.add_argument("--batchsize", default="100 MB", help="Size of the batches of events that are handled simultaneously (default is '100 MB'). Can be an integer (=number of events) or a string (specifying the data size, e.g. '100 MB')")
+    parser.add_argument("--batchsize", default="10 MB", help="Size of the batches of events that are handled simultaneously (default is '100 MB'). Can be an integer (=number of events) or a string (specifying the data size, e.g. '100 MB')")
     parser.add_argument("--N-update", type=int, default=10, help="Number of batches processed before printing an update in the terminal: e.g., 'process event batch 10 of 15' (default is 10)")
     parser.add_argument("-n", "--nevents", type=int, default=-1,  help="Number of events to be processed")
     parser.add_argument("-p", "--physicsprocess", type=int, default=0,  help="Integer indicating the physics process. Default is 0.")
     parser.add_argument("-g", "--geometry", type=str, default="Ellipse",  help="String indicating the geometry of the PAIReD jet. Default is Ellipse.")
+    parser.add_argument("-l", "--label", type=str, default="PAIReD_EX", help="Label to help with unique identification of events")
     args = parser.parse_args()
 
     makeNtuplesPAIReDjointMC(args.inputFilePath, args.outputFilePath,
         batchsize=args.batchsize, N_update=args.N_update, 
-        N_events_to_process=args.nevents, physics_process=args.physicsprocess, PAIReD_geometry=args.geometry)
+        N_events_to_process=args.nevents, physics_process=args.physicsprocess, PAIReD_geometry=args.geometry, file_label=stable_hash64(args.label))

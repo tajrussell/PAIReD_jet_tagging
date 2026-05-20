@@ -1,0 +1,431 @@
+treename:
+  tree
+
+selection:
+  (ak.num(part_energy) > 0) & (MC_higgs_valid) & (MC_higgs_mass >= 20) & ((label_CC==1) | (label_BB==1))
+test_time_selection:
+  (ak.num(part_energy) > 0) & (MC_higgs_valid) & (MC_higgs_mass >= 20) & ((label_CC==1) | (label_BB==1))
+
+preprocess:
+  ### method: [manual, auto] - whether to use manually specified parameters for variable standardization
+  method: manual
+  ### data_fraction: fraction of events to use when calculating the mean/scale for the standardization
+  data_fraction: null
+  params: null
+
+new_variables:
+  ### [format] name: formula
+  ### can use functions from `math`, `np` (numpy), and `awkward` in the expression
+  part_mask: ak.ones_like(part_energy)
+  part_pt_log: np.where(np.isnan(np.log(part_pt)), -1e3, np.log(part_pt))
+  part_e_log: np.where(np.isnan(np.log(part_energy)), -1e3, np.log(part_energy))
+  jet1_rawenergy: jet1_energy * (1-jet1_rawfactor)
+  jet2_rawenergy: jet2_energy * (1-jet2_rawfactor)
+  jet1_rawpt: jet1_pt * (1-jet1_rawfactor)
+  jet2_rawpt: jet2_pt * (1-jet2_rawfactor)
+  part_logptrel: np.where(np.isnan(np.log(part_pt/(jet1_rawpt+jet2_rawpt))), -1e3,
+    np.log(part_pt/(jet1_rawpt+jet2_rawpt)))
+  part_logerel: np.where(np.isnan(np.log(part_energy/(jet1_rawenergy+jet2_rawenergy))),
+    -1e3, np.log(part_energy/(jet1_rawenergy+jet2_rawenergy)))
+  part_deltaR1: np.hypot(part_deta1, part_dphi1)
+  part_deltaR2: np.hypot(part_deta2, part_dphi2)
+  part_d0: np.where(part_d0val==-1, -1.5, np.tanh(part_d0val))
+  part_dz: np.where(part_dzval==-1, -1.5, np.tanh(part_dzval))
+  sv_px: np.cos(sv_phi) * sv_pt
+  sv_py: np.sin(sv_phi) * sv_pt
+  sv_pz: np.sinh(sv_eta) * sv_pt
+  sv_energy: np.sqrt(sv_mass**2 + (sv_pt*np.cosh(sv_eta))**2)
+  sv_mask: ak.ones_like(sv_pt)
+  class_WpHcc: (MC_physics_process==1)
+  class_WmHcc: (MC_physics_process==2)
+  class_ZHcc: (MC_physics_process==3)
+  class_WpHbb: (MC_physics_process==11)
+  class_WmHbb: (MC_physics_process==12)
+  class_ZHbb: (MC_physics_process==13)
+  class_DY: (MC_physics_process==23)
+  class_W: (MC_physics_process==22)
+  class_TT: (MC_physics_process==66)
+  class_XtoHH: (MC_physics_process==25)
+
+
+inputs:
+  pf_features:
+    length: 128
+    pad_mode: wrap
+    vars:
+      - [part_pt_log, 1., 0.25]
+      - [part_e_log, 2.0, 0.25]
+      - [part_logptrel, -4.7, 0.25]
+      - [part_logerel, -4.7, 0.25]
+      - [part_deltaR1, null]
+      - [part_deltaR2, null]
+      - [part_charge, null]
+      - [part_d0, null]
+      - [part_d0err, 0, 1, 0, 1]
+      - [part_dz, null]
+      - [part_dzerr, 0, 1, 0, 1]
+      - [part_deta1, null]
+      - [part_dphi1, null]
+      - [part_deta2, null]
+      - [part_dphi2, null]
+      - [part_puppiweight, null]
+  pf_vectors:
+    length: 128
+    pad_mode: wrap
+    vars:
+    - - part_px
+      - null
+    - - part_py
+      - null
+    - - part_pz
+      - null
+    - - part_energy
+      - null
+  pf_mask:
+    length: 128
+    pad_mode: constant
+    vars:
+    - [part_mask, null]
+  sv_features:
+    length: 10
+    pad_mode: wrap
+    vars:
+      - sv_charge
+      - [sv_chi2, 0, 0.25]
+      - [sv_dlen, 0, 0.05]
+      - [sv_dlenSig, 0, 0.01]
+      - [sv_dxy, 0, 0.05]
+      - [sv_dxySig, 0, 0.01]
+      - sv_eta
+      - [sv_mass, 0, 0.1]
+      - [sv_ndof, 0, 0.1]
+      - [sv_ntracks, 0, 0.1]
+      - [sv_pAngle, 0, 0.33]
+      - sv_phi
+      - [sv_pt, 0, 0.01]
+      - [sv_x, 0, 0.2]
+      - [sv_y, 0, 0.2]
+      - [sv_z, 0, 0.2]
+      - sv_deta1
+      - sv_deta2
+      - sv_dphi1
+      - sv_dphi2
+  sv_vectors:
+    length: 10
+    pad_mode: wrap
+    vars:
+    - - sv_px
+      - null
+    - - sv_py
+      - null
+    - - sv_pz
+      - null
+    - - sv_energy
+      - null
+  sv_mask:
+    length: 10
+    pad_mode: constant
+    vars:
+    - [sv_mask, null]
+labels:
+  type: custom
+  value:
+     target_mass: MC_higgs_mass
+
+observers:
+  - event
+  - genweight
+  - jet1_eta
+  - jet1_phi
+  - jet1_index
+  - jet2_index
+  - jet2_eta
+  - jet2_phi
+  - jet1_nparticles
+  - jet2_nparticles
+  - dijet_nparticles
+  - dijet_eta
+  - dijet_phi
+  - dijet_pt
+  - dijet_mass
+  - dijet_index
+  - MC_higgs_pt
+  - MC_higgs_eta
+  - MC_higgs_phi
+  - MC_higgs_mass
+  - MC_higgs_flav
+  - MC_vector_flav
+  - MC_lepton_channel
+  - MC_gendijet_mass
+  - label_bb
+  - label_cx
+  - label_ll
+  - label_bx
+  - label_CC
+  - label_BB
+  - label_elCC
+  - label_elBB
+  - dijet_hmass
+  - dijet_hmass_pnet
+  - d1_jet_idx
+  - d2_jet_idx
+  - jet1_index
+  - jet2_index
+  - jet1_pnet_B
+  - jet1_pnet_CvL
+  - jet1_pnet_CvB
+  - jet1_part_B
+  - jet1_part_CvL
+  - jet1_part_CvB
+  - jet2_pnet_B
+  - jet2_pnet_CvL
+  - jet2_pnet_CvB
+  - jet2_part_B
+  - jet2_part_CvL
+  - jet2_part_CvB
+  - jet1_hadronFlavour
+  - jet2_hadronFlavour
+  - jet1_pt
+  - jet1_eta
+  - jet1_phi
+  - jet1_energy
+    #- jet1_rawFactor
+    #- jet1_PNetRegPtRawCorr
+  - jet2_pt
+  - jet2_eta
+  - jet2_phi
+  - jet2_energy
+    #- jet2_rawFactor
+    #- jet2_PNetRegPtRawCorr
+
+monitor_variables: []
+weights:
+  use_precomputed_weights: false
+  reweight_method: ref
+  reweight_vars:
+    dijet_pt:
+    - 0.0
+    - 303.41935
+    - 466.926422
+    - 908.118271
+    - 9999999.0
+    MC_higgs_mass:
+    - 20
+    - 30
+    - 40
+    - 50
+    - 60
+    - 70
+    - 80
+    - 90
+    - 100
+    - 110
+    - 120
+    - 130
+    - 140
+    - 150
+    - 160
+    - 170
+    - 180
+    - 190
+    - 200
+    - 210
+    - 220
+    - 230
+    - 240
+    - 250
+  reweight_threshold: 0.1
+  reweight_classes:
+  - label_BB
+  - label_CC
+  class_weights:
+  - 1.0
+  - 1.0
+  reweight_hists:
+    label_BB:
+    - - 0.6319910514541387
+      - 0.36522301228183585
+      - 0.21137298915076694
+      - 0.12203023758099352
+      - 0.1
+      - 0.1
+      - 0.1
+      - 0.1
+      - 0.1
+      - 0.1
+      - 0.1
+      - 0.1
+      - 0.1
+      - 0.1
+      - 0.1
+      - 0.1
+      - 0.1
+      - 0.1
+      - 0.1
+      - 0.1
+      - 0.1
+      - 0.1
+      - 0.1
+    - - 0.8786936236391912
+      - 0.2702056432329029
+      - 0.14253279515640765
+      - 0.1
+      - 0.1
+      - 0.1
+      - 0.1
+      - 0.1
+      - 0.1
+      - 0.1
+      - 0.1
+      - 0.1
+      - 0.1
+      - 0.1
+      - 0.1
+      - 0.1
+      - 0.1
+      - 0.1
+      - 0.1
+      - 0.1
+      - 0.1
+      - 0.1
+      - 0.1
+    - - 1.0
+      - 0.7133838383838385
+      - 0.19185059422750425
+      - 0.1
+      - 0.1
+      - 0.1
+      - 0.1
+      - 0.1
+      - 0.1
+      - 0.1
+      - 0.1
+      - 0.1
+      - 0.1
+      - 0.1
+      - 0.1
+      - 0.1
+      - 0.1
+      - 0.1
+      - 0.1
+      - 0.1
+      - 0.1
+      - 0.1
+      - 0.1
+    - - 0.35556954059156703
+      - 0.3843537414965986
+      - 0.36428110896196
+      - 0.25223214285714285
+      - 0.13478053435114504
+      - 0.1
+      - 0.1
+      - 0.1
+      - 0.1
+      - 0.1
+      - 0.1
+      - 0.1
+      - 0.1
+      - 0.1
+      - 0.1
+      - 0.1
+      - 0.1
+      - 0.1
+      - 0.1
+      - 0.1
+      - 0.1
+      - 0.1
+      - 0.1
+    label_CC:
+    - - 0.30271536159330126
+      - 0.18928740987457024
+      - 0.1058269566548561
+      - 0.1
+      - 0.1
+      - 0.1
+      - 0.1
+      - 0.1
+      - 0.1
+      - 0.1
+      - 0.1
+      - 0.1
+      - 0.1
+      - 0.1
+      - 0.1
+      - 0.1
+      - 0.1
+      - 0.1
+      - 0.1
+      - 0.1
+      - 0.1
+      - 0.1
+      - 0.1
+    - - 0.45815328795699894
+      - 0.19090741445226111
+      - 0.11980577754901048
+      - 0.1
+      - 0.1
+      - 0.1
+      - 0.1
+      - 0.1
+      - 0.1
+      - 0.1
+      - 0.1
+      - 0.1
+      - 0.1
+      - 0.1
+      - 0.1
+      - 0.1
+      - 0.1
+      - 0.1
+      - 0.1
+      - 0.1
+      - 0.1
+      - 0.1
+      - 0.1
+    - - 0.5248550166448561
+      - 0.31445058265947334
+      - 0.12409645734301188
+      - 0.1
+      - 0.1
+      - 0.1
+      - 0.1
+      - 0.1
+      - 0.1
+      - 0.1
+      - 0.1
+      - 0.1
+      - 0.1
+      - 0.1
+      - 0.1
+      - 0.1
+      - 0.1
+      - 0.1
+      - 0.1
+      - 0.1
+      - 0.1
+      - 0.1
+      - 0.1
+    - - 0.15753759051798819
+      - 0.1649648307457833
+      - 0.14579306017912672
+      - 0.11020577777319815
+      - 0.1
+      - 0.1
+      - 0.1
+      - 0.1
+      - 0.1
+      - 0.1
+      - 0.1
+      - 0.1
+      - 0.1
+      - 0.1
+      - 0.1
+      - 0.1
+      - 0.1
+      - 0.1
+      - 0.1
+      - 0.1
+      - 0.1
+      - 0.1
+      - 0.1
+

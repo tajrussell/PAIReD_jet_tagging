@@ -16,7 +16,7 @@ BranchNames = {
               "index", "pnet_CvL", "pnet_CvB", "pnet_B", "part_CvL", "part_CvB", "part_B"],
     "dijet": ["eta", "phi", "pt", "mass", "nparticles",
               "index", "ak4_mass", "pnet_mass",  "pnet_mass_alt", "hf_mass", "hf_mass_pnet"],
-    "singleValues": ['event', 'genweight','run', 'pv_n', 'pv_ngood', 'fgrfccpu', 'fgrfcc', 'Pileup_nPU',
+    "singleValues": ['event', 'file_label', 'genweight','run', 'pv_n', 'pv_ngood', 'fgrfccpu', 'fgrfcc', 'Pileup_nPU',
                      'MC_higgs_pt','MC_higgs_eta','MC_higgs_phi','MC_higgs_mass',
                      'MC_gendijet_pt','MC_gendijet_eta','MC_gendijet_phi','MC_gendijet_mass',
                      'MC_genjet1_flav','MC_genjet2_flav','MC_genjet1_matched','MC_genjet2_matched',
@@ -54,6 +54,7 @@ def branchName2akType(branch):
 
 outputTreeType =  {
     'event': "uint64",
+    'file_label': "uint64",
     'genweight': "float32",
     'run': "uint8",
     'Pileup_nPU': "uint8",

@@ -23,7 +23,7 @@ import numpy as np
 import vector
 import uproot
 from tools.branchnames import BranchNames
-from tools.helpers import isoLeptonCut, deltaPhi, getJetClusterIndex, _is_rootcompat, isClustered, isHighPt, soft_drop, get_constituent_indices
+from tools.helpers import isoLeptonCut, deltaPhi, getJetClusterIndex, _is_rootcompat, isClustered, isHighPt, soft_drop, get_constituent_indices, deltaR
 #from tools.helpers import getJetClusterIndexCut
 from tools.getMCInfo import getMCInfo
 from tools.PAIReD_geometries.ellipse import isInPAIReD
@@ -35,7 +35,7 @@ import matplotlib.pyplot as plt
 
 
 
-def processEvents(Events, physics_process=0, PAIReD_geometry="Ellipse"):
+def processEvents(Events, physics_process=0, PAIReD_geometry="Ellipse", file_label=0):
 
     # import the PAIReD jet geometry
     if PAIReD_geometry=="Ellipse":
@@ -309,6 +309,7 @@ def processEvents(Events, physics_process=0, PAIReD_geometry="Ellipse"):
     # prepare other single value branches
     ones = ak.ones_like(Jet.j1.phi)
     event = Events.event * ones
+    file_label_data = file_label * ones
     genweight = Events.genWeight * ones
     run = Events.run * ones
     Pileup_nPU = Events.Pileup_nPU * ones
@@ -322,6 +323,15 @@ def processEvents(Events, physics_process=0, PAIReD_geometry="Ellipse"):
 
     if MCInfo == False:
         return False
+
+    dijet_dR_masked = ak.where(MCInfo["label_elBB"] | MCInfo["label_elCC"], deltaR(jet1.eta, jet2.eta, jet1.phi, jet2.phi), 999.9)
+    #dijet_dMjj_masked = ak.where(MCInfo["label_elBB"] | MCInfo["label_elCC"], abs(dijet_hf_mass_pnet-MCInfo["MC_higgs_mass"]), 999.9)
+    min_dR = ak.min(dijet_dR_masked, axis=1)
+    #min_dMjj = ak.min(dijet_dMjj_masked, axis=1)
+    MCInfo["label_BB"] = MCInfo["label_elBB"] & (dijet_dR_masked == min_dR)
+    MCInfo["label_CC"] = MCInfo["label_elCC"] & (dijet_dR_masked == min_dR)
+    #MCInfo["label_BB"] = MCInfo["label_elBB"] & (dijet_dMjj_masked == min_dMjj)
+    #MCInfo["label_CC"] = MCInfo["label_elCC"] & (dijet_dMjj_masked == min_dMjj)
     MCInfo["label_BB"] = MCInfo["label_elBB"] & (jet1["hadronFlavour"] == 5) & (jet2["hadronFlavour"] == 5)
     MCInfo["label_CC"] = MCInfo["label_elCC"] & (jet1["hadronFlavour"] == 4) & (jet2["hadronFlavour"] == 4)
     MCInfo["label_elBB"] = MCInfo["label_elBB"] & (~MCInfo["label_BB"])
@@ -329,6 +339,7 @@ def processEvents(Events, physics_process=0, PAIReD_geometry="Ellipse"):
 
     DataPAIReD = {
         "event" : event,
+        "file_label": file_label_data,
         "genweight": genweight,
         "run" : run,
         "Pileup_nPU" : Pileup_nPU,

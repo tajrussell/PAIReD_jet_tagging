@@ -1,1 +1,1 @@
-MC_defaultAK4_2023_1-2.root PAIReD_1-2.root PAIReD_1-2
+/isilon/hadoop/store/user/spmondal/VH_gen/ZHbb_PFNano/ZHbb_2845194_102_MH122.root PAIReD_ZHbb_2845194_102_MH122.root PAIReD_ZHbb_2845194_102_MH122
